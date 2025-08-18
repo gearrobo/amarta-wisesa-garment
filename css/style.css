@@ -258,3 +258,98 @@
             color: #666;
             margin: 0.5rem 0 0 0;
         }
+
+        /* Document Preview Styles */
+        .preview-container {
+            margin-top: 10px;
+        }
+
+        .img-thumbnail {
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .img-thumbnail:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            transform: scale(1.02);
+        }
+
+        .no-preview {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        /* Modal Image Styles */
+        #modalImage {
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .modal-lg {
+            max-width: 90%;
+        }
+
+        /* File Input Styling */
+        .form-control[type="file"] {
+            padding: 0.375rem 0.75rem;
+            border-radius: 8px;
+        }
+
+        .form-control[type="file"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        /* Preview Image Container */
+        .preview-image-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .preview-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .preview-container:hover .preview-overlay {
+            opacity: 1;
+        }
+
+        .preview-overlay i {
+            font-size: 2rem;
+        }
+
+        /* Responsive adjustments for preview */
+        @media (max-width: 768px) {
+            .img-thumbnail {
+                max-width: 150px !important;
+                max-height: 100px !important;
+            }
+            
+            .modal-lg {
+                max-width: 95%;
+                margin: 0.5rem;
+            }
+            
+            #modalImage {
+                max-height: 60vh;
+            }
+        }
