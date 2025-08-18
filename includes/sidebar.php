@@ -16,9 +16,9 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link">
-                    <i class="fas fa-chart-bar"></i>
-                    Laporan
+                <a href="master-data.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'master-data.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-database"></i>
+                    Master Data
                 </a>
             </li>
             <li>

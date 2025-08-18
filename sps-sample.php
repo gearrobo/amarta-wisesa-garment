@@ -148,14 +148,18 @@ $result = $conn->query("SELECT * FROM sps ORDER BY id DESC");
 
     <!-- Main Content -->
     <main class="main-content">
-        <div class="top-bar">
-            <h1 class="page-title">Surat Perintah Sample</h1>
+       
             <div>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#spsModal">
-                    <i class="fas fa-plus"></i> Buat SPS Baru
-                </button>
+                <h1 class="h3 mb-4">Surat Perintah Sample</h1>
+                
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Surat Perintah Sample</li>
+                    </ol>
+                </nav>
             </div>
-        </div>
 
         <!-- Stats Cards -->
         <div class="row mb-4">
@@ -184,6 +188,11 @@ $result = $conn->query("SELECT * FROM sps ORDER BY id DESC");
                 </div>
             </div>
         </div>
+        <div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#spsModal">
+                <i class="fas fa-plus"></i> Buat SPS Baru
+            </button>
+        </div><br>
 
         <!-- Alerts -->
         <?php
@@ -395,4 +404,4 @@ function generateSPK(id) {
 </script>
 
 
-<?php include 'includes/footer.php';
+<?php include '../includes/footer.php';
