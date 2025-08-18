@@ -173,7 +173,7 @@ if (isset($_POST['update'])) {
 
         <div class="col-12">
             <button type="submit" name="update" class="btn btn-primary">Update</button>
-            <a href="index.php" class="btn btn-secondary">Kembali</a>
+            <a href="sps-sample.php" class="btn btn-secondary">Kembali</a>
         </div>
     </form>
 </div>
