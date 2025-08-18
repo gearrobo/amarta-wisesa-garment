@@ -87,10 +87,10 @@ if (isset($_POST['update'])) {
         $stmt->bind_param($types, ...$params);
         
         if ($stmt->execute()) {
-            header("Location: index.php?updated=1");
+            header("Location: sps-sample.php?updated=1");
             exit();
         } else {
-            header("Location: index.php?error=1");
+            header("Location: sps-sample.php?error=1");
             exit();
         }
     }
