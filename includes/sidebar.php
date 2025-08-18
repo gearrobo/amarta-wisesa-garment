@@ -1,0 +1,32 @@
+ <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h4>Amarta Wisesa</h4>
+            <small>SPS Management System</small>
+        </div>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="index.php" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="sps-sample.php" class="nav-link">
+                    <i class="fas fa-file-alt"></i>
+                    Surat Perintah Sample
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link">
+                    <i class="fas fa-chart-bar"></i>
+                    Laporan
+                </a>
+            </li>
+            <li>
+                <a href="pengaturan.php" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    Pengaturan
+                </a>
+            </li>
+        </ul>
+    </nav>
