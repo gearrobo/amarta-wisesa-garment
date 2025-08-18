@@ -25,9 +25,25 @@
         }
 
         .sidebar-header {
-            padding: 0 1.5rem 1.5rem;
+            /* padding: 1.5rem; */
             border-bottom: 1px solid rgba(255,255,255,0.1);
             margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .sidebar-logo {
+            width: 250px;
+            height: 65px;
+            margin-bottom: 0.5rem;
+            border-radius: 10%;
+            background: rgba(255,255,255,0.1);
+            padding: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-logo:hover {
+            transform: scale(1.05);
         }
 
         .sidebar-header h4 {
@@ -40,6 +56,8 @@
         .sidebar-header small {
             color: rgba(255,255,255,0.8);
             font-size: 0.8rem;
+            display: block;
+            margin-top: 0.25rem;
         }
 
         .sidebar-nav {

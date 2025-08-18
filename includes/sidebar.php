@@ -1,7 +1,6 @@
-<nav class="sidebar" id="sidebar">
+    <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <h4>Amarta Wisesa</h4>
-            <small>SPS Management System</small>
+            <img src="img/amarta-wisesa.png" alt="Amarta Wisesa Logo" class="sidebar-logo">
         </div>
         <ul class="sidebar-nav">
             <li>
