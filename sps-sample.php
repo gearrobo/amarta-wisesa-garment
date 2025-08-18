@@ -416,4 +416,4 @@ function generateSPK(id) {
 </script>
 
 
-<?php include '../includes/footer.php';
+<?php include 'includes/footer.php';
