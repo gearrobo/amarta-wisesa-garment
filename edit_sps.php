@@ -27,8 +27,8 @@ if (isset($_POST['update'])) {
     // Handle file uploads jika ada file baru
     $updateFields = [];
     $params = [];
-    $types = '';
-
+    $types = 'sssssisssss'; // For the non-file fields
+    
     // Upload file baru jika ada
     function uploadFile($field, $oldFile) {
         if (isset($_FILES[$field]) && $_FILES[$field]['error'] == 0) {
@@ -36,15 +36,19 @@ if (isset($_POST['update'])) {
             $fileType = $_FILES[$field]['type'];
             
             if (!in_array($fileType, $allowedTypes)) {
-                return ['error' => 'Tipe file tidak valid'];
+                return ['error' => 'Tipe file tidak valid untuk ' . $field];
             }
             
             if ($_FILES[$field]['size'] > 5000000) {
-                return ['error' => 'File terlalu besar'];
+                return ['error' => 'File terlalu besar untuk ' . $field];
             }
             
             $targetDir = "uploads/";
-            $filename = time() . "_" . basename($_FILES[$field]['name']);
+            if (!is_dir($targetDir)) {
+                mkdir($targetDir, 0777, true);
+            }
+            
+            $filename = time() . "_" . uniqid() . "_" . basename($_FILES[$field]['name']);
             $targetFile = $targetDir . $filename;
             
             if (move_uploaded_file($_FILES[$field]['tmp_name'], $targetFile)) {
@@ -60,38 +64,56 @@ if (isset($_POST['update'])) {
 
     // Upload files
     $files = ['sample_product', 'design', 'st_chart', 'material_sm', 'pola_sample', 'buat_sample'];
+    $uploadSuccess = true;
+    
     foreach ($files as $file) {
-        $uploadResult = uploadFile($file, $sps[$file]);
-        if (isset($uploadResult['error'])) {
-            $message = $uploadResult['error'];
-            $messageType = 'danger';
-            break;
+        if (isset($_FILES[$file]) && $_FILES[$file]['error'] == 0) {
+            $uploadResult = uploadFile($file, $sps[$file]);
+            if (isset($uploadResult['error'])) {
+                $message = $uploadResult['error'];
+                $messageType = 'danger';
+                $uploadSuccess = false;
+                break;
+            }
+            $updateFields[] = "$file = ?";
+            $params[] = $uploadResult['filename'];
+            $types .= 's';
+        } else {
+            // Keep existing file if no new upload
+            $updateFields[] = "$file = ?";
+            $params[] = $sps[$file];
+            $types .= 's';
         }
-        $updateFields[] = "$file = ?";
-        $params[] = $uploadResult['filename'];
-        $types .= 's';
     }
 
-    if (!isset($message)) {
-        // Update data
-        $sql = "UPDATE sps SET 
-                tanggal = ?, sps_no = ?, customer = ?, item = ?, artikel = ?, qty = ?, size = ?, 
-                kirim = ?, approval = ?, sp_srx = ?, 
-                " . implode(', ', $updateFields) . "
-                WHERE id = ?";
+    if ($uploadSuccess) {
+        // Build the complete SQL query
+        $baseFields = [
+            "tanggal = ?", "sps_no = ?", "customer = ?", "item = ?", "artikel = ?", 
+            "qty = ?", "size = ?", "kirim = ?", "approval = ?", "sp_srx = ?"
+        ];
+        
+        $allFields = array_merge($baseFields, $updateFields);
+        $sql = "UPDATE sps SET " . implode(', ', $allFields) . " WHERE id = ?";
+        
+        // Build parameters array
+        $baseParams = [$tanggal, $sps_no, $customer, $item, $artikel, $qty, $size, $kirim, $approval, $sp_srx];
+        $allParams = array_merge($baseParams, $params, [$id]);
+        
+        // Build types string
+        $types = str_repeat('s', count($baseParams)); // 10 string parameters
+        $types .= str_repeat('s', count($params));   // file parameters (all strings)
+        $types .= 'i'; // id parameter
         
         $stmt = $conn->prepare($sql);
-        $params = array_merge([$tanggal, $sps_no, $customer, $item, $artikel, $qty, $size, $kirim, $approval, $sp_srx], $params, [$id]);
-        $types = 'sssssisssss' . $types . 'i';
-        
-        $stmt->bind_param($types, ...$params);
+        $stmt->bind_param($types, ...$allParams);
         
         if ($stmt->execute()) {
             header("Location: sps-sample.php?updated=1");
             exit();
         } else {
-            header("Location: sps-sample.php?error=1");
-            exit();
+            $message = "Gagal update data: " . $stmt->error;
+            $messageType = 'danger';
         }
     }
 }
