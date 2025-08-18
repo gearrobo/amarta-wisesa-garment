@@ -161,13 +161,27 @@ if (isset($_POST['update'])) {
         
         foreach ($fileFields as $field => $label): 
             $currentFile = $sps[$field];
+            $filePath = "uploads/" . $currentFile;
         ?>
-        <div class="col-md-6">
+        <div class="col-md-6 mb-4">
             <label><?= $label ?> (.png)</label>
-            <input type="file" name="<?= $field ?>" accept="image/png" class="form-control">
-            <?php if ($currentFile): ?>
-                <small class="text-muted">File saat ini: <?= $currentFile ?></small>
-            <?php endif; ?>
+            <input type="file" name="<?= $field ?>" accept="image/png" class="form-control mb-2" onchange="previewImage(this, '<?= $field ?>_preview')">
+            
+            <div class="preview-container">
+                <?php if ($currentFile && file_exists($filePath)): ?>
+                    <img src="<?= $filePath ?>" alt="<?= $label ?>" class="img-thumbnail" style="max-width: 200px; max-height: 150px; cursor: pointer;" onclick="openModal('<?= $filePath ?>', '<?= $label ?>')">
+                    <br>
+                    <small class="text-muted">File saat ini: <?= $currentFile ?></small>
+                <?php else: ?>
+                    <div class="no-preview text-muted" style="width: 200px; height: 150px; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center;">
+                        <small>No file uploaded</small>
+                    </div>
+                <?php endif; ?>
+            </div>
+            
+            <div id="<?= $field ?>_preview" class="mt-2" style="display: none;">
+                <img src="" alt="Preview" class="img-thumbnail" style="max-width: 200px; max-height: 150px;">
+            </div>
         </div>
         <?php endforeach; ?>
 
@@ -178,4 +192,32 @@ if (isset($_POST['update'])) {
     </form>
 </div>
 
-    <?php include 'includes/footer.php';
+    <!-- Modal for Image Preview -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Document Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" class="img-fluid" alt="Document Preview">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a id="downloadBtn" href="" class="btn btn-primary" download>Download</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to preview uploaded image
+        function previewImage(input, previewId) {
+            const preview = document.getElementById(previewId);
+            const previewImg = preview.querySelector('img');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
