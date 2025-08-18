@@ -4,7 +4,6 @@ $username = 'root';
 $password = '';
 $db_name = 'db_amarta_wisesa';
 
-
 $conn = mysqli_connect($host, $username, $password, $db_name);
 
 if (!$conn) {

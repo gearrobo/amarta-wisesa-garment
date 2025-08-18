@@ -31,7 +31,7 @@ include 'includes/header.php';
                                     <i class="fas fa-users fa-3x text-primary mb-3"></i>
                                     <h5 class="card-title">Data Karyawan</h5>
                                     <p class="card-text">Kelola data karyawan dan staf</p>
-                                    <a href="#" class="btn btn-primary">Kelola</a>
+                                    <a href="data-karyawan.php" class="btn btn-primary">Kelola Data Karyawan</a>
                                 </div>
                             </div>
                         </div>
@@ -100,3 +100,4 @@ include 'includes/header.php';
 <?php
 // Include footer
 include 'includes/footer.php';
+?>
