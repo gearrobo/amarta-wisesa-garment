@@ -121,7 +121,7 @@ if (isset($_POST['save'])) {
                     $messageType = 'success';
                     
                     // Redirect untuk mencegah duplicate submission
-                    header("Location: index.php?success=1");
+                    header("Location: sps-sample.php?success=1");
                     exit();
                 } else {
                     $message = 'Error: Gagal menyimpan data - ' . $stmt->error;
@@ -144,6 +144,18 @@ if (isset($_GET['success']) && $_GET['success'] == 1) {
 
 // Ambil data SPS
 $result = $conn->query("SELECT * FROM sps ORDER BY id DESC");
+
+// Hitung jumlah pending approval
+$pending_result = $conn->query("SELECT COUNT(*) as pending_count FROM sps WHERE approval = '' OR approval IS NULL");
+$pending_count = $pending_result->fetch_assoc()['pending_count'];
+
+// Hitung jumlah approved
+$approved_result = $conn->query("SELECT COUNT(*) as approved_count FROM sps WHERE approval != '' AND approval IS NOT NULL");
+$approved_count = $approved_result->fetch_assoc()['approved_count'];
+
+// Hitung jumlah dikirim (yang sudah di-approve dan dikirim)
+$kirim_result = $conn->query("SELECT COUNT(*) as kirim_count FROM sps WHERE approval != '' AND approval IS NOT NULL AND kirim IS NOT NULL AND kirim != ''");
+$kirim_count = $kirim_result->fetch_assoc()['kirim_count'];
 ?>
 
     <!-- Main Content -->
@@ -171,19 +183,19 @@ $result = $conn->query("SELECT * FROM sps ORDER BY id DESC");
             </div>
             <div class="col-md-3">
                 <div class="stats-card">
-                    <h3>0</h3>
+                    <h3><?php echo $pending_count; ?></h3>
                     <p>Menunggu Approval</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="stats-card">
-                    <h3>0</h3>
+                    <h3><?php echo $approved_count; ?></h3>
                     <p>Disetujui</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="stats-card">
-                    <h3>0</h3>
+                    <h3><?php echo $kirim_count; ?></h3>
                     <p>Dikirim</p>
                 </div>
             </div>
