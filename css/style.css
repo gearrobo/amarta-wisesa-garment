@@ -1,6 +1,6 @@
         :root {
             --sidebar-width: 250px;
-            --primary-color: #0d6efd;
+            --primary-color: #0d19fdff;
             --sidebar-bg: #f8f9fa;
             --sidebar-border: #dee2e6;
         }
@@ -17,7 +17,7 @@
             left: 0;
             height: 100vh;
             width: var(--sidebar-width);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3c5cebff 0%, #764ba2 100%);
             padding: 1rem 0;
             transition: all 0.3s ease;
             z-index: 1000;
@@ -32,8 +32,8 @@
         }
 
         .sidebar-logo {
-            width: 250px;
-            height: 65px;
+            width: 240px;
+            height: 67px;
             margin-bottom: 0.5rem;
             border-radius: 10%;
             background: rgba(255,255,255,0.1);
