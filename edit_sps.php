@@ -221,3 +221,45 @@ if (isset($_POST['update'])) {
                 const reader = new FileReader();
                 
                 reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // Function to open modal with image
+        function openModal(imageSrc, title) {
+            const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+            const modalImage = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('imageModalLabel');
+            const downloadBtn = document.getElementById('downloadBtn');
+            
+            modalImage.src = imageSrc;
+            modalTitle.textContent = title;
+            downloadBtn.href = imageSrc;
+            
+            modal.show();
+        }
+
+        // Add some styling for better UX
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effect to images
+            const images = document.querySelectorAll('.img-thumbnail');
+            images.forEach(img => {
+                img.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                    this.style.transition = 'transform 0.3s ease';
+                });
+                
+                img.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+
+    <?php include 'includes/footer.php';
