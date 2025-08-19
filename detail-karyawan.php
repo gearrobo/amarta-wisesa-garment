@@ -45,7 +45,7 @@ if ($karyawan['type_karyawan'] == 'tetap') {
         mysqli_stmt_close($stmt);
     }
 } else {
-    $sql = "SELECT * FROM karyawan_non_tetap WHERE id_karyawan = ?";
+    $sql = "SELECT * FROM karyawan_harian_borongan WHERE id_karyawan = ?";
     $stmt = mysqli_prepare($conn, $sql);
     if ($stmt) {
         mysqli_stmt_bind_param($stmt, "i", $id_karyawan);
