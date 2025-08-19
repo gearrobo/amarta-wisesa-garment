@@ -64,7 +64,7 @@ include 'includes/header.php';
                                     <i class="fas fa-cogs fa-3x text-warning mb-3"></i>
                                     <h5 class="card-title">Data Mesin</h5>
                                     <p class="card-text">Kelola data mesin dan peralatan</p>
-                                    <a href="#" class="btn btn-warning">Kelola</a>
+                                    <a href="data-mesin.php" class="btn btn-warning">Kelola Data Mesin</a>
                                 </div>
                             </div>
                         </div>
