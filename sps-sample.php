@@ -154,7 +154,7 @@ $approved_result = $conn->query("SELECT COUNT(*) as approved_count FROM sps WHER
 $approved_count = $approved_result->fetch_assoc()['approved_count'];
 
 // Hitung jumlah dikirim (yang sudah di-approve dan dikirim)
-$kirim_result = $conn->query("SELECT COUNT(*) as kirim_count FROM sps WHERE approval != '' AND approval IS NOT NULL AND kirim IS NOT NULL AND kirim != ''");
+$kirim_result = $conn->query("SELECT COUNT(*) as kirim_count FROM sps WHERE approval ='Approved' ");
 $kirim_count = $kirim_result->fetch_assoc()['kirim_count'];
 ?>
 
