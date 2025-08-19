@@ -39,9 +39,9 @@ $stmt->execute();
 </head>
 <body>
     <div class="header">
-        <div class="company-name">PT AMARTA WISESA</div>
-        <div>Jl. Raya Cibaduyut No. 123, Bandung</div>
-        <div>Telp: (022) 12345678</div>
+        <div class="company-name">CV. AMARTA WISESA</div>
+        <div>Jl. Brigjend. Katamso No.48-50, Kauman, Kec. Klojen, Kota Malang, Jawa Timur 65119</div>
+        <div>Telp: (62) 8125202033</div>
     </div>
 
     <div class="spk-title">SURAT PERINTAH KERJA (SPK)</div>
