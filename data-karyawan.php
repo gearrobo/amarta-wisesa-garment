@@ -1,15 +1,18 @@
 <?php
+// Start session
+session_start();
+
+// Include database configuration
+include 'config/db.php';
+
 // Include header
 include 'includes/header.php';
-
-include 'config/db.php';
-session_start();
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['tambah_karyawan'])) {
         // Start transaction
-        mysqli_begin_transaction($conn);
+        mysqli_autocommit($conn, FALSE);
         
         try {
             // Insert basic employee data
@@ -17,6 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             
             $stmt = mysqli_prepare($conn, $sql);
+            if (!$stmt) {
+                throw new Exception("Prepare failed: " . mysqli_error($conn));
+            }
+            
             mysqli_stmt_bind_param($stmt, "ssssssssssii", 
                 $_POST['nik'],
                 $_POST['nama_lengkap'],
@@ -32,8 +39,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_POST['id_departemen']
             );
             
-            mysqli_stmt_execute($stmt);
+            if (!mysqli_stmt_execute($stmt)) {
+                throw new Exception("Execute failed: " . mysqli_stmt_error($stmt));
+            }
+            
             $id_karyawan = mysqli_insert_id($conn);
+            mysqli_stmt_close($stmt);
             
             // Insert type-specific data
             if ($_POST['type_karyawan'] == 'tetap') {
@@ -41,6 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 
                 $stmt = mysqli_prepare($conn, $sql);
+                if (!$stmt) {
+                    throw new Exception("Prepare failed for karyawan_tetap: " . mysqli_error($conn));
+                }
+                
                 mysqli_stmt_bind_param($stmt, "isssiiiiis", 
                     $id_karyawan,
                     $_POST['npwp'],
@@ -54,12 +69,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $_POST['nama_bank']
                 );
                 
-                mysqli_stmt_execute($stmt);
+                if (!mysqli_stmt_execute($stmt)) {
+                    throw new Exception("Execute failed for karyawan_tetap: " . mysqli_stmt_error($stmt));
+                }
+                mysqli_stmt_close($stmt);
+                
             } else {
-                $sql = "INSERT INTO karyawan_non_tetap (id_karyawan, upah_per_hari, upah_per_jam, upah_borongan, metode_pembayaran, rekening_bank, nama_bank) 
+                $sql = "INSERT INTO karyawan_harian_borongan (id_karyawan, upah_per_hari, upah_per_jam, upah_borongan, metode_pembayaran, rekening_bank, nama_bank) 
                         VALUES (?, ?, ?, ?, ?, ?, ?)";
                 
                 $stmt = mysqli_prepare($conn, $sql);
+                if (!$stmt) {
+                    throw new Exception("Prepare failed for karyawan_harian_borongan: " . mysqli_error($conn));
+                }
+                
                 mysqli_stmt_bind_param($stmt, "iiiiiss", 
                     $id_karyawan,
                     $_POST['upah_per_hari'],
@@ -70,7 +93,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $_POST['nama_bank']
                 );
                 
-                mysqli_stmt_execute($stmt);
+                if (!mysqli_stmt_execute($stmt)) {
+                    throw new Exception("Execute failed for karyawan_non_tetap: " . mysqli_stmt_error($stmt));
+                }
+                mysqli_stmt_close($stmt);
             }
             
             // Commit transaction
@@ -235,8 +261,8 @@ $departemenList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                 <label class="form-label">Jenis Kelamin</label>
                                 <select name="jenis_kelamin" class="form-select" required>
                                     <option value="">Pilih</option>
-                                    <option value="Laki-laki">Laki-laki</option>
-                                    <option value="Perempuan">Perempuan</option>
+                                    <option value="L">Laki-laki</option>
+                                    <option value="P">Perempuan</option>
                                 </select>
                             </div>
                         </div>
