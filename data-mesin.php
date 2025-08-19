@@ -204,7 +204,7 @@ $(document).ready(function() {
 function hapusMesin(id) {
     if (confirm('Apakah Anda yakin ingin menghapus data mesin ini?')) {
         // Implement delete functionality
-        window.location.href = 'hapus-mesin.php?id=' + id;
+        window.location.href = 'delete-mesin.php?id=' + id;
     }
 }
 </script>
