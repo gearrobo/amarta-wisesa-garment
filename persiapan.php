@@ -1,107 +1,89 @@
 <?php
 include 'includes/header.php';
-include 'includes/sidebar.php';
+include 'config/db.php';
 ?>
 
-<!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <h1>
-            Persiapan Produksi
-            <small>Menu Persiapan</small>
-        </h1>
-        <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-            <li class="active">Persiapan</li>
-        </ol>
-    </section>
-
+<div class="main-content">
     <!-- Main content -->
-    <section class="content">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="box box-primary">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Data Persiapan Produksi</h3>
-                        <div class="box-tools pull-right">
-                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalTambah">
-                                <i class="fa fa-plus"></i> Tambah Persiapan
-                            </button>
-                        </div>
-                    </div>
-                    <!-- /.box-header -->
-                    <div class="box-body">
-                        <table id="tablePersiapan" class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>No. SPS</th>
-                                    <th>Nama Buyer</th>
-                                    <th>Style</th>
-                                    <th>Tanggal Persiapan</th>
-                                    <th>Status</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                $query = "SELECT * FROM persiapan ORDER BY id DESC";
-                                $result = mysqli_query($conn, $query);
-                                $no = 1;
-                                while($row = mysqli_fetch_assoc($result)) {
-                                    $status_class = '';
-                                    $status_text = '';
-                                    
-                                    switch($row['status']) {
-                                        case 'pending':
-                                            $status_class = 'label-warning';
-                                            $status_text = 'Pending';
-                                            break;
-                                        case 'proses':
-                                            $status_class = 'label-info';
-                                            $status_text = 'Dalam Proses';
-                                            break;
-                                        case 'selesai':
-                                            $status_class = 'label-success';
-                                            $status_text = 'Selesai';
-                                            break;
-                                        default:
-                                            $status_class = 'label-default';
-                                            $status_text = 'Belum Ditentukan';
-                                    }
-                                ?>
-                                <tr>
-                                    <td><?= $no++ ?></td>
-                                    <td><?= $row['no_sps'] ?></td>
-                                    <td><?= $row['nama_buyer'] ?></td>
-                                    <td><?= $row['style'] ?></td>
-                                    <td><?= date('d/m/Y', strtotime($row['tanggal_persiapan'])) ?></td>
-                                    <td><span class="label <?= $status_class ?>"><?= $status_text ?></span></td>
-                                    <td>
-                                        <button class="btn btn-xs btn-info" onclick="editPersiapan(<?= $row['id'] ?>)">
-                                            <i class="fa fa-edit"></i> Edit
-                                        </button>
-                                        <button class="btn btn-xs btn-danger" onclick="hapusPersiapan(<?= $row['id'] ?>)">
-                                            <i class="fa fa-trash"></i> Hapus
-                                        </button>
-                                    </td>
-                                </tr>
-                                <?php } ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- /.box-body -->
-                </div>
-                <!-- /.box -->
-            </div>
-            <!-- /.col -->
+    <div>
+        <h1 class="h3 mb-4">Surat Perintah Sample</h1>
+        
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
+                <li class="breadcrumb-item active">Surat Perintah Sample</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="box-tools pull-right">
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalTambah">
+                <i class="fa fa-plus"></i> Tambah Persiapan
+            </button>
         </div>
-        <!-- /.row -->
-    </section>
-    <!-- /.content -->
-</div>
-<!-- /.content-wrapper -->
+    <!-- /.box-header -->
+    <div class="box-body">
+        <table id="tablePersiapan" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>No. SPS</th>
+                    <th>Nama Buyer</th>
+                    <th>Style</th>
+                    <th>Tanggal Persiapan</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $query = "SELECT * FROM persiapan ORDER BY id DESC";
+                $result = mysqli_query($conn, $query);
+                $no = 1;
+                while($row = mysqli_fetch_assoc($result)) {
+                    $status_class = '';
+                    $status_text = '';
+                    
+                    switch($row['status']) {
+                        case 'pending':
+                            $status_class = 'label-warning';
+                            $status_text = 'Pending';
+                            break;
+                        case 'proses':
+                            $status_class = 'label-info';
+                            $status_text = 'Dalam Proses';
+                            break;
+                        case 'selesai':
+                            $status_class = 'label-success';
+                            $status_text = 'Selesai';
+                            break;
+                        default:
+                            $status_class = 'label-default';
+                            $status_text = 'Belum Ditentukan';
+                    }
+                ?>
+                <tr>
+                    <td><?= $no++ ?></td>
+                    <td><?= $row['no_sps'] ?></td>
+                    <td><?= $row['nama_buyer'] ?></td>
+                    <td><?= $row['style'] ?></td>
+                    <td><?= date('d/m/Y', strtotime($row['tanggal_persiapan'])) ?></td>
+                    <td><span class="label <?= $status_class ?>"><?= $status_text ?></span></td>
+                    <td>
+                        <button class="btn btn-xs btn-info" onclick="editPersiapan(<?= $row['id'] ?>)">
+                            <i class="fa fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-xs btn-danger" onclick="hapusPersiapan(<?= $row['id'] ?>)">
+                            <i class="fa fa-trash"></i> Hapus
+                        </button>
+                    </td>
+                </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+    </div>
+    <!-- /.box-body -->
+
 
 <!-- Modal Tambah Persiapan -->
 <div class="modal fade" id="modalTambah">
