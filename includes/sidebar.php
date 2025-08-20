@@ -16,6 +16,12 @@
                 </a>
             </li>
             <li>
+                <a href="persiapan.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'persiapan.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-clipboard-list"></i>
+                    Persiapan Produksi
+                </a>
+            </li>
+            <li>
                 <a href="master-data.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'master-data.php' ? 'active' : ''; ?>">
                     <i class="fas fa-database"></i>
                     Master Data
