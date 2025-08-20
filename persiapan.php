@@ -13,7 +13,7 @@ $messageType = '';
 
 if (isset($_POST['save'])) {
     // Validasi input required
-    $required_fields = ['tanggal', 'persiapan_no', 'customer', 'item', 'artikel', 'qty'];
+    $required_fields = ['tanggal', 'customer', 'item', 'artikel', 'qty'];
     $missing_fields = [];
     
     foreach ($required_fields as $field) {
@@ -28,7 +28,6 @@ if (isset($_POST['save'])) {
     } else {
         // Ambil data dengan aman
         $tanggal = $_POST['tanggal'];
-        $persiapan_no = $_POST['persiapan_no'];
         $customer = $_POST['customer'];
         $item = $_POST['item'];
         $artikel = $_POST['artikel'];
@@ -96,8 +95,8 @@ if (isset($_POST['save'])) {
             $messageType = 'danger';
         } else {
             // Gunakan prepared statement untuk keamanan
-            $sql = "INSERT INTO persiapan 
-                    (tanggal, persiapan_no, customer, item, artikel, qty, size, 
+            $sql = "INSERT INTO sps 
+                    (tanggal, sps_no, customer, item, artikel, qty, size, 
                      sample_product, design, st_chart, material_sm, pola_sample, buat_sample, 
                      kirim, approval, sp_srx)
                     VALUES 
@@ -142,20 +141,20 @@ if (isset($_GET['success']) && $_GET['success'] == 1) {
     $messageType = 'success';
 }
 
-// Ambil data persiapan
-// $result = $conn->query("SELECT * FROM persiapan ORDER BY id DESC");
+// Ambil data persiapan dari tabel sps
+$result = $conn->query("SELECT * FROM sps ORDER BY id DESC");
 
-// // Hitung jumlah pending approval
-// $pending_result = $conn->query("SELECT COUNT(*) as pending_count FROM persiapan WHERE approval = '' OR approval IS NULL");
-// $pending_count = $pending_result->fetch_assoc()['pending_count'];
+// Hitung jumlah pending approval
+$pending_result = $conn->query("SELECT COUNT(*) as pending_count FROM sps WHERE approval = '' OR approval IS NULL");
+$pending_count = $pending_result ? $pending_result->fetch_assoc()['pending_count'] : 0;
 
-// // Hitung jumlah approved
-// $approved_result = $conn->query("SELECT COUNT(*) as approved_count FROM persiapan WHERE approval != '' AND approval IS NOT NULL");
-// $approved_count = $approved_result->fetch_assoc()['approved_count'];
+// Hitung jumlah approved
+$approved_result = $conn->query("SELECT COUNT(*) as approved_count FROM sps WHERE approval != '' AND approval IS NOT NULL");
+$approved_count = $approved_result ? $approved_result->fetch_assoc()['approved_count'] : 0;
 
-// // Hitung jumlah dikirim
-// $kirim_result = $conn->query("SELECT COUNT(*) as kirim_count FROM persiapan WHERE approval ='Approved'");
-// $kirim_count = $kirim_result->fetch_assoc()['kirim_count'];
+// Hitung jumlah dikirim
+$kirim_result = $conn->query("SELECT COUNT(*) as kirim_count FROM sps WHERE approval ='Approved'");
+$kirim_count = $kirim_result ? $kirim_result->fetch_assoc()['kirim_count'] : 0;
 ?>
 
     <!-- Main Content -->
@@ -249,7 +248,6 @@ if (isset($_GET['success']) && $_GET['success'] == 1) {
                         <tr>
                             <th>No</th>
                             <th>Tanggal</th>
-                            <th>No Persiapan</th>
                             <th>Customer</th>
                             <th>Item</th>
                             <th>Artikel</th>
@@ -266,7 +264,6 @@ if (isset($_GET['success']) && $_GET['success'] == 1) {
                         <tr>
                             <td><?= $no++ ?></td>
                             <td><?= date('d/m/Y', strtotime($row['tanggal'])) ?></td>
-                            <td><strong><?= $row['persiapan_no'] ?></strong></td>
                             <td><?= $row['customer'] ?></td>
                             <td><?= $row['item'] ?></td>
                             <td><?= $row['artikel'] ?></td>
@@ -320,9 +317,6 @@ if (isset($_GET['success']) && $_GET['success'] == 1) {
             <label>Tanggal</label>
             <input type="date" name="tanggal" class="form-control" required>
         </div>
-        <div class="col-md-4">
-            <label>No Persiapan</label>
-            <input type="text" name="persiapan_no" class="form-control" required>
         </div>
         <div class="col-md-4">
             <label>Customer</label>
