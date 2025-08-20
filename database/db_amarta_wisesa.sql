@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `departemen` (
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table db_amarta_wisesa.departemen: ~5 rows (approximately)
-INSERT INTO `departemen` (`id_departemen`, `nama_departemen`, `deskripsi`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `departemen` (`id_departemen`, `nama_departemen`, `deskripsi`, `created_at`, `updated_at`) VALUES
 	(1, 'Produksi', 'Departemen yang menangani proses produksi', '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 	(2, 'Quality Assurance', 'Departemen yang menangani kontrol kualitas', '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 	(3, 'Gudang', 'Departemen yang menangani penyimpanan dan distribusi', '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS `gudang` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table db_amarta_wisesa.gudang: ~6 rows (approximately)
-INSERT INTO `gudang` (`id_gudang`, `nama`, `alamat`, `kepala_gudang`, `kapasitas`, `keterangan`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `gudang` (`id_gudang`, `nama`, `alamat`, `kepala_gudang`, `kapasitas`, `keterangan`, `created_at`, `updated_at`) VALUES
 	(1, 'Gudang Utama Jakarta', 'Jl. Industri No. 123, Jakarta Barat', 'Budi Santoso', 5000, 'Gudang utama untuk penyimpanan bahan baku', '2025-08-20 03:28:41', '2025-08-20 03:28:41'),
 	(2, 'Gudang Finishing Bandung', 'Jl. Pahlawan No. 45, Bandung', 'Siti Nurhaliza', 3000, 'Gudang untuk produk jadi dan finishing', '2025-08-20 03:28:41', '2025-08-20 03:28:41'),
 	(3, 'Gudang Bahan Surabaya', 'Jl. Ahmad Yani No. 78, Surabaya', 'Andi Wijaya', 4000, 'Gudang khusus untuk bahan baku tekstil', '2025-08-20 03:28:41', '2025-08-20 03:28:41'),
@@ -117,8 +117,8 @@ CREATE TABLE IF NOT EXISTS `inventory` (
   KEY `idx_warehouse` (`warehouse`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table db_amarta_wisesa.inventory: ~5 rows (approximately)
-INSERT INTO `inventory` (`id`, `nama_barang`, `warehouse`, `unit`, `jumlah`, `harga_per_unit`, `keterangan`, `created_at`, `updated_at`) VALUES
+-- Dumping data for table db_amarta_wisesa.inventory: ~1 rows (approximately)
+INSERT IGNORE INTO `inventory` (`id`, `nama_barang`, `warehouse`, `unit`, `jumlah`, `harga_per_unit`, `keterangan`, `created_at`, `updated_at`) VALUES
 	(7, 'Kain Hijau', 'Gudang B', 'm²', 1000, 25000.00, 'ya', '2025-08-20 11:55:19', NULL);
 
 -- Dumping structure for table db_amarta_wisesa.inventory_gudang
@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS `inventory_gudang` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table db_amarta_wisesa.inventory_gudang: ~4 rows (approximately)
-INSERT INTO `inventory_gudang` (`id_inventory`, `id_gudang`, `kode_barang`, `nama_barang`, `jumlah`, `satuan`, `tanggal_masuk`, `tanggal_update`) VALUES
+INSERT IGNORE INTO `inventory_gudang` (`id_inventory`, `id_gudang`, `kode_barang`, `nama_barang`, `jumlah`, `satuan`, `tanggal_masuk`, `tanggal_update`) VALUES
 	(1, 1, 'BRG001', 'Kain Katun Premium', 500, 'roll', '2024-01-15', '2025-08-20 03:28:41'),
 	(2, 1, 'BRG002', 'Benang Polyester', 200, 'kg', '2024-01-20', '2025-08-20 03:28:41'),
 	(3, 2, 'BRG003', 'Kaos Polos L', 1000, 'pcs', '2024-01-25', '2025-08-20 03:28:41'),
@@ -181,7 +181,7 @@ CREATE TABLE IF NOT EXISTS `jabatan` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table db_amarta_wisesa.jabatan: ~7 rows (approximately)
-INSERT INTO `jabatan` (`id_jabatan`, `nama_jabatan`, `deskripsi`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `jabatan` (`id_jabatan`, `nama_jabatan`, `deskripsi`, `created_at`, `updated_at`) VALUES
 	(1, 'Operator Produksi', 'Karyawan yang bekerja di lini produksi', '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 	(2, 'Supervisor Produksi', 'Mengawasi dan mengkoordinir lini produksi', '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 	(3, 'Quality Control', 'Memastikan kualitas produk sesuai standar', '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
@@ -219,7 +219,7 @@ CREATE TABLE IF NOT EXISTS `karyawan` (
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table db_amarta_wisesa.karyawan: ~6 rows (approximately)
-INSERT INTO `karyawan` (`id_karyawan`, `nik`, `nama_lengkap`, `jenis_kelamin`, `tempat_lahir`, `tanggal_lahir`, `alamat`, `no_telepon`, `email`, `type_karyawan`, `status_karyawan`, `tanggal_masuk`, `tanggal_keluar`, `id_jabatan`, `id_departemen`, `foto`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `karyawan` (`id_karyawan`, `nik`, `nama_lengkap`, `jenis_kelamin`, `tempat_lahir`, `tanggal_lahir`, `alamat`, `no_telepon`, `email`, `type_karyawan`, `status_karyawan`, `tanggal_masuk`, `tanggal_keluar`, `id_jabatan`, `id_departemen`, `foto`, `created_at`, `updated_at`) VALUES
 	(1, 'K001', 'Budi Santoso', 'L', 'Jakarta', '1985-05-15', 'Jl. Merdeka No. 123', '081234567890', 'budi@amarta.com', 'tetap', 'aktif', '2020-01-15', NULL, 2, 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 	(2, 'K002', 'Siti Nurhaliza', 'P', 'Bandung', '1990-08-20', 'Jl. Sudirman No. 45', '082345678901', 'siti@amarta.com', 'tetap', 'aktif', '2019-03-10', NULL, 5, 4, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 	(3, 'KH001', 'Ahmad Dahlan', 'L', 'Yogyakarta', '1995-12-10', 'Jl. Malioboro No. 78', '083456789012', 'ahmad@amarta.com', 'harian', 'aktif', '2023-06-01', NULL, 1, 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
@@ -241,7 +241,7 @@ CREATE TABLE IF NOT EXISTS `karyawan_harian_borongan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table db_amarta_wisesa.karyawan_harian_borongan: ~3 rows (approximately)
-INSERT INTO `karyawan_harian_borongan` (`id_karyawan`, `upah_per_hari`, `upah_per_jam`, `upah_borongan`, `metode_pembayaran`, `rekening_bank`, `nama_bank`) VALUES
+INSERT IGNORE INTO `karyawan_harian_borongan` (`id_karyawan`, `upah_per_hari`, `upah_per_jam`, `upah_borongan`, `metode_pembayaran`, `rekening_bank`, `nama_bank`) VALUES
 	(3, 150000.00, 0.00, 0.00, 'harian', NULL, NULL),
 	(4, 150000.00, 0.00, 0.00, 'harian', NULL, NULL),
 	(5, 0.00, 0.00, 2500000.00, 'borongan', NULL, NULL);
@@ -263,7 +263,7 @@ CREATE TABLE IF NOT EXISTS `karyawan_tetap` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table db_amarta_wisesa.karyawan_tetap: ~2 rows (approximately)
-INSERT INTO `karyawan_tetap` (`id_karyawan`, `npwp`, `bpjs_ketenagakerjaan`, `bpjs_kesehatan`, `gaji_pokok`, `tunjangan_jabatan`, `tunjangan_transport`, `tunjangan_makan`, `rekening_bank`, `nama_bank`) VALUES
+INSERT IGNORE INTO `karyawan_tetap` (`id_karyawan`, `npwp`, `bpjs_ketenagakerjaan`, `bpjs_kesehatan`, `gaji_pokok`, `tunjangan_jabatan`, `tunjangan_transport`, `tunjangan_makan`, `rekening_bank`, `nama_bank`) VALUES
 	(1, '123456789012345', 'BPJS-TK001', 'BPJS-KS001', 5000000.00, 1500000.00, 500000.00, 300000.00, NULL, NULL),
 	(2, '987654321098765', 'BPJS-TK002', 'BPJS-KS002', 7000000.00, 2000000.00, 750000.00, 500000.00, NULL, NULL);
 
@@ -282,7 +282,7 @@ CREATE TABLE IF NOT EXISTS `mesin` (
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table db_amarta_wisesa.mesin: ~5 rows (approximately)
-INSERT INTO `mesin` (`id_mesin`, `seri_number`, `nama_mesin`, `lokasi`, `tanggal_masuk`, `keterangan`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `mesin` (`id_mesin`, `seri_number`, `nama_mesin`, `lokasi`, `tanggal_masuk`, `keterangan`, `created_at`, `updated_at`) VALUES
 	(1, 'SN-001', 'Mesin Jahit Singer', 'Line A - Station 1', '2024-01-15', 'Mesin jahit untuk produksi kaos', '2025-08-19 03:25:49', '2025-08-19 03:25:49'),
 	(3, 'SN-003', 'Mesin Bordir Komputer', 'Line B - Station 1', '2024-02-01', 'Mesin bordir digital 10 kepala', '2025-08-19 03:25:49', '2025-08-19 03:25:49'),
 	(4, 'SN-004', 'Mesin Cutting Laser', 'Area Cutting', '2024-02-10', 'Mesin cutting presisi untuk kain', '2025-08-19 03:25:49', '2025-08-19 03:25:49'),
@@ -307,7 +307,7 @@ CREATE TABLE IF NOT EXISTS `pengguna` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table db_amarta_wisesa.pengguna: ~2 rows (approximately)
-INSERT INTO `pengguna` (`id_pengguna`, `id_karyawan`, `username`, `password`, `role`, `status_aktif`, `last_login`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `pengguna` (`id_pengguna`, `id_karyawan`, `username`, `password`, `role`, `status_aktif`, `last_login`, `created_at`, `updated_at`) VALUES
 	(1, 1, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 	(2, 2, 'hr', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'hr', 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05');
 
@@ -350,8 +350,8 @@ CREATE TABLE IF NOT EXISTS `sps` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table db_amarta_wisesa.sps: ~0 rows (approximately)
-INSERT INTO `sps` (`id`, `tanggal`, `sps_no`, `customer`, `item`, `artikel`, `qty`, `size`, `sample_product`, `design`, `st_chart`, `material_sm`, `pola_sample`, `buat_sample`, `kirim`, `approval`, `sp_srx`) VALUES
+-- Dumping data for table db_amarta_wisesa.sps: ~1 rows (approximately)
+INSERT IGNORE INTO `sps` (`id`, `tanggal`, `sps_no`, `customer`, `item`, `artikel`, `qty`, `size`, `sample_product`, `design`, `st_chart`, `material_sm`, `pola_sample`, `buat_sample`, `kirim`, `approval`, `sp_srx`) VALUES
 	(2, '2025-08-19', 'SPS-01', 'Resky-jakarta', 'T-Shirt', 'T-Shirt', 2, 'L', '1755572545_68a3e9415efd7_stempel soendev.png', '1755571849_stempel soendev.png', '1755571849_stempel soendev.png', '1755571849_stempel soendev.png', '1755571849_stempel soendev.png', '1755571849_stempel soendev.png', '2025-08-26', 'Approved', 'SPK-20250819-0002');
 
 -- Dumping structure for procedure db_amarta_wisesa.sp_get_gudang_stats
