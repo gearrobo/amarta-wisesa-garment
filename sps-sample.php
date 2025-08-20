@@ -411,7 +411,7 @@ function approveSPS(id) {
 }
 
 function generateSPK(id) {
-    window.open('generate_spk.php?id=' + id, '_blank');
+    window.open('generate_spk_new.php?id=' + id, '_blank');
 }
 </script>
 
