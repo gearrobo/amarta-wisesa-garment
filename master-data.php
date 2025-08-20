@@ -75,7 +75,7 @@ include 'includes/header.php';
                                     <i class="fas fa-warehouse fa-3x text-danger mb-3"></i>
                                     <h5 class="card-title">Data Gudang</h5>
                                     <p class="card-text">Kelola data gudang dan lokasi</p>
-                                    <a href="#" class="btn btn-danger">Kelola</a>
+                                    <a href="data-gudang.php" class="btn btn-danger">Kelola</a>
                                 </div>
                             </div>
                         </div>
