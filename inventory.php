@@ -235,9 +235,6 @@ if ($barang_keluar == 0 && $barang_masuk_transaksi == 0) {
                 <?php $no=1; while($row_dg = $nama_gudang->fetch_assoc()): ?>
                 <option value="">Pilih Warehouse</option>
                 <option value=<?= $row_dg['nama']; ?>><?= $row_dg['nama']; ?></option>
-                <option value="Gudang B">Gudang B</option>
-                <option value="Gudang C">Gudang C</option>
-                <option value="Gudang Utama">Gudang Utama</option>
              <?php endwhile; ?>
             </select>
         </div>
