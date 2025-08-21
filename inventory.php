@@ -228,12 +228,21 @@ if ($barang_keluar == 0 && $barang_masuk_transaksi == 0) {
         </div>
         <div class="col-md-6">
             <label>Warehouse</label>
-            <select name="warehouse" class="form-control" required>
+            <?php
+                $sql = ""
+            ?>
+            <select name="warehouse" id="warehouse" class="form-control" required onchange="loadGudang()">
                 <option value="">Pilih Warehouse</option>
                 <option value="Gudang A">Gudang A</option>
                 <option value="Gudang B">Gudang B</option>
                 <option value="Gudang C">Gudang C</option>
                 <option value="Gudang Utama">Gudang Utama</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label>Gudang</label>
+            <select name="gudang" id="gudang" class="form-control" required>
+                <option value="">Pilih Gudang</option>
             </select>
         </div>
         <div class="col-md-4">
