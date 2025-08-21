@@ -95,7 +95,7 @@ if (isset($_POST['update'])) {
     $markerUpload = uploadFile('marker', ['hpg', 'mrk', 'application/octet-stream'], 10000000);
     
     // Upload file SPK (.pdf/.png)
-    $spkUpload = uploadFile('spk', ['pdf', 'png', 'image/png', 'application/pdf'], 10000000);
+    $spkUpload = uploadFile('upload_spk', ['pdf', 'png', 'image/png', 'application/pdf'], 10000000);
 
     // Cek error upload
     $uploadErrors = [];
@@ -128,7 +128,7 @@ if (isset($_POST['update'])) {
             $updateFields['marker'] = $markerUpload['filename'];
         }
         if ($spkUpload['filename']) {
-            $updateFields['spk'] = $spkUpload['filename'];
+            $updateFields['upload_spk'] = $spkUpload['filename'];
         }
 
         // Build query
@@ -152,11 +152,8 @@ if (isset($_POST['update'])) {
             $stmt->bind_param($types, ...$params);
             
             if ($stmt->execute()) {
-                $message = 'Data persiapan berhasil diupdate!';
-                $messageType = 'success';
-                
-                // Redirect untuk refresh data
-                header("Location: edit-persiapan.php?id=$id&success=1");
+                // Redirect langsung ke persiapan.php dengan notifikasi sukses
+                header("Location: persiapan.php?updated=1&message=Data Berhasil di Update!");
                 exit();
             } else {
                 $message = 'Error: Gagal update data - ' . $stmt->error;
@@ -224,54 +221,34 @@ if (isset($_GET['success'])) {
                                     <label class="form-label">No SPS</label>
                                     <input type="text" class="form-control" value="<?= $persiapan['sps_no'] ?: '-' ?>" readonly>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Nama Barang</label>
                                     <input type="text" name="nama_barang" class="form-control" value="<?= $persiapan['nama_barang'] ?? '' ?>" required>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Jumlah</label>
                                     <input type="number" name="jumlah" class="form-control" value="<?= $persiapan['jumlah'] ?? 0 ?>" required>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Satuan</label>
                                     <input type="text" name="satuan" class="form-control" value="<?= $persiapan['satuan'] ?? '' ?>" required>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Harga</label>
                                     <input type="number" name="harga" class="form-control" step="0.01" value="<?= $persiapan['harga'] ?? 0 ?>" required>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Status</label>
                                     <select name="status" class="form-select" required>
                                         <option value="">Pilih Status</option>
-                                        <option value="Draft" <?= ($persiapan['status'] ?? '') == 'Draft' ? 'selected' : '' ?>>Draft</option>
+                                        <option value="Pending" <?= ($persiapan['status'] ?? '') == 'Pending' ? 'selected' : '' ?>>Pending</option>
                                         <option value="Proses" <?= ($persiapan['status'] ?? '') == 'Proses' ? 'selected' : '' ?>>Proses</option>
                                         <option value="Selesai" <?= ($persiapan['status'] ?? '') == 'Selesai' ? 'selected' : '' ?>>Selesai</option>
-                                        <option value="Dibatalkan" <?= ($persiapan['status'] ?? '') == 'Dibatalkan' ? 'selected' : '' ?>>Dibatalkan</option>
+                                        <option value="Batal" <?= ($persiapan['status'] ?? '') == 'Batal' ? 'selected' : '' ?>>Batal</option>
                                     </select>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- File Uploads -->
-                        <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Upload Pola (.hpg/.mrk)</label>
                                     <input type="file" name="pola" class="form-control" accept=".hpg,.mrk">
@@ -281,8 +258,6 @@ if (isset($_GET['success'])) {
                                         </small>
                                     <?php endif; ?>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Upload Marker (.hpg/.mrk)</label>
                                     <input type="file" name="marker" class="form-control" accept=".hpg,.mrk">
@@ -292,14 +267,12 @@ if (isset($_GET['success'])) {
                                         </small>
                                     <?php endif; ?>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Upload SPK (.pdf/.png)</label>
-                                    <input type="file" name="spk" class="form-control" accept=".pdf,.png">
-                                    <?php if (!empty($persiapan['spk'])): ?>
+                                    <input type="file" name="upload_spk" class="form-control" accept=".pdf,.png">
+                                    <?php if (!empty($persiapan['upload_spk'])): ?>
                                         <small class="text-muted">
-                                            File saat ini: <a href="uploads/persiapan/<?= $persiapan['spk'] ?>" target="_blank"><?= $persiapan['spk'] ?></a>
+                                            File saat ini: <a href="uploads/persiapan/<?= $persiapan['upload_spk'] ?>" target="_blank"><?= $persiapan['upload_spk'] ?></a>
                                         </small>
                                     <?php endif; ?>
                                 </div>
@@ -334,7 +307,7 @@ if (isset($_GET['success'])) {
                     let allowedExtensions = [];
                     if (this.name === 'pola' || this.name === 'marker') {
                         allowedExtensions = ['.hpg', '.mrk'];
-                    } else if (this.name === 'spk') {
+                    } else if (this.name === 'upload_spk') {
                         allowedExtensions = ['.pdf', '.png'];
                     }
                     

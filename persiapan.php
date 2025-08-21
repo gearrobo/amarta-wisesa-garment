@@ -251,7 +251,7 @@ $belum_harga_count = $belum_harga_result ? $belum_harga_result->fetch_assoc()['b
                             <th>Satuan</th>
                             <th>Harga</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -263,7 +263,30 @@ $belum_harga_count = $belum_harga_result ? $belum_harga_result->fetch_assoc()['b
                             <td><?= number_format($row['jumlah'] ?? 0) ?></td>
                             <td><?= $row['satuan'] ?: '-' ?></td>
                             <td>Rp <?= number_format($row['harga'] ?? 0, 0, ',', '.') ?></td>
-                            <td><?= $row['status'] ?: '-' ?></td>
+                            <td>
+                                <?php
+                                $status = $row['status'] ?? '';
+                                $statusClass = '';
+                                switch(strtolower($status)) {
+                                    case 'pending':
+                                        $statusClass = 'badge bg-warning text-dark';
+                                        break;
+                                    case 'proses':
+                                        $statusClass = 'badge bg-primary';
+                                        break;
+                                    case 'selesai':
+                                        $statusClass = 'badge bg-success';
+                                        break;
+                                    case 'batal':
+                                        $statusClass = 'badge bg-danger';
+                                        break;
+                                    default:
+                                        $statusClass = 'badge bg-light text-dark';
+                                        break;
+                                }
+                                ?>
+                                <span class="<?= $statusClass ?>"><?= $status ?: '-' ?></span>
+                            </td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
                                     <button class="btn btn-warning" onclick="editPersiapan(<?= $row['id'] ?>)" title="Edit">
