@@ -232,10 +232,10 @@ if ($barang_keluar == 0 && $barang_masuk_transaksi == 0) {
         <div class="col-md-6">
             <label>Warehouse</label>
             <select name="warehouse" id="warehouse" class="form-control" required onchange="loadGudang()">
-                <?php $no=1; while($row_dg = $nama_gudang->fetch_assoc()): ?>
                 <option value="">Pilih Warehouse</option>
+                <?php $no=1; while($row_dg = $nama_gudang->fetch_assoc()): ?>
                 <option value=<?= $row_dg['nama']; ?>><?= $row_dg['nama']; ?></option>
-             <?php endwhile; ?>
+                <?php endwhile; ?>
             </select>
         </div>
         <div class="col-md-6">
