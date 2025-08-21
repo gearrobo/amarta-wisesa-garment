@@ -13,6 +13,8 @@ include "includes/header.php";
                 </ol>
             </nav>
 
+        <!-- Stats Cards Section -->
+        <?php include 'includes/stats-cards.php'; ?>
  
     </main>
 
