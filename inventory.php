@@ -238,12 +238,6 @@ if ($barang_keluar == 0 && $barang_masuk_transaksi == 0) {
                 <?php endwhile; ?>
             </select>
         </div>
-        <div class="col-md-6">
-            <label>Gudang</label>
-            <select name="gudang" id="gudang" class="form-control" required>
-                <option value="">Pilih Gudang</option>
-            </select>
-        </div>
         <div class="col-md-4">
             <label>Unit</label>
             <select name="unit" class="form-control" required>
