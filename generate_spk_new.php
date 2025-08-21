@@ -55,6 +55,23 @@ if (isset($_GET['id'])) {
         }
     }
 }
+$id = intval($_GET['id']);
+
+// Ambil data SPS
+$result = $conn->query("SELECT * FROM sps WHERE id = $id");
+$sps = $result->fetch_assoc();
+
+if (!$sps) {
+    die("Data tidak ditemukan!");
+}
+
+// Generate nomor SPK
+$spk_no = "SPK-" . date('Ymd') . "-" . str_pad($id, 4, '0', STR_PAD_LEFT);
+
+// Update SP SRX dengan nomor SPK
+$stmt = $conn->prepare("UPDATE sps SET sp_srx = ? WHERE id = ?");
+$stmt->bind_param("si", $spk_no, $id);
+$stmt->execute();
 ?>
 
 <!DOCTYPE html>
