@@ -4,54 +4,81 @@ include 'config/db.php'; // koneksi database
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']); 
 
-    $sql = "SELECT * FROM sps WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    // Cek apakah SPK sudah pernah dicetak (berdasarkan sp_srx yang sudah terisi)
+    $check_sql = "SELECT sp_srx FROM sps WHERE id = ?";
+    $check_stmt = $conn->prepare($check_sql);
+    $check_stmt->bind_param("i", $id);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result();
+    $sps_data = $check_result->fetch_assoc();
+    
+    // Jika sudah ada nomor SPK (sp_srx sudah terisi), skip insert data
+    if (!empty($sps_data['sp_srx'])) {
+        echo "⚠️ SPK sudah pernah dicetak sebelumnya dengan nomor: " . $sps_data['sp_srx'] . "<br>";
+        echo "Data tidak akan diinsert ulang untuk menghindari duplikasi.";
+    } else {
+        // Ambil data SPS
+        $sql = "SELECT * FROM sps WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    while ($row = $result->fetch_assoc()) {
-
-        // Data persiapan (contoh dummy)
-        $kode_barang = '123';
-        $nama_barang = 'Kain Biru';
-        $jumlah = 500;
-        $satuan = 'meter';
-        $harga = 10;
-        $total = $jumlah * $harga;
-        $status = 'pending';
-        $tanggal_persiapan = $row['kirim']; // pastikan format YYYY-MM-DD
-
-        $insert = "INSERT INTO persiapan 
-          (id_sps, kode_barang, nama_barang, jumlah, satuan, harga, total, tanggal_persiapan, status) 
-          VALUES (?,?,?,?,?,?,?,?,?)";
-
-        $stmt2 = $conn->prepare($insert);
-        if ($stmt2) {
-            $stmt2->bind_param(
-                "issisddss",
-                $row['id'],        // id_sps (FK ke sps.id)
-                $kode_barang,      // string
-                $nama_barang,      // string
-                $jumlah,           // int
-                $satuan,           // string
-                $harga,            // double
-                $total,            // double
-                $tanggal_persiapan,// string (date)
-                $status            // string
-            );
-
-            if ($stmt2->execute()) {
-                echo "✅ Data berhasil disimpan ke persiapan!<br>";
+        while ($row = $result->fetch_assoc()) {
+            // Cek apakah data persiapan sudah ada untuk id_sps ini
+            $check_persiapan = "SELECT id FROM persiapan WHERE id_sps = ? LIMIT 1";
+            $check_persiapan_stmt = $conn->prepare($check_persiapan);
+            $check_persiapan_stmt->bind_param("i", $row['id']);
+            $check_persiapan_stmt->execute();
+            $check_persiapan_result = $check_persiapan_stmt->get_result();
+            
+            if ($check_persiapan_result->num_rows > 0) {
+                echo "⚠️ Data persiapan untuk SPS ini sudah ada, tidak akan diinsert ulang.<br>";
             } else {
-                echo "❌ Error insert: " . $stmt2->error . "<br>";
-            }
+                // Data persiapan (contoh dummy)
+                $kode_barang = '123';
+                $nama_barang = 'Kain Biru';
+                $jumlah = 500;
+                $satuan = 'meter';
+                $harga = 10;
+                $total = $jumlah * $harga;
+                $status = 'pending';
+                $tanggal_persiapan = $row['kirim']; // pastikan format YYYY-MM-DD
 
-            $stmt2->close();
-        } else {
-            echo "❌ Error prepare insert: " . $conn->error;
+                $insert = "INSERT INTO persiapan 
+                  (id_sps, kode_barang, nama_barang, jumlah, satuan, harga, total, tanggal_persiapan, status) 
+                  VALUES (?,?,?,?,?,?,?,?,?)";
+
+                $stmt2 = $conn->prepare($insert);
+                if ($stmt2) {
+                    $stmt2->bind_param(
+                        "issisddss",
+                        $row['id'],        // id_sps (FK ke sps.id)
+                        $kode_barang,      // string
+                        $nama_barang,      // string
+                        $jumlah,           // int
+                        $satuan,           // string
+                        $harga,            // double
+                        $total,            // double
+                        $tanggal_persiapan,// string (date)
+                        $status            // string
+                    );
+
+                    if ($stmt2->execute()) {
+                        echo "✅ Data berhasil disimpan ke persiapan!<br>";
+                    } else {
+                        echo "❌ Error insert: " . $stmt2->error . "<br>";
+                    }
+
+                    $stmt2->close();
+                } else {
+                    echo "❌ Error prepare insert: " . $conn->error;
+                }
+            }
+            $check_persiapan_stmt->close();
         }
     }
+    $check_stmt->close();
 }
 $id = intval($_GET['id']);
 
