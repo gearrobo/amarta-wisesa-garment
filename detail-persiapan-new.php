@@ -164,13 +164,10 @@ foreach ($hpp_items as $item) {
                     <div class="card mt-3">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Daftar HPP (Harga Pokok Produksi)</h5>
-                            <button type="button" class="btn btn-primary btn-sm text-white d-flex align-items-center" 
-                                    data-bs-toggle="modal" data-bs-target="#addHppModal">
-                                <i class="fas fa-plus me-1"></i> <!-- icon plus -->
-                                <span>Tambah HPP</span>          <!-- teks -->
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addHppModal">
+                                <i class="fas fa-plus"></i> Tambah HPP
                             </button>
                         </div>
-
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-striped">
@@ -179,7 +176,6 @@ foreach ($hpp_items as $item) {
                                             <th>No</th>
                                             <th>Nama Barang</th>
                                             <th>Jumlah</th>
-                                            <th>Satuan</th>
                                             <th>Harga Satuan</th>
                                             <th>Total</th>
                                             <th>Aksi</th>
@@ -192,7 +188,6 @@ foreach ($hpp_items as $item) {
                                                     <td><?= $index + 1; ?></td>
                                                     <td><?= htmlspecialchars($item['nama_barang']); ?></td>
                                                     <td><?= number_format($item['jumlah']); ?></td>
-                                                    <td><?= number_format($item['satuan']); ?></td>
                                                     <td>Rp <?= number_format($item['harga'], 0, ',', '.'); ?></td>
                                                     <td>Rp <?= number_format($item['total'], 0, ',', '.'); ?></td>
                                                     <td>
