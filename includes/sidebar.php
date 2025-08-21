@@ -12,7 +12,7 @@
             <li>
                 <a href="sps-sample.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'sps-sample.php' ? 'active' : ''; ?>">
                     <i class="fas fa-file-alt"></i>
-                    Surat Perintah Samples
+                    Order Samples
                 </a>
             </li>
             <li>
