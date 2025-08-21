@@ -289,6 +289,9 @@ $belum_harga_count = $belum_harga_result ? $belum_harga_result->fetch_assoc()['b
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
+                                    <a href="detail-persiapan.php?id=<?= $row['id'] ?>" class="btn btn-info" title="Detail">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
                                     <button class="btn btn-warning" onclick="editPersiapan(<?= $row['id'] ?>)" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </button>
@@ -391,6 +394,10 @@ $belum_harga_count = $belum_harga_result ? $belum_harga_result->fetch_assoc()['b
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // JavaScript functions for action buttons
+function detailPersiapan(id) {
+    window.location.href = 'detail-persiapan.php?id=' + id;
+}
+
 function editPersiapan(id) {
     window.location.href = 'edit-persiapan.php?id=' + id;
 }
