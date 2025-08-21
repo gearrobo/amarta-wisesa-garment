@@ -47,10 +47,10 @@ if (!empty($persiapan_data['sp_srx'])) {
     $spk_no = "SPK-" . date('Ymd') . "-" . str_pad($id, 4, '0', STR_PAD_LEFT);
     
     // Update SP SRX dengan nomor SPK di tabel persiapan
-    $stmt = $conn->prepare("UPDATE persiapan SET sp_srx = ? WHERE id = ?");
-    $stmt->bind_param("si", $spk_no, $id);
-    $stmt->execute();
-    $stmt->close();
+    $update_stmt = $conn->prepare("UPDATE persiapan SET sp_srx = ? WHERE id = ?");
+    $update_stmt->bind_param("si", $spk_no, $id);
+    $update_stmt->execute();
+    $update_stmt->close();
 }
 
 $stmt->close();
