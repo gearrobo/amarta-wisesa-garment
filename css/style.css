@@ -48,10 +48,10 @@ body {
     width: 250px;
     height: 100vh;
     position: fixed;
-    left: 0;
+    left: -40px;
     top: 0;
     padding-top: 0;
-    box-shadow: 4px 0 15px rgba(0,0,0,0.08);
+    box-shadow: 2px 0 15px rgba(0,0,0,0.08);
     overflow-y: auto;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
@@ -74,7 +74,7 @@ body {
 .sidebar-header {
     background: rgba(0,0,0,0.2);
     padding: 1.5rem 1rem;
-    text-align: center;
+    text-align: left;
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255,255,255,0.2);
 }
@@ -83,6 +83,7 @@ body {
     width: 100%;
     max-width: 180px;
     height: auto;
+    left: 5;
     margin: 0 auto;
     transition: all 0.3s ease;
     filter: drop-shadow(0 2px 4px rgba(189, 189, 189, 0.72));
@@ -154,7 +155,7 @@ body {
 
 .sidebar ul li.active a {
     background: transparent;
-    font-weight: 600;
+    font-weight: 100;
 }
 
 .sidebar ul li.active:hover {
@@ -165,7 +166,7 @@ body {
 
 /* Main Content */
 .main-content {
-    margin-left: 250px;
+    margin-left: 210px;
     padding: 2rem;
     background: rgba(255,255,255,0.1);
     backdrop-filter: blur(10px);
