@@ -141,20 +141,23 @@ if (isset($_GET['success']) && $_GET['success'] == 1) {
     $messageType = 'success';
 }
 
-// Ambil data persiapan dari tabel sps
-$result = $conn->query("SELECT * FROM sps ORDER BY id DESC");
+// Ambil data persiapan dari tabel persiapan dengan join ke tabel sps untuk mendapatkan No SPS
+$result = $conn->query("SELECT p.*, s.sps_no 
+                        FROM persiapan p 
+                        LEFT JOIN sps s ON p.id_sps = s.id 
+                        ORDER BY p.id DESC");
 
-// Hitung jumlah pending approval
-$pending_result = $conn->query("SELECT COUNT(*) as pending_count FROM sps WHERE approval = '' OR approval IS NULL");
-$pending_count = $pending_result ? $pending_result->fetch_assoc()['pending_count'] : 0;
+// Hitung jumlah total persiapan
+$total_result = $conn->query("SELECT COUNT(*) as total_count FROM persiapan");
+$total_count = $total_result ? $total_result->fetch_assoc()['total_count'] : 0;
 
-// Hitung jumlah approved
-$approved_result = $conn->query("SELECT COUNT(*) as approved_count FROM sps WHERE approval != '' AND approval IS NOT NULL");
-$approved_count = $approved_result ? $approved_result->fetch_assoc()['approved_count'] : 0;
+// Hitung jumlah persiapan yang sudah memiliki harga
+$harga_result = $conn->query("SELECT COUNT(*) as harga_count FROM persiapan WHERE harga IS NOT NULL AND harga > 0");
+$harga_count = $harga_result ? $harga_result->fetch_assoc()['harga_count'] : 0;
 
-// Hitung jumlah dikirim
-$kirim_result = $conn->query("SELECT COUNT(*) as kirim_count FROM sps WHERE approval ='Approved'");
-$kirim_count = $kirim_result ? $kirim_result->fetch_assoc()['kirim_count'] : 0;
+// Hitung jumlah persiapan yang belum memiliki harga
+$belum_harga_result = $conn->query("SELECT COUNT(*) as belum_harga_count FROM persiapan WHERE harga IS NULL OR harga = 0");
+$belum_harga_count = $belum_harga_result ? $belum_harga_result->fetch_assoc()['belum_harga_count'] : 0;
 ?>
 
     <!-- Main Content -->
@@ -176,34 +179,29 @@ $kirim_count = $kirim_result ? $kirim_result->fetch_assoc()['kirim_count'] : 0;
         <div class="row mb-4">
             <div class="col-md-3">
                 <div class="stats-card">
-                    <h3><?php echo $result->num_rows; ?></h3>
+                    <h3><?php echo $total_count; ?></h3>
                     <p>Total Persiapan</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="stats-card">
-                    <h3><?php echo $pending_count; ?></h3>
-                    <p>Menunggu Approval</p>
+                    <h3><?php echo $harga_count; ?></h3>
+                    <p>Sudah Ada Harga</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="stats-card">
-                    <h3><?php echo $approved_count; ?></h3>
-                    <p>Disetujui</p>
+                    <h3><?php echo $belum_harga_count; ?></h3>
+                    <p>Belum Ada Harga</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="stats-card">
-                    <h3><?php echo $kirim_count; ?></h3>
-                    <p>Dikirim</p>
+                    <h3><?php echo $total_count; ?></h3>
+                    <p>Total Item</p>
                 </div>
             </div>
-        </div>
-        <div>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#persiapanModal">
-                <i class="fas fa-plus"></i> Buat Persiapan Baru
-            </button>
-        </div><br>
+        </div>    
 
         <!-- Alerts -->
         <?php
@@ -247,37 +245,25 @@ $kirim_count = $kirim_result ? $kirim_result->fetch_assoc()['kirim_count'] : 0;
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Tanggal</th>
-                            <th>Customer</th>
-                            <th>Item</th>
-                            <th>Artikel</th>
-                            <th>Qty</th>
-                            <th>Size</th>
-                            <th>Kirim</th>
-                            <th>Approval</th>
-                            <th>SP SRX</th>
-                            <th>Aksi</th>
+                            <th>No SPS</th>
+                            <th>Nama Barang</th>
+                            <th>Jumlah</th>
+                            <th>Satuan</th>
+                            <th>Harga</th>
+                            <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php $no=1; while($row = $result->fetch_assoc()): ?>
                         <tr>
                             <td><?= $no++ ?></td>
-                            <td><?= date('d/m/Y', strtotime($row['tanggal'])) ?></td>
-                            <td><?= $row['customer'] ?></td>
-                            <td><?= $row['item'] ?></td>
-                            <td><?= $row['artikel'] ?></td>
-                            <td><?= number_format($row['qty']) ?></td>
-                            <td><?= $row['size'] ?></td>
-                            <td><?= $row['kirim'] ? date('d/m/Y', strtotime($row['kirim'])) : '-' ?></td>
-                            <td>
-                                <?php if($row['approval']): ?>
-                                    <span class="badge bg-success"><i class="fas fa-check"></i> <?= $row['approval'] ?></span>
-                                <?php else: ?>
-                                    <span class="badge bg-warning"><i class="fas fa-clock"></i> Pending</span>
-                                <?php endif; ?>
-                            </td>
-                            <td><?= $row['sp_srx'] ?: '-' ?></td>
+                            <td><?= $row['sps_no'] ?: '-' ?></td>
+                            <td><?= $row['nama_barang'] ?: '-' ?></td>
+                            <td><?= number_format($row['jumlah'] ?? 0) ?></td>
+                            <td><?= $row['satuan'] ?: '-' ?></td>
+                            <td>Rp <?= number_format($row['harga'] ?? 0, 0, ',', '.') ?></td>
+                            <td><?= $row['status'] ?: '-' ?></td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
                                     <button class="btn btn-warning" onclick="editPersiapan(<?= $row['id'] ?>)" title="Edit">
@@ -285,12 +271,6 @@ $kirim_count = $kirim_result ? $kirim_result->fetch_assoc()['kirim_count'] : 0;
                                     </button>
                                     <button class="btn btn-danger" onclick="deletePersiapan(<?= $row['id'] ?>)" title="Hapus">
                                         <i class="fas fa-trash"></i>
-                                    </button>
-                                    <button class="btn btn-success" onclick="approvePersiapan(<?= $row['id'] ?>)" title="Approve">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="btn btn-info" onclick="generateSPK(<?= $row['id'] ?>)" title="Generate SPK">
-                                        <i class="fas fa-print"></i>
                                     </button>
                                 </div>
                             </td>
@@ -389,7 +369,7 @@ $kirim_count = $kirim_result ? $kirim_result->fetch_assoc()['kirim_count'] : 0;
 <script>
 // JavaScript functions for action buttons
 function editPersiapan(id) {
-    window.location.href = 'edit_persiapan.php?id=' + id;
+    window.location.href = 'edit-persiapan.php?id=' + id;
 }
 
 function deletePersiapan(id) {
