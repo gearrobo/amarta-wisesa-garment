@@ -74,6 +74,9 @@ if (isset($_GET['success']) && $_GET['success'] == 1) {
 // Ambil data inventory
 $result = $conn->query("SELECT * FROM inventory ORDER BY id DESC");
 
+// Ambil data gudang
+$nama_gudang = $conn->query("SELECT * FROM gudang ");
+
 // Hitung total stok barang
 $total_stok = $conn->query("SELECT SUM(jumlah) as total FROM inventory")->fetch_assoc()['total'] ?? 0;
 
@@ -228,15 +231,14 @@ if ($barang_keluar == 0 && $barang_masuk_transaksi == 0) {
         </div>
         <div class="col-md-6">
             <label>Warehouse</label>
-            <?php
-                $sql = ""
-            ?>
             <select name="warehouse" id="warehouse" class="form-control" required onchange="loadGudang()">
+                <?php $no=1; while($row_dg = $nama_gudang->fetch_assoc()): ?>
                 <option value="">Pilih Warehouse</option>
-                <option value="Gudang A">Gudang A</option>
+                <option value=<?= $row_dg['nama']; ?>><?= $row_dg['nama']; ?></option>
                 <option value="Gudang B">Gudang B</option>
                 <option value="Gudang C">Gudang C</option>
                 <option value="Gudang Utama">Gudang Utama</option>
+             <?php endwhile; ?>
             </select>
         </div>
         <div class="col-md-6">
