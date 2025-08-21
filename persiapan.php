@@ -298,6 +298,9 @@ $belum_harga_count = $belum_harga_result ? $belum_harga_result->fetch_assoc()['b
                                     <button class="btn btn-danger" onclick="deletePersiapan(<?= $row['id'] ?>)" title="Hapus">
                                         <i class="fas fa-trash"></i>
                                     </button>
+                                    <a href="print_surat_perintah_potong.php?id=<?= $row['id'] ?>" class="btn btn-secondary" title="Print" target="_blank">
+                                        <i class="fas fa-print"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 21, 2025 at 04:38 AM
+-- Generation Time: Aug 21, 2025 at 05:03 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -108,12 +108,25 @@ CREATE TABLE `gudang` (
 --
 
 INSERT INTO `gudang` (`id_gudang`, `nama`, `alamat`, `kepala_gudang`, `kapasitas`, `keterangan`, `created_at`, `updated_at`) VALUES
-(1, 'Gudang Utama Jakarta', 'Jl. Industri No. 123, Jakarta Barat', 'Budi Santoso', 5000, 'Gudang utama untuk penyimpanan bahan baku', '2025-08-20 03:28:41', '2025-08-20 03:28:41'),
-(2, 'Gudang Finishing Bandung', 'Jl. Pahlawan No. 45, Bandung', 'Siti Nurhaliza', 3000, 'Gudang untuk produk jadi dan finishing', '2025-08-20 03:28:41', '2025-08-20 03:28:41'),
-(3, 'Gudang Bahan Surabaya', 'Jl. Ahmad Yani No. 78, Surabaya', 'Andi Wijaya', 4000, 'Gudang khusus untuk bahan baku tekstil', '2025-08-20 03:28:41', '2025-08-20 03:28:41'),
-(5, 'Gudang Produksi Tangerang', 'Jl. Raya Serpong KM 15, Tangerang', 'Dedi Kurniawan', 6000, 'Gudang dekat area produksi utama', '2025-08-20 03:28:41', '2025-08-20 03:28:41'),
-(6, 'Gudang Cadangan Bekasi', 'Jl. Sudirman No. 56, Bekasi', 'Maya Sari', 2000, 'Gudang cadangan untuk stok overflow', '2025-08-20 03:28:41', '2025-08-20 03:28:41'),
-(7, 'Gudang Probolinggo', 'Probolinggo', 'Rezky', 5000, 'gudang kain', '2025-08-20 03:31:39', '2025-08-20 03:31:39');
+(8, 'Kasin', 'Jalan Brigjen Kauman', 'Stefanus', 2000, '', '2025-08-21 03:06:16', '2025-08-21 03:06:16');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hpp`
+--
+
+CREATE TABLE `hpp` (
+  `id` int(11) NOT NULL,
+  `id_persiapan` int(11) NOT NULL,
+  `nama_barang` varchar(255) NOT NULL,
+  `jumlah` int(11) NOT NULL DEFAULT 0,
+  `satuan` varchar(50) NOT NULL DEFAULT 'pcs',
+  `harga` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `total` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -133,13 +146,6 @@ CREATE TABLE `inventory` (
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `inventory`
---
-
-INSERT INTO `inventory` (`id`, `nama_barang`, `warehouse`, `unit`, `jumlah`, `harga_per_unit`, `keterangan`, `created_at`, `updated_at`) VALUES
-(7, 'Kain Hijau', 'Gudang B', 'm²', 1000, '25000.00', 'ya', '2025-08-20 11:55:19', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -156,16 +162,6 @@ CREATE TABLE `inventory_gudang` (
   `tanggal_masuk` date DEFAULT NULL,
   `tanggal_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `inventory_gudang`
---
-
-INSERT INTO `inventory_gudang` (`id_inventory`, `id_gudang`, `kode_barang`, `nama_barang`, `jumlah`, `satuan`, `tanggal_masuk`, `tanggal_update`) VALUES
-(1, 1, 'BRG001', 'Kain Katun Premium', 500, 'roll', '2024-01-15', '2025-08-20 03:28:41'),
-(2, 1, 'BRG002', 'Benang Polyester', 200, 'kg', '2024-01-20', '2025-08-20 03:28:41'),
-(3, 2, 'BRG003', 'Kaos Polos L', 1000, 'pcs', '2024-01-25', '2025-08-20 03:28:41'),
-(4, 2, 'BRG004', 'Celana Jeans M', 300, 'pcs', '2024-01-28', '2025-08-20 03:28:41');
 
 -- --------------------------------------------------------
 
@@ -386,7 +382,7 @@ CREATE TABLE `persiapan` (
 --
 
 INSERT INTO `persiapan` (`id`, `id_sps`, `kode_barang`, `nama_barang`, `jumlah`, `satuan`, `harga`, `total`, `tanggal_persiapan`, `pola`, `marker`, `upload_spk`, `status`, `created_at`, `updated_at`) VALUES
-(1, 3, '123', 'Kain Biru', 500, 'meter', '10.00', '5000.00', '2025-08-27', NULL, NULL, NULL, 'pending', '2025-08-20 14:45:29', '2025-08-20 14:45:29');
+(1, 3, '123', 'Kain Biru', 500, 'meter', '150000.00', '5000.00', '2025-08-27', '1755779843_FNS- KTD SH S M 01(KATADATA MEN)-PROD.hpg', '1755779843_FNS- KTD SH S M 01(KATADATA MEN)-PROD.mrk', '1755779843_061. Surat Penawaran Amarta Wisesa (non gaji).docx.pdf', 'proses', '2025-08-20 14:45:29', '2025-08-21 19:37:47');
 
 -- --------------------------------------------------------
 
@@ -420,7 +416,7 @@ CREATE TABLE `sps` (
 
 INSERT INTO `sps` (`id`, `tanggal`, `sps_no`, `customer`, `item`, `artikel`, `qty`, `size`, `sample_product`, `design`, `st_chart`, `material_sm`, `pola_sample`, `buat_sample`, `kirim`, `approval`, `sp_srx`) VALUES
 (2, '2025-08-19', 'SPS-01', 'Resky-jakarta', 'T-Shirt', 'T-Shirt', 2, 'L', '1755572545_68a3e9415efd7_stempel soendev.png', '1755571849_stempel soendev.png', '1755571849_stempel soendev.png', '1755571849_stempel soendev.png', '1755571849_stempel soendev.png', '1755571849_stempel soendev.png', '2025-08-26', 'Approved', 'SPK-20250820-0002'),
-(3, '2025-08-20', 'SPS-02', 'Joko-Jakarta', 'Kemeja', 'Kemeja', 1, 'M', NULL, NULL, NULL, NULL, NULL, NULL, '2025-08-27', 'Approved', '');
+(3, '2025-08-20', 'SPS-02', 'Joko-Jakarta', 'Kemeja', 'Kemeja', 1, 'M', NULL, NULL, NULL, NULL, NULL, NULL, '2025-08-27', 'Approved', 'SPK-20250821-0003');
 
 --
 -- Indexes for dumped tables
@@ -453,6 +449,15 @@ ALTER TABLE `gudang`
   ADD PRIMARY KEY (`id_gudang`),
   ADD KEY `idx_nama` (`nama`),
   ADD KEY `idx_kepala_gudang` (`kepala_gudang`);
+
+--
+-- Indexes for table `hpp`
+--
+ALTER TABLE `hpp`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_persiapan` (`id_persiapan`),
+  ADD KEY `idx_hpp_nama_barang` (`nama_barang`),
+  ADD KEY `idx_hpp_created_at` (`created_at`);
 
 --
 -- Indexes for table `inventory`
@@ -557,7 +562,13 @@ ALTER TABLE `gaji`
 -- AUTO_INCREMENT for table `gudang`
 --
 ALTER TABLE `gudang`
-  MODIFY `id_gudang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_gudang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `hpp`
+--
+ALTER TABLE `hpp`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `inventory`
@@ -605,7 +616,7 @@ ALTER TABLE `pengguna`
 -- AUTO_INCREMENT for table `persiapan`
 --
 ALTER TABLE `persiapan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `sps`
@@ -628,6 +639,12 @@ ALTER TABLE `absensi`
 --
 ALTER TABLE `gaji`
   ADD CONSTRAINT `gaji_ibfk_1` FOREIGN KEY (`id_karyawan`) REFERENCES `karyawan` (`id_karyawan`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `hpp`
+--
+ALTER TABLE `hpp`
+  ADD CONSTRAINT `hpp_ibfk_1` FOREIGN KEY (`id_persiapan`) REFERENCES `persiapan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `inventory_gudang`
