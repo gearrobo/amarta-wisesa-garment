@@ -90,6 +90,17 @@ include 'includes/header.php';
                                 </div>
                             </div>
                         </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-purple" style="border-color: #6f42c1 !important;">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-tags fa-3x text-purple mb-3" style="color: #6f42c1 !important;"></i>
+                                    <h5 class="card-title">Kategori Barang</h5>
+                                    <p class="card-text">Kelola kategori barang dan produk</p>
+                                    <a href="kategori-barang.php" class="btn btn-purple" style="background-color: #6f42c1; border-color: #6f42c1;">Kelola Kategori</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

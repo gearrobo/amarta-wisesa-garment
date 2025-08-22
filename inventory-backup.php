@@ -178,6 +178,9 @@ $result = $conn->query("SELECT * FROM inventory ORDER BY id DESC");
 // Ambil data gudang
 $nama_gudang = $conn->query("SELECT * FROM gudang ");
 
+// Ambil data kategori barang
+$kategori_barang = $conn->query("SELECT * FROM kategori_barang ORDER BY nama_kategori");
+
 // Hitung total stok barang
 $total_stok = $conn->query("SELECT SUM(jumlah) as total FROM inventory")->fetch_assoc()['total'] ?? 0;
 
@@ -327,8 +330,13 @@ if ($barang_keluar == 0 && $barang_masuk_transaksi == 0) {
       <div class="modal-body row g-3">
 
         <div class="col-md-6">
-            <label>Nama Barang</label>
-            <input type="text" name="nama_barang" class="form-control" required>
+            <label>Kategori</label>
+            <select name="nama_barang" class="form-control" required>
+                <option value="">Pilih Kategori</option>
+                <?php while($row_kategori = $kategori_barang->fetch_assoc()): ?>
+                <option value="<?= $row_kategori['nama_kategori'] ?>"><?= $row_kategori['nama_kategori'] ?></option>
+                <?php endwhile; ?>
+            </select>
         </div>
         <div class="col-md-6">
             <label>Warehouse</label>
