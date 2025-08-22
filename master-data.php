@@ -53,7 +53,7 @@ include 'includes/header.php';
                                     <i class="fas fa-truck fa-3x text-info mb-3"></i>
                                     <h5 class="card-title">Data Supplier</h5>
                                     <p class="card-text">Kelola data supplier dan vendor</p>
-                                    <a href="#" class="btn btn-info">Kelola</a>
+                                    <a href="data-suplier.php" class="btn btn-info">Kelola</a>
                                 </div>
                             </div>
                         </div>

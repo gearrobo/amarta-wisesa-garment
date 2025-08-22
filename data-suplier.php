@@ -1,18 +1,6 @@
 <?php
-session_start();
-require_once 'config/db.php';
-
-// Database connection
-$host = 'localhost';
-$username = 'root';
-$password = '';
-$database = 'suplier';
-
-$mysqli = new mysqli($host, $username, $password, $database);
-
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
-}
+include 'includes/header.php';
+include 'config/db.php';
 
 // Handle CRUD operations
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -86,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Get all suppliers
 $suppliers = [];
-$result = $mysqli->query("SELECT * FROM suplier ORDER BY created_at DESC");
+$result = $conn->query("SELECT * FROM suplier ORDER BY created_at DESC");
 if ($result) {
     while ($row = $result->fetch_assoc()) {
         $suppliers[] = $row;
@@ -97,7 +85,7 @@ if ($result) {
 $edit_supplier = null;
 if (isset($_GET['edit'])) {
     $id = $_GET['edit'];
-    $stmt = $mysqli->prepare("SELECT * FROM suplier WHERE id=?");
+    $stmt = $conn->prepare("SELECT * FROM suplier WHERE id=?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -106,61 +94,7 @@ if (isset($_GET['edit'])) {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Supplier - Amarta Wisesa Garment</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        .sidebar {
-            min-height: 100vh;
-            background-color: #343a40;
-        }
-        .sidebar .nav-link {
-            color: #ffffff;
-        }
-        .sidebar .nav-link:hover {
-            background-color: #495057;
-        }
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-        }
-        .card-header {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-        .status-badge {
-            font-size: 0.75em;
-        }
-    </style>
-</head>
-<body>
-    <!-- Sidebar -->
-    <nav class="sidebar position-fixed d-flex flex-column p-3" style="width: 250px;">
-        <h4 class="text-white mb-4">Amarta Wisesa</h4>
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-                <a href="index.php" class="nav-link">
-                    <i class="fas fa-home me-2"></i>Dashboard
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="data-gudang.php" class="nav-link">
-                    <i class="fas fa-warehouse me-2"></i>Data Gudang
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="data-suplier.php" class="nav-link active">
-                    <i class="fas fa-truck me-2"></i>Data Supplier
-                </a>
-            </li>
-        </ul>
-    </nav>
+
 
     <!-- Main Content -->
     <div class="main-content">
@@ -397,5 +331,3 @@ if (isset($_GET['edit'])) {
             modal.show();
         }
     </script>
-</body>
-</html>
