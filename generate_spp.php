@@ -183,11 +183,6 @@ $sps = $final_data;
             <td><?= htmlspecialchars($sps['artikel']) ?></td>
         </tr>
         <tr>
-            <td>Qty</td>
-            <td>:</td>
-            <td><?= htmlspecialchars($sps['qty']) ?></td>
-        </tr>
-        <tr>
             <td>Size</td>
             <td>:</td>
             <td><?= htmlspecialchars($sps['size']) ?></td>
