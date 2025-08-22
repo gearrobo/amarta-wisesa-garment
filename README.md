@@ -1,1 +1,0 @@
-# amarta-wisesa-garment
