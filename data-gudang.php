@@ -155,12 +155,12 @@ $gudangList = mysqli_fetch_all($result, MYSQLI_ASSOC);
             <!-- Navigation Tabs -->
             <ul class="nav nav-tabs" id="gudangTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="daftar-gudang-tab" data-bs-toggle="tab" data-bs-target="#daftar-gudang" type="button" role="tab">
+                    <button class="nav-link <?= (!isset($_GET['filter_gudang']) && !isset($_GET['search_nama'])) ? 'active' : '' ?>" id="daftar-gudang-tab" data-bs-toggle="tab" data-bs-target="#daftar-gudang" type="button" role="tab">
                         <i class="fas fa-warehouse"></i> Daftar Gudang
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="inventory-gudang-tab" data-bs-toggle="tab" data-bs-target="#inventory-gudang" type="button" role="tab">
+                    <button class="nav-link <?= (isset($_GET['filter_gudang']) || isset($_GET['search_nama'])) ? 'active' : '' ?>" id="inventory-gudang-tab" data-bs-toggle="tab" data-bs-target="#inventory-gudang" type="button" role="tab">
                         <i class="fas fa-boxes"></i> Inventory Gudang
                     </button>
                 </li>
@@ -169,19 +169,20 @@ $gudangList = mysqli_fetch_all($result, MYSQLI_ASSOC);
             <!-- Tab Content -->
             <div class="tab-content" id="gudangTabsContent">
                 <!-- Daftar Gudang Tab -->
-                <div class="tab-pane fade show active" id="daftar-gudang" role="tabpanel">
+                <div class="tab-pane fade <?= (!isset($_GET['filter_gudang']) && !isset($_GET['search_nama'])) ? 'show active' : '' ?>" id="daftar-gudang" role="tabpanel">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Daftar Gudang</h5>
+                        
                         </div>
                         <div>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahGudangModal">
-                                <i class="fas fa-plus"></i> <strong>TAMBAH DAFTAR GUDANG</strong>
-                            </button>
-                            <button type="button" class="btn btn-success">
-                                <i class="fas fa-file-excel"></i> <strong>EXPORT EXCEL</strong>
-                            </button>
-                        </div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahGudangModal">
+                                    <i class="fas fa-plus"></i> <strong>TAMBAH DAFTAR GUDANG</strong>
+                                </button>
+                                <button type="button" class="btn btn-success">
+                                    <i class="fas fa-file-excel"></i> <strong>EXPORT EXCEL</strong>
+                                </button>
+                            </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover" id="tabelGudang">
@@ -224,16 +225,32 @@ $gudangList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                 </div>
 
                 <!-- Inventory Gudang Tab -->
-                <div class="tab-pane fade" id="inventory-gudang" role="tabpanel">
+                <div class="tab-pane fade <?= (isset($_GET['filter_gudang']) || isset($_GET['search_nama'])) ? 'show active' : '' ?>" id="inventory-gudang" role="tabpanel">
                     <?php
-                    // Get inventory_gudang data with gudang names and stok akhir
+                    // Handle filter parameters
+                    $filter_gudang = isset($_GET['filter_gudang']) ? $_GET['filter_gudang'] : '';
+                    $search_nama = isset($_GET['search_nama']) ? $_GET['search_nama'] : '';
+                    
+                    // Build query with filters
                     $inventoryGudangQuery = "
                         SELECT ig.*, g.nama as nama_gudang,
                                COALESCE(ig.stok_akhir, ig.jumlah) as stok_tersedia
                         FROM inventory_gudang ig 
                         JOIN gudang g ON ig.id_gudang = g.id_gudang 
-                        ORDER BY ig.nama_barang ASC
+                        WHERE 1=1
                     ";
+                    
+                    if (!empty($filter_gudang)) {
+                        $inventoryGudangQuery .= " AND ig.id_gudang = " . intval($filter_gudang);
+                    }
+                    
+                    if (!empty($search_nama)) {
+                        $search_nama_escaped = mysqli_real_escape_string($conn, $search_nama);
+                        $inventoryGudangQuery .= " AND ig.nama_barang LIKE '%$search_nama_escaped%'";
+                    }
+                    
+                    $inventoryGudangQuery .= " ORDER BY ig.nama_barang ASC";
+                    
                     $inventoryGudangResult = mysqli_query($conn, $inventoryGudangQuery);
                     $inventoryGudangList = mysqli_fetch_all($inventoryGudangResult, MYSQLI_ASSOC);
                     ?>
@@ -243,8 +260,37 @@ $gudangList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                             <h5 class="card-title mb-0">Inventory Gudang</h5>
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahInventoryGudangModal">
                                 <i class="fas fa-plus"></i> <strong>TAMBAH INVENTORY GUDANG</strong>
+                            </button>
                         </div>
                         <div class="card-body">
+                            <!-- Filter Controls -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <form method="GET" class="row g-2">
+                                        <input type="hidden" name="tab" value="inventory-gudang">
+                                        <div class="col-md-5">
+                                            <select name="filter_gudang" class="form-control" onchange="this.form.submit()">
+                                                <option value="">Semua Gudang</option>
+                                                <?php foreach ($gudangList as $gudang): ?>
+                                                <option value="<?= $gudang['id_gudang']; ?>" <?= ($filter_gudang == $gudang['id_gudang']) ? 'selected' : ''; ?>>
+                                                    <?= htmlspecialchars($gudang['nama']); ?>
+                                                </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <input type="text" name="search_nama" class="form-control" placeholder="Cari nama barang..." 
+                                                   value="<?= htmlspecialchars($search_nama); ?>">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover" id="tabelInventoryGudang">
                                     <thead>
@@ -400,6 +446,17 @@ $(document).ready(function() {
             url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
         }
     });
+
+    // Check if we have filter parameters and activate the inventory tab
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('filter_gudang') || urlParams.has('search_nama')) {
+        // Activate the inventory gudang tab
+        const inventoryTab = new bootstrap.Tab(document.getElementById('inventory-gudang-tab'));
+        inventoryTab.show();
+        
+        // Also update the URL hash to maintain tab state
+        window.location.hash = 'inventory-gudang';
+    }
 });
 
 function hapusGudang(id) {
