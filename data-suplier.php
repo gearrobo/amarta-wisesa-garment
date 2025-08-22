@@ -166,12 +166,14 @@ if (isset($_GET['edit'])) {
                                         </span>
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-warning" onclick="editSupplier(<?php echo $supplier['id']; ?>)">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteSupplier(<?php echo $supplier['id']; ?>)">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-sm btn-warning" onclick="editSupplier(<?php echo $supplier['id']; ?>)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="deleteSupplier(<?php echo $supplier['id']; ?>)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>

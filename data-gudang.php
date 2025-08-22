@@ -205,15 +205,17 @@ $gudangList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                             <td><?= htmlspecialchars($gudang['kepala_gudang']); ?></td>
                                             <td><?= number_format($gudang['kapasitas']); ?> m²</td>
                                             <td>
-                                                <a href="detail-gudang.php?id=<?= $gudang['id_gudang']; ?>" class="btn btn-sm btn-info" title="Detail">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="edit-gudang.php?id=<?= $gudang['id_gudang']; ?>" class="btn btn-sm btn-warning" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <button type="button" class="btn btn-sm btn-danger" onclick="hapusGudang(<?= $gudang['id_gudang']; ?>)" title="Hapus">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <a href="detail-gudang.php?id=<?= $gudang['id_gudang']; ?>" class="btn btn-sm btn-info" title="Detail">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="edit-gudang.php?id=<?= $gudang['id_gudang']; ?>" class="btn btn-sm btn-warning" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="hapusGudang(<?= $gudang['id_gudang']; ?>)" title="Hapus">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                         <?php endforeach; ?>
