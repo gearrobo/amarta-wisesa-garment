@@ -131,7 +131,7 @@ if ($stmt_inventory) {
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-striped">
+                                <table id="invGudangTable" class="table table-striped">
                                     <thead>
                                         <tr>
                                             <th>Nama Barang</th>
@@ -212,6 +212,11 @@ if ($stmt_inventory) {
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    
 <script>
 function hapusGudang(id) {
     if (confirm('Apakah Anda yakin ingin menghapus data gudang ini?')) {
@@ -219,20 +224,14 @@ function hapusGudang(id) {
     }
 }
 
-$(document).ready(function() {
-    // Initialize DataTable for inventory if it exists
-    if ($('.table').length > 0) {
-        $('.table').DataTable({
-            responsive: true,
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
-            },
-            searching: false,
-            paging: false,
-            info: false
+ $(document).ready(function() {
+            $('#invGudangTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json'
+                },
+                order: [[0, 'asc']]
+            });
         });
-    }
-});
 </script>
 
 <?php

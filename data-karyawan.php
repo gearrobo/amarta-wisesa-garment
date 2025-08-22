@@ -181,7 +181,7 @@ $departemenList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover" id="tabelKaryawan">
+                        <table id="tabelKaryawan" class="table table-striped table-hover" id="tabelKaryawan">
                             <thead>
                                 <tr>
                                     <th>No</th>
@@ -360,6 +360,12 @@ $departemenList = mysqli_fetch_all($result, MYSQLI_ASSOC);
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    
 
 <script>
 $(document).ready(function() {
