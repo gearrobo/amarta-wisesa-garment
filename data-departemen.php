@@ -170,15 +170,17 @@ while ($row = mysqli_fetch_assoc($result)) {
                                             </td>
                                             <td><?= date('d/m/Y', strtotime($departemen['created_at'])); ?></td>
                                             <td>
-                                                <a href="detail-departemen.php?id=<?= $departemen['id_departemen']; ?>" class="btn btn-sm btn-info" title="Lihat Detail Departemen">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="edit-departemen.php?id=<?= $departemen['id_departemen']; ?>" class="btn btn-sm btn-warning" title="Edit Departemen">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <button type="button" class="btn btn-sm btn-danger" onclick="hapusDepartemen(<?= $departemen['id_departemen']; ?>)" title="Hapus Departemen">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <a href="detail-departemen.php?id=<?= $departemen['id_departemen']; ?>" class="btn btn-info" title="Lihat Detail Departemen">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="edit-departemen.php?id=<?= $departemen['id_departemen']; ?>" class="btn btn-warning" title="Edit Departemen">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-danger" onclick="hapusDepartemen(<?= $departemen['id_departemen']; ?>)" title="Hapus Departemen">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                         <?php endforeach; ?>
