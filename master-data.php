@@ -85,7 +85,7 @@ include 'includes/header.php';
                                     <i class="fas fa-chart-line fa-3x text-secondary mb-3"></i>
                                     <h5 class="card-title">Data Departemen</h5>
                                     <p class="card-text">Kelola data departemen dan divisi</p>
-                                    <a href="#" class="btn btn-secondary">Kelola</a>
+                                    <a href="data-departemen.php" class="btn btn-secondary">Kelola Data Departemen</a>
                                 </div>
                             </div>
                         </div>
