@@ -37,8 +37,22 @@ if (!$sps) {
     die("Data SPS tidak ditemukan!");
 }
 
-// Cek apakah SPK sudah pernah dicetak (berdasarkan sp_srx yang sudah terisi)
-$check_sql = "SELECT sp_srx FROM persiapan WHERE id = ?";
+// Ambil data persiapan detail untuk tabel database preparation
+$sql_detail = "SELECT * FROM persiapan WHERE id = ? ORDER BY id ASC";
+$stmt_detail = mysqli_prepare($conn, $sql_detail);
+if (!$stmt_detail) {
+    die("Prepare failed for detail query: " . mysqli_error($conn));
+}
+mysqli_stmt_bind_param($stmt_detail, "i", $id);
+mysqli_stmt_execute($stmt_detail);
+$result_detail = mysqli_stmt_get_result($stmt_detail);
+$persiapan_details = [];
+while ($row = mysqli_fetch_assoc($result_detail)) {
+    $persiapan_details[] = $row;
+}
+
+// Cek apakah SPP sudah pernah dicetak (berdasarkan spp_no yang sudah terisi)
+$check_sql = "SELECT spp_no FROM persiapan WHERE id = ?";
 $check_stmt = mysqli_prepare($conn, $check_sql);
 if (!$check_stmt) {
     die("Prepare failed for check query: " . mysqli_error($conn));
@@ -48,37 +62,37 @@ mysqli_stmt_execute($check_stmt);
 $check_result = mysqli_stmt_get_result($check_stmt);
 $persiapan_data = mysqli_fetch_assoc($check_result);
 
-// Jika sudah ada nomor SPK (sp_srx sudah terisi), gunakan nomor yang sudah ada
-if (!empty($persiapan_data['sp_srx'])) {
-    $spk_no = $persiapan_data['sp_srx'];
+// Jika sudah ada nomor SPP (spp_no sudah terisi), gunakan nomor yang sudah ada
+if (!empty($persiapan_data['spp_no'])) {
+    $spp_no = $persiapan_data['spp_no'];
 } else {
-    // Generate nomor SPK baru
+    // Generate nomor SPP baru
     $year = date('Y');
     $month = date('m');
     
-    // Cari nomor SPK terakhir
-    $last_spk_sql = "SELECT MAX(CAST(SUBSTRING(sp_srx, 4, 4) AS UNSIGNED)) as last_num 
+    // Cari nomor SPP terakhir
+    $last_spp_sql = "SELECT MAX(CAST(SUBSTRING(spp_no, 4, 4) AS UNSIGNED)) as last_num 
                      FROM persiapan 
-                     WHERE sp_srx LIKE 'SPK%' AND YEAR(created_at) = ?";
-    $last_spk_stmt = mysqli_prepare($conn, $last_spk_sql);
-    if (!$last_spk_stmt) {
-        die("Prepare failed for last SPK query: " . mysqli_error($conn));
+                     WHERE spp_no LIKE 'SPP%' AND YEAR(created_at) = ?";
+    $last_spp_stmt = mysqli_prepare($conn, $last_spp_sql);
+    if (!$last_spp_stmt) {
+        die("Prepare failed for last SPP query: " . mysqli_error($conn));
     }
-    mysqli_stmt_bind_param($last_spk_stmt, "i", $year);
-    mysqli_stmt_execute($last_spk_stmt);
-    $last_spk_result = mysqli_stmt_get_result($last_spk_stmt);
-    $last_spk = mysqli_fetch_assoc($last_spk_result);
+    mysqli_stmt_bind_param($last_spp_stmt, "i", $year);
+    mysqli_stmt_execute($last_spp_stmt);
+    $last_spp_result = mysqli_stmt_get_result($last_spp_stmt);
+    $last_spp = mysqli_fetch_assoc($last_spp_result);
     
-    $next_num = ($last_spk['last_num'] ?? 0) + 1;
-    $spk_no = 'SPK' . str_pad($next_num, 4, '0', STR_PAD_LEFT);
+    $next_num = ($last_spp['last_num'] ?? 0) + 1;
+    $spp_no = 'SPP' . str_pad($next_num, 4, '0', STR_PAD_LEFT);
 
-    // Update nomor SPK ke database
-    $update_sql = "UPDATE persiapan SET sp_srx = ? WHERE id = ?";
+    // Update nomor SPP ke database
+    $update_sql = "UPDATE persiapan SET spp_no = ? WHERE id = ?";
     $update_stmt = mysqli_prepare($conn, $update_sql);
     if (!$update_stmt) {
         die("Prepare failed for update query: " . mysqli_error($conn));
     }
-    mysqli_stmt_bind_param($update_stmt, "si", $spk_no, $id);
+    mysqli_stmt_bind_param($update_stmt, "si", $spp_no, $id);
     mysqli_stmt_execute($update_stmt);
 }
 
@@ -101,7 +115,7 @@ if (!$final_data) {
 }
 
 // Gunakan data yang sudah diupdate
-$spk_no = $final_data['sp_srx'];
+$spp_no = $final_data['spp_no'];
 $sps = $final_data;
 
 ?>
@@ -109,17 +123,19 @@ $sps = $final_data;
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Surat Perintah Kerja (SPK)</title>
+    <title>SPP - Surat Perintah Potong</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .header { text-align: center; margin-bottom: 30px; }
         .company-name { font-size: 18px; font-weight: bold; }
-        .spk-title { font-size: 20px; font-weight: bold; margin: 20px 0; }
+        .spp-title { font-size: 20px; font-weight: bold; margin: 20px 0; }
         .info-table { width: 100%; margin-bottom: 20px; }
         .info-table td { padding: 5px; }
         .signature { margin-top: 50px; }
         .signature div { margin-bottom: 40px; }
+        .detail-table { margin-top: 30px; }
+        .detail-table th { background-color: #f8f9fa; }
         @media print {
             body { margin: 0; }
             .no-print { display: none; }
@@ -133,13 +149,13 @@ $sps = $final_data;
         <div>Telp: (62) 8125202033</div>
     </div>
 
-    <div class="spk-title">SURAT PERINTAH KERJA (SPK)</div>
+    <div class="spp-title">SURAT PERINTAH POTONG (SPP)</div>
 
     <table class="info-table">
         <tr>
-            <td width="150">No. SPK</td>
+            <td width="150">No. SPP</td>
             <td width="10">:</td>
-            <td><?= htmlspecialchars($spk_no) ?></td>
+            <td><?= htmlspecialchars($spp_no) ?></td>
         </tr>
         <tr>
             <td>Tanggal</td>
@@ -156,28 +172,66 @@ $sps = $final_data;
             <td>:</td>
             <td><?= htmlspecialchars($sps['customer']) ?></td>
         </tr>
+        <tr>
+            <td>Item</td>
+            <td>:</td>
+            <td><?= htmlspecialchars($sps['item']) ?></td>
+        </tr>
+        <tr>
+            <td>Artikel</td>
+            <td>:</td>
+            <td><?= htmlspecialchars($sps['artikel']) ?></td>
+        </tr>
+        <tr>
+            <td>Qty</td>
+            <td>:</td>
+            <td><?= htmlspecialchars($sps['qty']) ?></td>
+        </tr>
+        <tr>
+            <td>Size</td>
+            <td>:</td>
+            <td><?= htmlspecialchars($sps['size']) ?></td>
+        </tr>
+        <tr>
+            <td>Tanggal Kirim</td>
+            <td>:</td>
+            <td><?= date('d/m/Y', strtotime($sps['kirim'])) ?></td>
+        </tr>
     </table>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Item</th>
-                <th>Artikel</th>
-                <th>Qty</th>
-                <th>Size</th>
-                <th>Tanggal Kirim</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><?= htmlspecialchars($sps['item']) ?></td>
-                <td><?= htmlspecialchars($sps['artikel']) ?></td>
-                <td><?= htmlspecialchars($sps['qty']) ?></td>
-                <td><?= htmlspecialchars($sps['size']) ?></td>
-                <td><?= date('d/m/Y', strtotime($sps['kirim'])) ?></td>
-            </tr>
-        </tbody>
-    </table>
+    <?php if (!empty($persiapan_details)): ?>
+    <div class="detail-table">
+        <h5>Data Persiapan Database:</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th width="50">No</th>
+                    <th>Kode Barang</th>
+                    <th>Nama Barang</th>
+                    <th>Jumlah</th>
+                    <th>Satuan</th>
+                    <th>Keterangan</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($persiapan_details as $index => $detail): ?>
+                <tr>
+                    <td><?= $index + 1 ?></td>
+                    <td><?= htmlspecialchars($detail['kode_barang'] ?? '-') ?></td>
+                    <td><?= htmlspecialchars($detail['nama_barang'] ?? '-') ?></td>
+                    <td><?= htmlspecialchars($detail['jumlah'] ?? '0') ?></td>
+                    <td><?= htmlspecialchars($detail['satuan'] ?? '-') ?></td>
+                    <td><?= htmlspecialchars($detail['keterangan'] ?? '-') ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php else: ?>
+    <div class="alert alert-info mt-3">
+        <strong>Info:</strong> Tidak ada data persiapan yang ditemukan untuk SPP ini.
+    </div>
+    <?php endif; ?>
 
     <div class="signature">
         <div class="row">
@@ -197,11 +251,11 @@ $sps = $final_data;
     </div>
 
     <div style="margin-top: 30px;">
-        <small>Catatan: SPK ini harus dilaksanakan sesuai dengan spesifikasi yang telah ditentukan.</small>
+        <small>Catatan: SPP ini harus dilaksanakan sesuai dengan spesifikasi yang telah ditentukan.</small>
     </div>
 
     <div class="no-print" style="margin-top: 20px; text-align: center;">
-        <button onclick="window.print()" class="btn btn-primary">Cetak SPK</button>
+        <button onclick="window.print()" class="btn btn-primary">Cetak SPP</button>
         <a href="index.php" class="btn btn-secondary">Kembali</a>
     </div>
 
