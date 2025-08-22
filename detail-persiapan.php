@@ -192,7 +192,7 @@ foreach ($hpp_items as $item) {
                                                     <td><?= $index + 1; ?></td>
                                                     <td><?= htmlspecialchars($item['nama_barang']); ?></td>
                                                     <td><?= number_format($item['jumlah']); ?></td>
-                                                    <td><?= number_format($item['satuan']); ?></td>
+                                                    <td><?= htmlspecialchars($item['satuan']); ?></td>
                                                     <td>Rp <?= number_format($item['harga'], 0, ',', '.'); ?></td>
                                                     <td>Rp <?= number_format($item['total'], 0, ',', '.'); ?></td>
                                                     <td>

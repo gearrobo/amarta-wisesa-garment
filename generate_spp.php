@@ -9,11 +9,14 @@ $id = intval($_GET['id']);
 
 // Ambil data dari tabel persiapan
 $sql = "SELECT * FROM persiapan WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-$persiapan = $result->fetch_assoc();
+$stmt = mysqli_prepare($conn, $sql);
+if (!$stmt) {
+    die("Prepare failed: " . mysqli_error($conn));
+}
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$persiapan = mysqli_fetch_assoc($result);
 
 if (!$persiapan) {
     die("Data persiapan tidak ditemukan!");
@@ -21,11 +24,14 @@ if (!$persiapan) {
 
 // Ambil data SPS terkait berdasarkan id_sps
 $sql_sps = "SELECT * FROM sps WHERE id = ?";
-$stmt_sps = $conn->prepare($sql_sps);
-$stmt_sps->bind_param("i", $persiapan['id_sps']);
-$stmt_sps->execute();
-$result_sps = $stmt_sps->get_result();
-$sps = $result_sps->fetch_assoc();
+$stmt_sps = mysqli_prepare($conn, $sql_sps);
+if (!$stmt_sps) {
+    die("Prepare failed for SPS query: " . mysqli_error($conn));
+}
+mysqli_stmt_bind_param($stmt_sps, "i", $persiapan['id_sps']);
+mysqli_stmt_execute($stmt_sps);
+$result_sps = mysqli_stmt_get_result($stmt_sps);
+$sps = mysqli_fetch_assoc($result_sps);
 
 if (!$sps) {
     die("Data SPS tidak ditemukan!");
@@ -33,31 +39,72 @@ if (!$sps) {
 
 // Cek apakah SPK sudah pernah dicetak (berdasarkan sp_srx yang sudah terisi)
 $check_sql = "SELECT sp_srx FROM persiapan WHERE id = ?";
-$check_stmt = $conn->prepare($check_sql);
-$check_stmt->bind_param("i", $id);
-$check_stmt->execute();
-$check_result = $check_stmt->get_result();
-$persiapan_data = $check_result->fetch_assoc();
+$check_stmt = mysqli_prepare($conn, $check_sql);
+if (!$check_stmt) {
+    die("Prepare failed for check query: " . mysqli_error($conn));
+}
+mysqli_stmt_bind_param($check_stmt, "i", $id);
+mysqli_stmt_execute($check_stmt);
+$check_result = mysqli_stmt_get_result($check_stmt);
+$persiapan_data = mysqli_fetch_assoc($check_result);
 
 // Jika sudah ada nomor SPK (sp_srx sudah terisi), gunakan nomor yang sudah ada
 if (!empty($persiapan_data['sp_srx'])) {
     $spk_no = $persiapan_data['sp_srx'];
 } else {
     // Generate nomor SPK baru
-    $spk_no = "SPK-" . date('Ymd') . "-" . str_pad($id, 4, '0', STR_PAD_LEFT);
+    $year = date('Y');
+    $month = date('m');
     
-    // Update SP SRX dengan nomor SPK di tabel persiapan
-    $update_stmt = $conn->prepare("UPDATE persiapan SET sp_srx = ? WHERE id = ?");
-    $update_stmt->bind_param("si", $spk_no, $id);
-    $update_stmt->execute();
-    $update_stmt->close();
+    // Cari nomor SPK terakhir
+    $last_spk_sql = "SELECT MAX(CAST(SUBSTRING(sp_srx, 4, 4) AS UNSIGNED)) as last_num 
+                     FROM persiapan 
+                     WHERE sp_srx LIKE 'SPK%' AND YEAR(created_at) = ?";
+    $last_spk_stmt = mysqli_prepare($conn, $last_spk_sql);
+    if (!$last_spk_stmt) {
+        die("Prepare failed for last SPK query: " . mysqli_error($conn));
+    }
+    mysqli_stmt_bind_param($last_spk_stmt, "i", $year);
+    mysqli_stmt_execute($last_spk_stmt);
+    $last_spk_result = mysqli_stmt_get_result($last_spk_stmt);
+    $last_spk = mysqli_fetch_assoc($last_spk_result);
+    
+    $next_num = ($last_spk['last_num'] ?? 0) + 1;
+    $spk_no = 'SPK' . str_pad($next_num, 4, '0', STR_PAD_LEFT);
+
+    // Update nomor SPK ke database
+    $update_sql = "UPDATE persiapan SET sp_srx = ? WHERE id = ?";
+    $update_stmt = mysqli_prepare($conn, $update_sql);
+    if (!$update_stmt) {
+        die("Prepare failed for update query: " . mysqli_error($conn));
+    }
+    mysqli_stmt_bind_param($update_stmt, "si", $spk_no, $id);
+    mysqli_stmt_execute($update_stmt);
 }
 
-$stmt->close();
-$check_stmt->close();
-$stmt_sps->close();
-?>
+// Ambil data yang sudah diupdate
+$final_sql = "SELECT p.*, s.sps_no, s.customer, s.item, s.artikel, s.qty, s.size, s.kirim 
+              FROM persiapan p 
+              JOIN sps s ON p.id_sps = s.id 
+              WHERE p.id = ?";
+$final_stmt = mysqli_prepare($conn, $final_sql);
+if (!$final_stmt) {
+    die("Prepare failed for final query: " . mysqli_error($conn));
+}
+mysqli_stmt_bind_param($final_stmt, "i", $id);
+mysqli_stmt_execute($final_stmt);
+$final_result = mysqli_stmt_get_result($final_stmt);
+$final_data = mysqli_fetch_assoc($final_result);
 
+if (!$final_data) {
+    die("Data tidak ditemukan setelah update!");
+}
+
+// Gunakan data yang sudah diupdate
+$spk_no = $final_data['sp_srx'];
+$sps = $final_data;
+
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
