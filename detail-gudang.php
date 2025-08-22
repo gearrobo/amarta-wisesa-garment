@@ -134,7 +134,6 @@ if ($stmt_inventory) {
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Kode Barang</th>
                                             <th>Nama Barang</th>
                                             <th>Jumlah</th>
                                             <th>Satuan</th>
@@ -144,7 +143,6 @@ if ($stmt_inventory) {
                                     <tbody>
                                         <?php foreach ($inventory_data as $item): ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($item['kode_barang']); ?></td>
                                             <td><?= htmlspecialchars($item['nama_barang']); ?></td>
                                             <td><?= number_format($item['jumlah']); ?></td>
                                             <td><?= htmlspecialchars($item['satuan']); ?></td>
