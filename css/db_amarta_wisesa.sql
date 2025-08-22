@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 22 Agu 2025 pada 14.19
+-- Waktu pembuatan: 22 Agu 2025 pada 14.31
 -- Versi server: 10.4.27-MariaDB
 -- Versi PHP: 7.4.33
 
@@ -229,6 +229,112 @@ CREATE TABLE `inventory_transaksi` (
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `inventory_transaksi_gudang`
+--
+
+CREATE TABLE `inventory_transaksi_gudang` (
+  `id` int(11) NOT NULL,
+  `inventory_gudang_id` int(11) NOT NULL,
+  `jenis` enum('masuk','keluar') NOT NULL,
+  `jumlah_masuk` int(11) DEFAULT 0,
+  `jumlah_keluar` int(11) DEFAULT 0,
+  `harga_per_unit` decimal(15,2) DEFAULT NULL,
+  `keterangan` text DEFAULT NULL,
+  `tanggal_transaksi` datetime NOT NULL DEFAULT current_timestamp(),
+  `user_id` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `inventory_transaksi_gudang`
+--
+
+INSERT INTO `inventory_transaksi_gudang` (`id`, `inventory_gudang_id`, `jenis`, `jumlah_masuk`, `jumlah_keluar`, `harga_per_unit`, `keterangan`, `tanggal_transaksi`, `user_id`, `created_at`, `updated_at`) VALUES
+(2, 1, 'masuk', 500, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-15 00:00:00', NULL, '2025-08-21 16:07:27', '2025-08-21 16:07:27'),
+(3, 2, 'masuk', 200, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-20 00:00:00', NULL, '2025-08-21 16:07:27', '2025-08-21 16:07:27'),
+(4, 3, 'masuk', 1000, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-25 00:00:00', NULL, '2025-08-21 16:07:27', '2025-08-21 16:07:27'),
+(5, 4, 'masuk', 300, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-28 00:00:00', NULL, '2025-08-21 16:07:27', '2025-08-21 16:07:27'),
+(6, 5, 'masuk', 100000, 0, NULL, 'Stok awal dari inventory_gudang', '2025-08-21 00:00:00', NULL, '2025-08-21 16:07:27', '2025-08-21 16:07:27'),
+(9, 1, 'masuk', 500, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-15 00:00:00', NULL, '2025-08-21 16:10:56', '2025-08-21 16:10:56'),
+(10, 2, 'masuk', 200, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-20 00:00:00', NULL, '2025-08-21 16:10:56', '2025-08-21 16:10:56'),
+(11, 3, 'masuk', 1000, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-25 00:00:00', NULL, '2025-08-21 16:10:56', '2025-08-21 16:10:56'),
+(12, 4, 'masuk', 300, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-28 00:00:00', NULL, '2025-08-21 16:10:56', '2025-08-21 16:10:56'),
+(13, 5, 'masuk', 100000, 0, NULL, 'Stok awal dari inventory_gudang', '2025-08-21 00:00:00', NULL, '2025-08-21 16:10:56', '2025-08-21 16:10:56'),
+(16, 6, 'masuk', 5000, 0, NULL, 'Stok awal masuk', '2025-08-21 00:00:00', NULL, '2025-08-21 16:16:37', '2025-08-21 16:16:37'),
+(17, 7, 'masuk', 783, 0, NULL, 'Migrasi data dari inventory lama - Beli untuk Kebutuhan Project Jakarta', '2025-08-21 10:59:11', NULL, '2025-08-21 16:38:23', '2025-08-21 16:38:23'),
+(18, 8, 'masuk', 95000, 0, NULL, 'Migrasi data dari inventory lama - Kebutuhan Project Jakarta', '2025-08-21 11:00:12', NULL, '2025-08-21 16:38:23', '2025-08-21 16:38:23'),
+(19, 9, 'masuk', 78000, 0, NULL, 'Migrasi data dari inventory lama - Stock Opname', '2025-08-21 11:04:00', NULL, '2025-08-21 16:38:23', '2025-08-21 16:38:23'),
+(20, 2, 'masuk', 20, 0, NULL, 'Migrasi data dari inventory lama - ', '2025-08-21 21:37:32', NULL, '2025-08-21 16:38:23', '2025-08-21 16:38:23'),
+(21, 10, 'masuk', 5000000, 0, NULL, 'Migrasi data dari inventory lama - ', '2025-08-21 23:17:59', NULL, '2025-08-21 16:38:23', '2025-08-21 16:38:23'),
+(22, 6, 'masuk', 2000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-21 23:41:06', NULL, '2025-08-21 16:41:06', '2025-08-21 16:41:06'),
+(23, 7, 'masuk', 100, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-22 14:16:42', NULL, '2025-08-22 07:16:42', '2025-08-22 07:16:42'),
+(24, 7, 'masuk', 100, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-22 15:30:32', NULL, '2025-08-22 08:30:32', '2025-08-22 08:30:32'),
+(25, 5, 'masuk', 100000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-22 15:32:30', NULL, '2025-08-22 08:32:30', '2025-08-22 08:32:30'),
+(26, 5, 'masuk', 200, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-22 16:15:39', NULL, '2025-08-22 09:15:39', '2025-08-22 09:15:39'),
+(27, 11, 'masuk', 1000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-22 18:34:38', NULL, '2025-08-22 11:34:38', '2025-08-22 11:34:38');
+
+--
+-- Trigger `inventory_transaksi_gudang`
+--
+DELIMITER $$
+CREATE TRIGGER `update_stok_after_delete_transaksi` AFTER DELETE ON `inventory_transaksi_gudang` FOR EACH ROW BEGIN
+  IF OLD.jenis = 'masuk' THEN
+    UPDATE `inventory_gudang` 
+    SET `stok_akhir` = `stok_akhir` - OLD.jumlah_masuk 
+    WHERE `id_inventory` = OLD.inventory_gudang_id;
+  ELSEIF OLD.jenis = 'keluar' THEN
+    UPDATE `inventory_gudang` 
+    SET `stok_akhir` = `stok_akhir` + OLD.jumlah_keluar 
+    WHERE `id_inventory` = OLD.inventory_gudang_id;
+  END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `update_stok_after_insert_transaksi` AFTER INSERT ON `inventory_transaksi_gudang` FOR EACH ROW BEGIN
+  IF NEW.jenis = 'masuk' THEN
+    UPDATE `inventory_gudang` 
+    SET `stok_akhir` = `stok_akhir` + NEW.jumlah_masuk 
+    WHERE `id_inventory` = NEW.inventory_gudang_id;
+  ELSEIF NEW.jenis = 'keluar' THEN
+    UPDATE `inventory_gudang` 
+    SET `stok_akhir` = `stok_akhir` - NEW.jumlah_keluar 
+    WHERE `id_inventory` = NEW.inventory_gudang_id;
+  END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `update_stok_after_update_transaksi` AFTER UPDATE ON `inventory_transaksi_gudang` FOR EACH ROW BEGIN
+  -- Revert old transaction
+  IF OLD.jenis = 'masuk' THEN
+    UPDATE `inventory_gudang` 
+    SET `stok_akhir` = `stok_akhir` - OLD.jumlah_masuk 
+    WHERE `id_inventory` = OLD.inventory_gudang_id;
+  ELSEIF OLD.jenis = 'keluar' THEN
+    UPDATE `inventory_gudang` 
+    SET `stok_akhir` = `stok_akhir` + OLD.jumlah_keluar 
+    WHERE `id_inventory` = OLD.inventory_gudang_id;
+  END IF;
+  
+  -- Apply new transaction
+  IF NEW.jenis = 'masuk' THEN
+    UPDATE `inventory_gudang` 
+    SET `stok_akhir` = `stok_akhir` + NEW.jumlah_masuk 
+    WHERE `id_inventory` = NEW.inventory_gudang_id;
+  ELSEIF NEW.jenis = 'keluar' THEN
+    UPDATE `inventory_gudang` 
+    SET `stok_akhir` = `stok_akhir` - NEW.jumlah_keluar 
+    WHERE `id_inventory` = NEW.inventory_gudang_id;
+  END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `jabatan`
 --
 
@@ -343,6 +449,30 @@ CREATE TABLE `karyawan_tetap` (
 INSERT INTO `karyawan_tetap` (`id_karyawan`, `npwp`, `bpjs_ketenagakerjaan`, `bpjs_kesehatan`, `gaji_pokok`, `tunjangan_jabatan`, `tunjangan_transport`, `tunjangan_makan`, `rekening_bank`, `nama_bank`) VALUES
 (1, '123456789012345', 'BPJS-TK001', 'BPJS-KS001', '5000000.00', '1500000.00', '500000.00', '300000.00', NULL, NULL),
 (2, '987654321098765', 'BPJS-TK002', 'BPJS-KS002', '7000000.00', '2000000.00', '750000.00', '500000.00', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `kategori_barang`
+--
+
+CREATE TABLE `kategori_barang` (
+  `id_kategori` int(11) NOT NULL,
+  `nama_kategori` varchar(255) NOT NULL,
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `kategori_barang`
+--
+
+INSERT INTO `kategori_barang` (`id_kategori`, `nama_kategori`, `keterangan`, `created_at`, `updated_at`) VALUES
+(2, 'Benang', 'Kategori untuk berbagai jenis benang', '2025-08-22 07:47:00', '2025-08-22 07:47:00'),
+(6, 'Kain Flanel', '', '2025-08-22 08:29:56', '2025-08-22 08:29:56'),
+(7, 'Kain Katun', '', '2025-08-22 08:31:53', '2025-08-22 08:31:53'),
+(8, 'Kain Perca', '', '2025-08-22 08:49:03', '2025-08-22 08:49:03');
 
 -- --------------------------------------------------------
 
@@ -467,6 +597,24 @@ INSERT INTO `sps` (`id`, `tanggal`, `sps_no`, `customer`, `item`, `artikel`, `qt
 (3, '2025-08-20', 'SPS-02', 'Joko-Jakarta', 'Kemeja', 'Kemeja', 1, 'M', NULL, NULL, NULL, NULL, NULL, NULL, '2025-08-27', 'Approved', ''),
 (4, '2025-08-21', 'SPS-04', 'Aji', 'T-Shirt', 'T-Shirt', 1, 'M', NULL, NULL, NULL, NULL, NULL, NULL, '2025-08-30', 'Approved', 'SPK-20250821-0004');
 
+-- --------------------------------------------------------
+
+--
+-- Stand-in struktur untuk tampilan `v_inventory_gudang_summary`
+-- (Lihat di bawah untuk tampilan aktual)
+--
+CREATE TABLE `v_inventory_gudang_summary` (
+);
+
+-- --------------------------------------------------------
+
+--
+-- Struktur untuk view `v_inventory_gudang_summary`
+--
+DROP TABLE IF EXISTS `v_inventory_gudang_summary`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_inventory_gudang_summary`  AS SELECT `ig`.`id_inventory` AS `id_inventory`, `ig`.`id_gudang` AS `id_gudang`, `g`.`nama` AS `nama_gudang`, `ig`.`kode_barang` AS `kode_barang`, `ig`.`nama_barang` AS `nama_barang`, `ig`.`jumlah` AS `jumlah_awal`, `ig`.`stok_akhir` AS `stok_akhir`, `ig`.`satuan` AS `satuan`, `ig`.`tanggal_masuk` AS `tanggal_masuk`, count(`itg`.`id`) AS `total_transaksi`, coalesce(sum(`itg`.`jumlah_masuk`),0) AS `total_masuk`, coalesce(sum(`itg`.`jumlah_keluar`),0) AS `total_keluar` FROM ((`inventory_gudang` `ig` left join `gudang` `g` on(`ig`.`id_gudang` = `g`.`id_gudang`)) left join `inventory_transaksi_gudang` `itg` on(`ig`.`id_inventory` = `itg`.`inventory_gudang_id`)) GROUP BY `ig`.`id_inventory``id_inventory`  ;
+
 --
 -- Indexes for dumped tables
 --
@@ -532,6 +680,14 @@ ALTER TABLE `inventory_transaksi`
   ADD KEY `inventory_id` (`inventory_id`);
 
 --
+-- Indeks untuk tabel `inventory_transaksi_gudang`
+--
+ALTER TABLE `inventory_transaksi_gudang`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `inventory_gudang_id` (`inventory_gudang_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Indeks untuk tabel `jabatan`
 --
 ALTER TABLE `jabatan`
@@ -557,6 +713,14 @@ ALTER TABLE `karyawan_harian_borongan`
 --
 ALTER TABLE `karyawan_tetap`
   ADD PRIMARY KEY (`id_karyawan`);
+
+--
+-- Indeks untuk tabel `kategori_barang`
+--
+ALTER TABLE `kategori_barang`
+  ADD PRIMARY KEY (`id_kategori`),
+  ADD KEY `idx_nama_kategori` (`nama_kategori`),
+  ADD KEY `idx_created_at` (`created_at`);
 
 --
 -- Indeks untuk tabel `mesin`
@@ -639,6 +803,12 @@ ALTER TABLE `inventory_transaksi`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT untuk tabel `inventory_transaksi_gudang`
+--
+ALTER TABLE `inventory_transaksi_gudang`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+
+--
 -- AUTO_INCREMENT untuk tabel `jabatan`
 --
 ALTER TABLE `jabatan`
@@ -649,6 +819,12 @@ ALTER TABLE `jabatan`
 --
 ALTER TABLE `karyawan`
   MODIFY `id_karyawan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT untuk tabel `kategori_barang`
+--
+ALTER TABLE `kategori_barang`
+  MODIFY `id_kategori` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT untuk tabel `mesin`
@@ -713,6 +889,13 @@ ALTER TABLE `inventory_gudang`
 --
 ALTER TABLE `inventory_transaksi`
   ADD CONSTRAINT `inventory_transaksi_ibfk_1` FOREIGN KEY (`inventory_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `inventory_transaksi_gudang`
+--
+ALTER TABLE `inventory_transaksi_gudang`
+  ADD CONSTRAINT `inventory_transaksi_gudang_ibfk_1` FOREIGN KEY (`inventory_gudang_id`) REFERENCES `inventory_gudang` (`id_inventory`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `inventory_transaksi_gudang_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `pengguna` (`id_pengguna`) ON DELETE SET NULL;
 
 --
 -- Ketidakleluasaan untuk tabel `karyawan`
