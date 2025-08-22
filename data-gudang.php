@@ -50,6 +50,69 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['error'] = "Gagal menambahkan data gudang: " . $e->getMessage();
         }
     }
+    
+    if (isset($_POST['tambah_inventory_gudang'])) {
+        // Start transaction
+        mysqli_autocommit($conn, FALSE);
+        
+        try {
+            // Insert inventory gudang data with stok_akhir
+            $sql = "INSERT INTO inventory_gudang (nama_barang, id_gudang, jumlah, stok_akhir, satuan, tanggal_masuk) 
+                    VALUES (?, ?, ?, ?, ?, ?)";
+            
+            $stmt = mysqli_prepare($conn, $sql);
+            if (!$stmt) {
+                throw new Exception("Prepare failed: " . mysqli_error($conn));
+            }
+            
+            mysqli_stmt_bind_param($stmt, "siisss", 
+                $_POST['nama_barang'],
+                $_POST['id_gudang'],
+                $_POST['jumlah'],
+                $_POST['jumlah'], // stok_akhir sama dengan jumlah awal
+                $_POST['satuan'],
+                $_POST['tanggal_masuk']
+            );
+            
+            if (!mysqli_stmt_execute($stmt)) {
+                throw new Exception("Execute failed: " . mysqli_stmt_error($stmt));
+            }
+            
+            $inventory_id = mysqli_insert_id($conn);
+            mysqli_stmt_close($stmt);
+            
+            // Insert initial transaction record
+            $sql_transaksi = "INSERT INTO inventory_transaksi_gudang 
+                            (inventory_gudang_id, jenis, jumlah_masuk, keterangan, tanggal_transaksi, user_id) 
+                            VALUES (?, 'masuk', ?, 'Stok awal masuk', ?, ?)";
+            
+            $stmt_transaksi = mysqli_prepare($conn, $sql_transaksi);
+            $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+            mysqli_stmt_bind_param($stmt_transaksi, "issi", 
+                $inventory_id,
+                $_POST['jumlah'],
+                $_POST['tanggal_masuk'],
+                $user_id
+            );
+            
+            if (!mysqli_stmt_execute($stmt_transaksi)) {
+                throw new Exception("Transaksi failed: " . mysqli_stmt_error($stmt_transaksi));
+            }
+            
+            mysqli_stmt_close($stmt_transaksi);
+            
+            // Commit transaction
+            mysqli_commit($conn);
+            
+            $_SESSION['success'] = "Data inventory gudang berhasil ditambahkan!";
+            header("Location: data-gudang.php#inventory-gudang");
+            exit();
+            
+        } catch(Exception $e) {
+            mysqli_rollback($conn);
+            $_SESSION['error'] = "Gagal menambahkan data inventory gudang: " . $e->getMessage();
+        }
+    }
 }
 
 // Get all warehouses
@@ -89,57 +152,138 @@ $gudangList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                 <?php unset($_SESSION['error']); ?>
             <?php endif; ?>
 
-            <!-- Action Buttons -->
-            <div class="mb-3">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahGudangModal">
-                    <i class="fas fa-plus"></i> Tambah Gudang
-                </button>
-                <button type="button" class="btn btn-success">
-                    <i class="fas fa-file-excel"></i> Export Excel
-                </button>
-            </div>
+            <!-- Navigation Tabs -->
+            <ul class="nav nav-tabs" id="gudangTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="daftar-gudang-tab" data-bs-toggle="tab" data-bs-target="#daftar-gudang" type="button" role="tab">
+                        <i class="fas fa-warehouse"></i> Daftar Gudang
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="inventory-gudang-tab" data-bs-toggle="tab" data-bs-target="#inventory-gudang" type="button" role="tab">
+                        <i class="fas fa-boxes"></i> Inventory Gudang
+                    </button>
+                </li>
+            </ul>
 
-            <!-- Warehouse Table -->
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Daftar Gudang</h5>
+            <!-- Tab Content -->
+            <div class="tab-content" id="gudangTabsContent">
+                <!-- Daftar Gudang Tab -->
+                <div class="tab-pane fade show active" id="daftar-gudang" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Daftar Gudang</h5>
+                            <div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahGudangModal">
+                                    <i class="fas fa-plus"></i> <strong>TAMBAH DAFTAR GUDANG</strong>
+                                </button>
+                                <button type="button" class="btn btn-success">
+                                    <i class="fas fa-file-excel"></i> <strong>EXPORT EXCEL</strong>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="tabelGudang">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Nama</th>
+                                            <th>Alamat</th>
+                                            <th>Kepala Gudang</th>
+                                            <th>Kapasitas</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php $no = 1; foreach ($gudangList as $gudang): ?>
+                                        <tr>
+                                            <td><?= $no++; ?></td>
+                                            <td><?= htmlspecialchars($gudang['nama']); ?></td>
+                                            <td><?= htmlspecialchars($gudang['alamat']); ?></td>
+                                            <td><?= htmlspecialchars($gudang['kepala_gudang']); ?></td>
+                                            <td><?= number_format($gudang['kapasitas']); ?> m²</td>
+                                            <td>
+                                                <a href="detail-gudang.php?id=<?= $gudang['id_gudang']; ?>" class="btn btn-sm btn-info" title="Detail">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="edit-gudang.php?id=<?= $gudang['id_gudang']; ?>" class="btn btn-sm btn-warning" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="hapusGudang(<?= $gudang['id_gudang']; ?>)" title="Hapus">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover" id="tabelGudang">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama</th>
-                                    <th>Alamat</th>
-                                    <th>Kepala Gudang</th>
-                                    <th>Kapasitas</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php $no = 1; foreach ($gudangList as $gudang): ?>
-                                <tr>
-                                    <td><?= $no++; ?></td>
-                                    <td><?= htmlspecialchars($gudang['nama']); ?></td>
-                                    <td><?= htmlspecialchars($gudang['alamat']); ?></td>
-                                    <td><?= htmlspecialchars($gudang['kepala_gudang']); ?></td>
-                                    <td><?= number_format($gudang['kapasitas']); ?> m²</td>
-                                    <td>
-                                        <a href="detail-gudang.php?id=<?= $gudang['id_gudang']; ?>" class="btn btn-sm btn-info">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="edit-gudang.php?id=<?= $gudang['id_gudang']; ?>" class="btn btn-sm btn-warning">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-sm btn-danger" onclick="hapusGudang(<?= $gudang['id_gudang']; ?>)">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+
+                <!-- Inventory Gudang Tab -->
+                <div class="tab-pane fade" id="inventory-gudang" role="tabpanel">
+                    <?php
+                    // Get inventory_gudang data with gudang names and stok akhir
+                    $inventoryGudangQuery = "
+                        SELECT ig.*, g.nama as nama_gudang,
+                               COALESCE(ig.stok_akhir, ig.jumlah) as stok_tersedia
+                        FROM inventory_gudang ig 
+                        JOIN gudang g ON ig.id_gudang = g.id_gudang 
+                        ORDER BY ig.nama_barang ASC
+                    ";
+                    $inventoryGudangResult = mysqli_query($conn, $inventoryGudangQuery);
+                    $inventoryGudangList = mysqli_fetch_all($inventoryGudangResult, MYSQLI_ASSOC);
+                    ?>
+                    
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Inventory Gudang</h5>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahInventoryGudangModal">
+                                <i class="fas fa-plus"></i> <strong>TAMBAH INVENTORY GUDANG</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="tabelInventoryGudang">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Nama Barang</th>
+                                            <th>Gudang</th>
+                                            <th>Jumlah</th>
+                                            <th>Satuan</th>
+                                            <th>Tanggal Masuk</th>
+                                            <!-- <th>Aksi</th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php $no = 1; foreach ($inventoryGudangList as $item): ?>
+                                        <tr>
+                                            <td><?= $no++; ?></td>
+                                            <td><?= htmlspecialchars($item['nama_barang']); ?></td>
+                                            <td><?= htmlspecialchars($item['nama_gudang']); ?></td>
+                                            <td><?= number_format($item['jumlah']); ?></td>
+                                            <td><?= htmlspecialchars($item['satuan']); ?></td>
+                                            <td><?= $item['tanggal_masuk'] ? date('d/m/Y', strtotime($item['tanggal_masuk'])) : '-'; ?></td>
+                                            <!-- <td>
+                                                <button type="button" class="btn btn-sm btn-info" onclick="detailInventoryGudang(<?= $item['id_inventory']; ?>)">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-warning" onclick="editInventoryGudang(<?= $item['id_inventory']; ?>)">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="hapusInventoryGudang(<?= $item['id_inventory']; ?>)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td> -->
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -191,9 +335,66 @@ $gudangList = mysqli_fetch_all($result, MYSQLI_ASSOC);
     </div>
 </div>
 
+<!-- Tambah Inventory Gudang Modal -->
+<div class="modal fade" id="tambahInventoryGudangModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Inventory Gudang</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Nama Barang</label>
+                        <input type="text" name="nama_barang" class="form-control" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Gudang</label>
+                        <select name="id_gudang" class="form-control" required>
+                            <option value="">Pilih Gudang</option>
+                            <?php foreach ($gudangList as $gudang): ?>
+                            <option value="<?= $gudang['id_gudang']; ?>"><?= htmlspecialchars($gudang['nama']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Jumlah</label>
+                        <input type="number" name="jumlah" class="form-control" required min="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Satuan</label>
+                        <input type="text" name="satuan" class="form-control" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Tanggal Masuk</label>
+                        <input type="date" name="tanggal_masuk" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" name="tambah_inventory_gudang" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 $(document).ready(function() {
     $('#tabelGudang').DataTable({
+        responsive: true,
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
+        }
+    });
+    
+    $('#tabelInventoryGudang').DataTable({
         responsive: true,
         language: {
             url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
@@ -205,6 +406,20 @@ function hapusGudang(id) {
     if (confirm('Apakah Anda yakin ingin menghapus data gudang ini?')) {
         // Implement delete functionality
         window.location.href = 'delete-gudang.php?id=' + id;
+    }
+}
+
+function detailInventoryGudang(id) {
+    window.location.href = 'detail-inventory-gudang.php?id=' + id;
+}
+
+function editInventoryGudang(id) {
+    window.location.href = 'edit-inventory-gudang.php?id=' + id;
+}
+
+function hapusInventoryGudang(id) {
+    if (confirm('Apakah Anda yakin ingin menghapus data inventory gudang ini?')) {
+        window.location.href = 'delete-inventory-gudang.php?id=' + id;
     }
 }
 </script>
