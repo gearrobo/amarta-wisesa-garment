@@ -22,7 +22,6 @@ include 'includes/header.php';
                     <h5 class="card-title mb-0">Kelola Master Data</h5>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted">Halaman ini digunakan untuk mengelola data master sistem.</p>
                     
                     <div class="row">
                         <div class="col-md-4 mb-3">
@@ -53,7 +52,7 @@ include 'includes/header.php';
                                     <i class="fas fa-truck fa-3x text-info mb-3"></i>
                                     <h5 class="card-title">Data Supplier</h5>
                                     <p class="card-text">Kelola data supplier dan vendor</p>
-                                    <a href="data-suplier.php" class="btn btn-info">Kelola</a>
+                                    <a href="data-suplier.php" class="btn btn-info">Kelola Data Supplier</a>
                                 </div>
                             </div>
                         </div>

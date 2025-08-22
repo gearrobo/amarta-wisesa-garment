@@ -164,6 +164,8 @@ foreach ($hpp_items as $item) {
                     <div class="card mt-3">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Daftar HPP (Harga Pokok Produksi)</h5>
+                        </div>
+                        <div>
                             <button type="button" class="btn btn-primary btn-sm text-white d-flex align-items-center" 
                                     data-bs-toggle="modal" data-bs-target="#addHppModal">
                                 <i class="fas fa-plus me-1"></i> <!-- icon plus -->

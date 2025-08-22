@@ -244,7 +244,7 @@ $kirim_count = $kirim_result->fetch_assoc()['kirim_count'];
         <!-- Table Container -->
         <div class="table-container">
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table id="sppTable" class="table table-hover">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -392,7 +392,20 @@ $kirim_count = $kirim_result->fetch_assoc()['kirim_count'];
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    
 <script>
+    $(document).ready(function() {
+            $('#sppTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json'
+                },
+                order: [[0, 'asc']]
+            });
+        });
+        
 // JavaScript functions for action buttons
 function editSPS(id) {
     window.location.href = 'edit_sps.php?id=' + id;
