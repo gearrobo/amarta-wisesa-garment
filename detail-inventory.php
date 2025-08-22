@@ -54,50 +54,56 @@ if (!$inventory) {
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
+                                        <label class="form-label"><strong>Kode Barang</strong></label>
+                                        <p class="form-control-plaintext"><?= htmlspecialchars($inventory['kode_barang'] ?? '-'); ?></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
                                         <label class="form-label"><strong>Nama Barang</strong></label>
                                         <p class="form-control-plaintext"><?= htmlspecialchars($inventory['nama_barang']); ?></p>
                                     </div>
                                 </div>
+                            </div>
+                            
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label"><strong>Warehouse</strong></label>
                                         <p class="form-control-plaintext"><?= htmlspecialchars($inventory['warehouse']); ?></p>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <div class="row">
                                 <div class="col-md-6">
-                                    <div class="mb-3">
+                                <div class="mb-3">
                                         <label class="form-label"><strong>Unit</strong></label>
                                         <p class="form-control-plaintext"><?= htmlspecialchars($inventory['unit']); ?></p>
                                     </div>
                                 </div>
+                            </div>
+                            
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label"><strong>Jumlah</strong></label>
                                         <p class="form-control-plaintext"><?= number_format($inventory['jumlah']); ?></p>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label"><strong>Harga per Unit</strong></label>
                                         <p class="form-control-plaintext">Rp <?= number_format($inventory['harga_per_unit'], 0, ',', '.'); ?></p>
                                     </div>
                                 </div>
+                            </div>
+                            
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label"><strong>Total Nilai</strong></label>
                                         <p class="form-control-plaintext"><strong>Rp <?= number_format($inventory['jumlah'] * $inventory['harga_per_unit'], 0, ',', '.'); ?></strong></p>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label"><strong>Keterangan</strong></label>
                                         <p class="form-control-plaintext"><?= htmlspecialchars($inventory['keterangan'] ?? '-'); ?></p>
@@ -143,6 +149,9 @@ if (!$inventory) {
                             <h5 class="card-title mb-0">Ringkasan</h5>
                         </div>
                         <div class="card-body">
+                            <p><strong>Kode Barang:</strong><br>
+                            <?= htmlspecialchars($inventory['kode_barang'] ?? '-'); ?></p>
+                            
                             <p><strong>Nama Barang:</strong><br>
                             <?= htmlspecialchars($inventory['nama_barang']); ?></p>
                             

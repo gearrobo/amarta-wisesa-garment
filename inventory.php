@@ -27,6 +27,7 @@ if (isset($_POST['save'])) {
         $messageType = 'danger';
     } else {
         // Ambil data dengan aman
+        $kode_barang = $_POST['kode_barang'] ?? '';
         $nama_barang = $_POST['nama_barang'];
         $warehouse = $_POST['warehouse'];
         $unit = $_POST['unit'];
@@ -40,24 +41,49 @@ if (isset($_POST['save'])) {
         try {
             // 1. Simpan ke tabel inventory (sistem lama)
             $sql = "INSERT INTO inventory 
-                    (nama_barang, warehouse, unit, jumlah, harga_per_unit, keterangan, created_at)
+                    (kode_barang, nama_barang, warehouse, unit, jumlah, harga_per_unit, keterangan, created_at)
                     VALUES 
-                    (?, ?, ?, ?, ?, ?, NOW())";
+                    (?, ?, ?, ?, ?, ?, ?, NOW())";
             
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 throw new Exception("Prepare failed: " . $conn->error);
             }
             
-            $stmt->bind_param("sssids", 
-                $nama_barang, $warehouse, $unit, $jumlah, $harga_per_unit, $keterangan
-            );
-            
-            if (!$stmt->execute()) {
-                throw new Exception("Execute failed: " . $stmt->error);
+            // Jika kode_barang tidak diisi, gunakan auto-generated
+            if (empty($kode_barang)) {
+                // Simpan dulu untuk mendapatkan ID, lalu generate kode
+                $stmt->bind_param("ssssids", 
+                    null, $nama_barang, $warehouse, $unit, $jumlah, $harga_per_unit, $keterangan
+                );
+                
+                if (!$stmt->execute()) {
+                    throw new Exception("Execute failed: " . $stmt->error);
+                }
+                
+                $inventory_id = $stmt->insert_id;
+                $kode_barang = 'INV' . str_pad($inventory_id, 4, '0', STR_PAD_LEFT);
+                
+                // Update dengan kode barang yang digenerate
+                $sql_update_kode = "UPDATE inventory SET kode_barang = ? WHERE id = ?";
+                $stmt_update = $conn->prepare($sql_update_kode);
+                $stmt_update->bind_param("si", $kode_barang, $inventory_id);
+                if (!$stmt_update->execute()) {
+                    throw new Exception("Update kode barang failed: " . $stmt_update->error);
+                }
+                $stmt_update->close();
+            } else {
+                // Gunakan kode_barang yang diinput manual
+                $stmt->bind_param("ssssids", 
+                    $kode_barang, $nama_barang, $warehouse, $unit, $jumlah, $harga_per_unit, $keterangan
+                );
+                
+                if (!$stmt->execute()) {
+                    throw new Exception("Execute failed: " . $stmt->error);
+                }
+                
+                $inventory_id = $stmt->insert_id;
             }
-            
-            $inventory_id = $stmt->insert_id;
             $stmt->close();
 
             // 2. Dapatkan ID gudang berdasarkan nama warehouse
@@ -80,9 +106,6 @@ if (isset($_POST['save'])) {
             $gudang_data = $result_gudang->fetch_assoc();
             $id_gudang = $gudang_data['id_gudang'];
             $stmt_gudang->close();
-
-            // 3. Generate kode barang (menggunakan ID inventory)
-            $kode_barang = 'INV' . str_pad($inventory_id, 4, '0', STR_PAD_LEFT);
 
             // 4. Cek apakah barang sudah ada di inventory_gudang
             $sql_check = "SELECT id_inventory, jumlah, stok_akhir FROM inventory_gudang 
@@ -117,11 +140,11 @@ if (isset($_POST['save'])) {
             } else {
                 // Insert new barang ke inventory_gudang
                 $sql_insert_gudang = "INSERT INTO inventory_gudang 
-                                    (id_gudang, kode_barang, nama_barang, jumlah, stok_akhir, satuan, tanggal_masuk)
-                                    VALUES (?, ?, ?, ?, ?, ?, CURDATE())";
+                                    (id_gudang, nama_barang, jumlah, stok_akhir, satuan, tanggal_masuk)
+                                    VALUES (?, ?, ?, ?, ?, CURDATE())";
                 
                 $stmt_insert = $conn->prepare($sql_insert_gudang);
-                $stmt_insert->bind_param("issiiss", $id_gudang, $kode_barang, $nama_barang, $jumlah, $jumlah, $unit);
+                $stmt_insert->bind_param("isiis", $id_gudang, $nama_barang, $jumlah, $jumlah, $unit);
                 
                 if (!$stmt_insert->execute()) {
                     throw new Exception("Insert inventory_gudang failed: " . $stmt_insert->error);
@@ -278,6 +301,7 @@ if ($barang_keluar == 0 && $barang_masuk_transaksi == 0) {
                     <thead>
                         <tr>
                             <th>No</th>
+                            <th>Kode Barang</th>
                             <th>Nama Barang</th>
                             <th>Warehouse</th>
                             <th>Unit</th>
@@ -291,6 +315,7 @@ if ($barang_keluar == 0 && $barang_masuk_transaksi == 0) {
                         <?php $no=1; while($row = $result->fetch_assoc()): ?>
                         <tr>
                             <td><?= $no++ ?></td>
+                            <td><strong><?= $row['kode_barang'] ?? '-' ?></strong></td>
                             <td><strong><?= $row['nama_barang'] ?></strong></td>
                             <td><?= $row['warehouse'] ?></td>
                             <td><?= $row['unit'] ?></td>
@@ -329,8 +354,14 @@ if ($barang_keluar == 0 && $barang_masuk_transaksi == 0) {
       </div>
       <div class="modal-body row g-3">
 
+        <!-- Baris 1: Kode Barang dan Kategori -->
         <div class="col-md-6">
-            <label>Kategori</label>
+            <label class="form-label">Kode Barang</label>
+            <input type="text" name="kode_barang" class="form-control" placeholder="Masukkan kode barang">
+            <!-- <small class="form-text text-muted">Biarkan kosong untuk generate otomatis</small> -->
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Kategori</label>
             <select name="nama_barang" class="form-control" required>
                 <option value="">Pilih Kategori</option>
                 <?php while($row_kategori = $kategori_barang->fetch_assoc()): ?>
@@ -338,38 +369,51 @@ if ($barang_keluar == 0 && $barang_masuk_transaksi == 0) {
                 <?php endwhile; ?>
             </select>
         </div>
+
+        <!-- Baris 2: Warehouse dan Unit -->
         <div class="col-md-6">
-            <label>Warehouse</label>
+            <label class="form-label">Warehouse</label>
             <select name="warehouse" id="warehouse" class="form-control" required onchange="loadGudang()">
                 <option value="">Pilih Warehouse</option>
                 <?php $no=1; while($row_dg = $nama_gudang->fetch_assoc()): ?>
-                <option value=<?= $row_dg['nama']; ?>><?= $row_dg['nama']; ?></option>
+                <option value="<?= $row_dg['nama']; ?>"><?= $row_dg['nama']; ?></option>
                 <?php endwhile; ?>
             </select>
         </div>
-        <div class="col-md-4">
-            <label>Unit</label>
+        <div class="col-md-6">
+            <label class="form-label">Unit</label>
             <select name="unit" class="form-control" required>
                 <option value="">Pilih Unit</option>
                 <option value="pcs">pcs</option>
                 <option value="m²">m²</option>
+                <option value="kg">kg</option>
+                <option value="roll">roll</option>
+                <option value="meter">meter</option>
             </select>
         </div>
-        <div class="col-md-4">
-            <label>Jumlah</label>
-            <input type="number" name="jumlah" class="form-control" required min="0">
+
+        <!-- Baris 3: Jumlah dan Harga -->
+        <div class="col-md-6">
+            <label class="form-label">Jumlah</label>
+            <input type="number" name="jumlah" class="form-control" required min="0" placeholder="0">
         </div>
-        <div class="col-md-4">
-            <label>Harga per Unit</label>
-            <input type="number" name="harga_per_unit" class="form-control" required min="0">
+        <div class="col-md-6">
+            <label class="form-label">Harga per Unit</label>
+            <div class="input-group">
+                <span class="input-group-text">Rp</span>
+                <input type="number" name="harga_per_unit" class="form-control" required min="0" placeholder="0">
+            </div>
         </div>
+
+        <!-- Baris 4: Keterangan -->
         <div class="col-md-12">
-            <label>Keterangan</label>
-            <textarea name="keterangan" class="form-control" rows="3"></textarea>
+            <label class="form-label">Keterangan</label>
+            <textarea name="keterangan" class="form-control" rows="3" placeholder="Tambahkan keterangan jika diperlukan"></textarea>
         </div>
 
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
         <button type="submit" name="save" class="btn btn-success">Simpan</button>
       </div>
       </form>
