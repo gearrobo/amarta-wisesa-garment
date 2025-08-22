@@ -22,6 +22,12 @@
                 </a>
             </li>
             <li>
+                <a href="produksi.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'produksi.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-industry"></i>
+                    Produksi
+                </a>
+            </li>
+            <li>
                 <a href="inventory.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'inventory.php' ? 'active' : ''; ?>">
                     <i class="fas fa-boxes"></i>
                     Inventory
