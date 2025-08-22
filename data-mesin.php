@@ -126,15 +126,17 @@ $mesinList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                     <td><?= htmlspecialchars($mesin['lokasi']); ?></td>
                                     <td><?= date('d/m/Y', strtotime($mesin['tanggal_masuk'])); ?></td>
                                     <td>
-                                        <a href="detail-mesin.php?id=<?= $mesin['id_mesin']; ?>" class="btn btn-sm btn-info">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="edit-mesin.php?id=<?= $mesin['id_mesin']; ?>" class="btn btn-sm btn-warning">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-sm btn-danger" onclick="hapusMesin(<?= $mesin['id_mesin']; ?>)">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button class="btn btn-warning" onclick="editMesin(<?= $mesin['id_mesin']; ?>)" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger" onclick="hapusMesin(<?= $mesin['id_mesin']; ?>)" title="Hapus">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <button class="btn btn-info" onclick="detailMesin(<?= $mesin['id_mesin']; ?>)" title="Detail">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -208,9 +210,16 @@ $(document).ready(function() {
 
 function hapusMesin(id) {
     if (confirm('Apakah Anda yakin ingin menghapus data mesin ini?')) {
-        // Implement delete functionality
         window.location.href = 'delete-mesin.php?id=' + id;
     }
+}
+
+function editMesin(id) {
+    window.location.href = 'edit-mesin.php?id=' + id;
+}
+
+function detailMesin(id) {
+    window.location.href = 'detail-mesin.php?id=' + id;
 }
 </script>
 
