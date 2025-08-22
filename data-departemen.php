@@ -132,7 +132,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                 <div class="card-body">
                     <div class="tab-content" id="departmentTabsContent">
                         
-                        <!-- All Departments Tab -->
+                        <!-- Semua Departemen -->
                         <div class="tab-pane fade show active" id="all" role="tabpanel">
                             <!-- Action Buttons -->
                             <div class="mb-3">
@@ -146,7 +146,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
                             <!-- Department Table -->
                             <div class="table-responsive">
-                                <table class="table table-striped table-hover" id="tabelDepartemen">
+                                <table class="table table-striped table-hover">
                                     <thead>
                                         <tr>
                                             <th>No</th>
@@ -170,13 +170,13 @@ while ($row = mysqli_fetch_assoc($result)) {
                                             </td>
                                             <td><?= date('d/m/Y', strtotime($departemen['created_at'])); ?></td>
                                             <td>
-                                                <a href="detail-departemen.php?id=<?= $departemen['id_departemen']; ?>" class="btn btn-sm btn-info">
+                                                <a href="detail-departemen.php?id=<?= $departemen['id_departemen']; ?>" class="btn btn-sm btn-info" title="Lihat Detail Departemen">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a href="edit-departemen.php?id=<?= $departemen['id_departemen']; ?>" class="btn btn-sm btn-warning">
+                                                <a href="edit-departemen.php?id=<?= $departemen['id_departemen']; ?>" class="btn btn-sm btn-warning" title="Edit Departemen">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <button type="button" class="btn btn-sm btn-danger" onclick="hapusDepartemen(<?= $departemen['id_departemen']; ?>)">
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="hapusDepartemen(<?= $departemen['id_departemen']; ?>)" title="Hapus Departemen">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </td>
@@ -187,126 +187,24 @@ while ($row = mysqli_fetch_assoc($result)) {
                             </div>
                         </div>
 
-                        <!-- HR Tab -->
+                        <!-- HR -->
                         <div class="tab-pane fade" id="hr" role="tabpanel">
-                            <?php
-                            $hrDept = array_filter($departemenList, function($dept) {
-                                return strpos(strtolower($dept['nama_departemen']), 'hr') !== false || 
-                                       strpos(strtolower($dept['nama_departemen']), 'human') !== false;
-                            });
-                            ?>
-                            <h5 class="mb-3">Departemen HR & GA</h5>
-                            <?php if (!empty($hrDept)): ?>
-                                <?php foreach ($hrDept as $dept): ?>
-                                <div class="card mb-3">
-                                    <div class="card-body">
-                                        <h6 class="card-title"><?= htmlspecialchars($dept['nama_departemen']); ?></h6>
-                                        <p class="card-text"><?= htmlspecialchars($dept['deskripsi']); ?></p>
-                                        <p class="text-muted">
-                                            <strong>Jumlah Karyawan:</strong> 
-                                            <span class="badge bg-info">
-                                                <?= isset($karyawanByDept[$dept['id_departemen']]) ? $karyawanByDept[$dept['id_departemen']] : 0; ?> orang
-                                            </span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle"></i> Belum ada data departemen HR.
-                                </div>
-                            <?php endif; ?>
+                            <p>Data Departemen HR akan tampil di sini.</p>
                         </div>
 
-                        <!-- Keuangan Tab -->
+                        <!-- Keuangan -->
                         <div class="tab-pane fade" id="keuangan" role="tabpanel">
-                            <?php
-                            $financeDept = array_filter($departemenList, function($dept) {
-                                return strpos(strtolower($dept['nama_departemen']), 'finance') !== false || 
-                                       strpos(strtolower($dept['nama_departemen']), 'keuangan') !== false;
-                            });
-                            ?>
-                            <h5 class="mb-3">Departemen Keuangan</h5>
-                            <?php if (!empty($financeDept)): ?>
-                                <?php foreach ($financeDept as $dept): ?>
-                                <div class="card mb-3">
-                                    <div class="card-body">
-                                        <h6 class="card-title"><?= htmlspecialchars($dept['nama_departemen']); ?></h6>
-                                        <p class="card-text"><?= htmlspecialchars($dept['deskripsi']); ?></p>
-                                        <p class="text-muted">
-                                            <strong>Jumlah Karyawan:</strong> 
-                                            <span class="badge bg-info">
-                                                <?= isset($karyawanByDept[$dept['id_departemen']]) ? $karyawanByDept[$dept['id_departemen']] : 0; ?> orang
-                                            </span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle"></i> Belum ada data departemen Keuangan.
-                                </div>
-                            <?php endif; ?>
+                            <p>Data Departemen Keuangan akan tampil di sini.</p>
                         </div>
 
-                        <!-- Produksi Tab -->
+                        <!-- Produksi -->
                         <div class="tab-pane fade" id="produksi" role="tabpanel">
-                            <?php
-                            $produksiDept = array_filter($departemenList, function($dept) {
-                                return strpos(strtolower($dept['nama_departemen']), 'produksi') !== false;
-                            });
-                            ?>
-                            <h5 class="mb-3">Departemen Produksi</h5>
-                            <?php if (!empty($produksiDept)): ?>
-                                <?php foreach ($produksiDept as $dept): ?>
-                                <div class="card mb-3">
-                                    <div class="card-body">
-                                        <h6 class="card-title"><?= htmlspecialchars($dept['nama_departemen']); ?></h6>
-                                        <p class="card-text"><?= htmlspecialchars($dept['deskripsi']); ?></p>
-                                        <p class="text-muted">
-                                            <strong>Jumlah Karyawan:</strong> 
-                                            <span class="badge bg-info">
-                                                <?= isset($karyawanByDept[$dept['id_departemen']]) ? $karyawanByDept[$dept['id_departemen']] : 0; ?> orang
-                                            </span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle"></i> Belum ada data departemen Produksi.
-                                </div>
-                            <?php endif; ?>
+                            <p>Data Departemen Produksi akan tampil di sini.</p>
                         </div>
 
-                        <!-- Gudang Tab -->
+                        <!-- Gudang -->
                         <div class="tab-pane fade" id="gudang" role="tabpanel">
-                            <?php
-                            $gudangDept = array_filter($departemenList, function($dept) {
-                                return strpos(strtolower($dept['nama_departemen']), 'gudang') !== false;
-                            });
-                            ?>
-                            <h5 class="mb-3">Departemen Gudang</h5>
-                            <?php if (!empty($gudangDept)): ?>
-                                <?php foreach ($gudangDept as $dept): ?>
-                                <div class="card mb-3">
-                                    <div class="card-body">
-                                        <h6 class="card-title"><?= htmlspecialchars($dept['nama_departemen']); ?></h6>
-                                        <p class="card-text"><?= htmlspecialchars($dept['deskripsi']); ?></p>
-                                        <p class="text-muted">
-                                            <strong>Jumlah Karyawan:</strong> 
-                                            <span class="badge bg-info">
-                                                <?= isset($karyawanByDept[$dept['id_departemen']]) ? $karyawanByDept[$dept['id_departemen']] : 0; ?> orang
-                                            </span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle"></i> Belum ada data departemen Gudang.
-                                </div>
-                            <?php endif; ?>
+                            <p>Data Departemen Gudang akan tampil di sini.</p>
                         </div>
 
                     </div>
@@ -345,26 +243,23 @@ while ($row = mysqli_fetch_assoc($result)) {
     </div>
 </div>
 
+<!-- DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
 <script>
 $(document).ready(function() {
-    $('#tabelDepartemen').DataTable({
+    // aktifkan DataTables untuk SEMUA tabel
+    $('table').DataTable({
         responsive: true,
         language: {
             url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
         }
     });
-
-    // Handle tab click to show appropriate content
-    $('#departmentTabs button').click(function() {
-        var target = $(this).data('bs-target');
-        $('.tab-pane').removeClass('show active');
-        $(target).addClass('show active');
-    });
 });
 
 function hapusDepartemen(id) {
     if (confirm('Apakah Anda yakin ingin menghapus data departemen ini?')) {
-        // Implement delete functionality
         window.location.href = 'delete-departemen.php?id=' + id;
     }
 }
