@@ -129,7 +129,7 @@ if (isset($_GET['delete'])) {
 $hpp_items = [];
 $total_hpp = 0;
 $id_persiapan = intval($_GET['id'] ?? 0);
-var_dump($id_persiapan);
+
 
 $sql = "SELECT hpp.*, g.nama_gudang, k.nama_kategori 
         FROM hpp 
@@ -150,11 +150,13 @@ if ($stmt = mysqli_prepare($conn, $sql)) {
 }
 
 // Ambil nama SPS dari persiapan
-$nama_sps = '';
-$sql_sps = "SELECT sps.no_sps 
-            FROM persiapan p 
-            LEFT JOIN sps ON p.id_sps = sps.id_sps 
-            WHERE p.id_persiapan = ?";
+$id_persiapan = intval($_GET['id'] ?? 0);
+
+$sql_sps = "SELECT s.sps_no 
+            FROM persiapan p
+            LEFT JOIN sps s ON p.id_sps = s.id
+            WHERE p.id = ?";
+
 if ($stmt = $conn->prepare($sql_sps)) {
     $stmt->bind_param("i", $id_persiapan);
     $stmt->execute();
