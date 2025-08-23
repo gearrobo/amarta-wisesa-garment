@@ -38,31 +38,39 @@ include 'includes/header.php';
 
 
 if (isset($_POST['save'])) {
-    $id_persiapan   = $_POST['id_persiapan'];
-    $no_urut        = $_POST['no_urut'];
-    $gudang         = $_POST['gudang'];
-    $kategori_barang= $_POST['kategori_barang'];
-    $jumlah         = $_POST['jumlah'];
+    $no_urut = 'HPP' . rand(100000, 999999);
+
+    $id_persiapan   = intval($_POST['id_persiapan']);
+    $gudang         = intval($_POST['gudang']);
+    $kategori_barang= intval($_POST['kategori_barang']);
+    $jumlah         = floatval($_POST['jumlah']);
     $satuan         = $_POST['satuan'];
     $barang_jadi    = $_POST['barang_jadi'];
     $consp          = $_POST['consp'];
     $stok_material  = $_POST['stok_material'];
     $purchase_order = $_POST['purchase_order'];
     $sppo           = $_POST['sppo'];
-    $harga          = $_POST['harga'];
+    $harga          = floatval($_POST['harga']);
 
-    $sql = "INSERT INTO hpp (id_persiapan, no_urut, gudang, kategori_barang, jumlah, satuan, barang_jadi, consp, stok_material, purchase_order, sppo, harga) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO hpp (id_persiapan, no_urut, gudang, id_inventory, jumlah, satuan, barang_jadi, consp, stok_material, purchase_order, sppo, harga) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     if ($stmt = mysqli_prepare($conn, $sql)) {
         mysqli_stmt_bind_param(
-            $stmt, "iiiissssssid",
-            $id_persiapan, $no_urut, $gudang, $kategori_barang, $jumlah,
-            $satuan, $barang_jadi, $consp, $stok_material, $purchase_order,
-            $sppo, $harga
-        );
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
+        $stmt, "isiiissssssd",
+        $id_persiapan, $no_urut, $gudang, $kategori_barang, $jumlah,
+        $satuan, $barang_jadi, $consp, $stok_material, $purchase_order,
+        $sppo, $harga
+    );
+        
+        if (mysqli_stmt_execute($stmt)) {
+            mysqli_stmt_close($stmt);
+            echo "<script>window.location.href='?id=$id_persiapan&success=1';</script>";
+            exit();
+        } else {
+            mysqli_stmt_close($stmt);
+            echo "<script>alert('Gagal menyimpan data HPP: " . mysqli_error($conn) . "');</script>";
+        }
     }
 }
 
@@ -89,9 +97,9 @@ if (isset($_POST['update'])) {
 
     if ($stmt = mysqli_prepare($conn, $sql)) {
         mysqli_stmt_bind_param(
-            $stmt, "iiisidsssiii",
-            $gudang, $kategori_barang, $jumlah, $satuan, $barang_jadi, $consp,
-            $stok_material, $purchase_order, $sppo, $harga, $id_hpp, $id_persiapan
+          $stmt, "ii d ssssss dii",
+          $gudang, $kategori_barang, $jumlah, $satuan, $barang_jadi, $consp,
+          $stok_material, $purchase_order, $sppo, $harga, $id_hpp, $id_persiapan
         );
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
@@ -119,10 +127,11 @@ $total_hpp = 0;
 $id_persiapan = intval($_GET['id'] ?? 0);
 
 
-$sql = "SELECT hpp.*, g.nama_gudang, k.nama_kategori 
+$sql = "SELECT hpp.*, g.nama, inv.nama_barang 
         FROM hpp 
-        LEFT JOIN gudang g ON hpp.gudang = g.id_gudang 
-        LEFT JOIN kategori_barang k ON hpp.kategori_barang = k.id_kategori 
+        LEFT JOIN gudang g ON hpp.gudang = g.id 
+        LEFT JOIN inventory_gudang ig ON hpp.id_inventory = ig.id_inventory 
+        LEFT JOIN inventory inv ON ig.id_inventory = inv.id 
         WHERE hpp.id_persiapan=? 
         ORDER BY hpp.no_urut ASC";
 
@@ -234,73 +243,97 @@ if ($stmt = $conn->prepare($sql_sps)) {
 <!-- Modal Tambah HPP -->
 <!-- ===================== -->
 <div class="modal fade" id="addHppModal" tabindex="-1" aria-labelledby="addHppModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
       <form method="POST" action="">
         <div class="modal-header">
           <h5 class="modal-title" id="addHppModalLabel">Tambah HPP</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body row g-3">
+        <div class="modal-body">
           <input type="hidden" name="id_persiapan" value="<?= $id_persiapan; ?>">
-
-          <div class="col-md-4">
-            <label>Nama SPS</label>
-                <input type="text" class="form-control" value="<?= htmlspecialchars($nama_sps); ?>" readonly>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Gudang</label>
-            <select class="form-control" id="gudang" name="gudang" required>
+          
+          <div class="row g-3">
+            <!-- Informasi Utama -->
+            <div class="col-12">
+              <h6 class="border-bottom pb-2 mb-3 text-primary">Informasi Utama</h6>
+            </div>
+            
+            <div class="col-md-6">
+              <label class="form-label">Nama SPS</label>
+              <input type="text" class="form-control" value="<?= htmlspecialchars($nama_sps); ?>" readonly>
+            </div>
+            
+            <div class="col-md-6">
+              <label class="form-label">Gudang <span class="text-danger">*</span></label>
+              <select class="form-select" id="gudang" name="gudang" required>
                 <option value="">Pilih Gudang</option>
                 <?php
                 $sql_gudang = "SELECT * FROM gudang ORDER BY nama";
                 $res_gudang = mysqli_query($conn, $sql_gudang);
                 while ($g = mysqli_fetch_assoc($res_gudang)) {
-                    echo '<option value="'.$g['id_gudang'].'">'.htmlspecialchars($g['nama']).'</option>';
+                    echo '<option value="'.$g['id'].'">'.htmlspecialchars($g['nama']).'</option>';
                 }
                 ?>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <label>Kategori Barang</label>
-            <select class="form-control" id="kategori_barang" name="kategori_barang" required>
+              </select>
+            </div>
+            
+            <div class="col-md-6">
+              <label class="form-label">Kategori Barang <span class="text-danger">*</span></label>
+              <select class="form-select" id="kategori_barang" name="kategori_barang" required>
                 <option value="">Pilih Barang</option>
-            </select>
-          </div>
+              </select>
+            </div>
+            
+            <div class="col-md-6">
+              <label class="form-label">Barang Jadi <span class="text-danger">*</span></label>
+              <input type="text" name="barang_jadi" class="form-control" required>
+            </div>
 
-          <div class="col-md-3">
-            <label>Jumlah</label>
-            <input type="number" name="jumlah" class="form-control" required>
-          </div>
-          <div class="col-md-3">
-                <label class="form-label">Satuan</label>
-                <input type="text" class="form-control" id="satuan" name="satuan" readonly>
-          </div>
-          <div class="col-md-6">
-            <label>Barang Jadi</label>
-            <input type="text" name="barang_jadi" class="form-control" required>
-          </div>
+            <!-- Detail Jumlah dan Harga -->
+            <div class="col-12 mt-4">
+              <h6 class="border-bottom pb-2 mb-3 text-primary">Detail Jumlah dan Harga</h6>
+            </div>
+            
+            <div class="col-md-4">
+              <label class="form-label">Jumlah <span class="text-danger">*</span></label>
+              <input type="number" name="jumlah" class="form-control" required min="0">
+            </div>
+            
+            <div class="col-md-4">
+              <label class="form-label">Satuan</label>
+              <input type="text" class="form-control" id="satuan" name="satuan" readonly>
+            </div>
+            
+            <div class="col-md-4">
+              <label class="form-label">Stok Material</label>
+              <input type="text" class="form-control" id="stok_material" name="stok_material" readonly>
+            </div>
+            
+            <div class="col-md-6">
+              <label class="form-label">Harga <span class="text-danger">*</span></label>
+              <input type="number" step="0.01" name="harga" class="form-control" required min="0">
+            </div>
 
-          <div class="col-md-4">
-            <label>Consp</label>
-            <input type="text" name="consp" class="form-control">
-          </div>
-          <div class="col-md-4">
-                <label class="form-label">Stok Material</label>
-                <input type="text" class="form-control" id="stok_material" name="stok_material" readonly>
-          </div>
-          <div class="col-md-4">
-            <label>Purchase Order</label>
-            <input type="text" name="purchase_order" class="form-control">
-          </div>
-
-          <div class="col-md-6">
-            <label>SPPO</label>
-            <input type="text" name="sppo" class="form-control">
-          </div>
-          <div class="col-md-6">
-            <label>Harga</label>
-            <input type="number" step="0.01" name="harga" class="form-control" required>
+            <!-- Informasi Tambahan -->
+            <div class="col-12 mt-4">
+              <h6 class="border-bottom pb-2 mb-3 text-primary">Informasi Tambahan</h6>
+            </div>
+            
+            <div class="col-md-4">
+              <label class="form-label">Consp</label>
+              <input type="text" name="consp" class="form-control">
+            </div>
+            
+            <div class="col-md-4">
+              <label class="form-label">Purchase Order</label>
+              <input type="text" name="purchase_order" class="form-control">
+            </div>
+            
+            <div class="col-md-4">
+              <label class="form-label">SPPO</label>
+              <input type="text" name="sppo" class="form-control">
+            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -325,7 +358,8 @@ document.getElementById('gudang').addEventListener('change', function () {
             .then(data => {
                 barangSelect.innerHTML = '<option value="">Pilih Barang</option>';
                 data.forEach(item => {
-                    barangSelect.innerHTML += `<option value="${item.id_gudang}" data-stok="${item.stok_akhir}" data-satuan="${item.satuan}">${item.nama_barang}</option>`;
+                   barangSelect.innerHTML += `<option value="${item.id_inventory}" data-stok="${item.stok_akhir}" data-satuan="${item.satuan}">${item.nama_barang}</option>`;
+
                 });
             })
             .catch(err => {
