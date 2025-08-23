@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 23, 2025 at 01:03 PM
+-- Generation Time: Aug 23, 2025 at 02:28 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -658,6 +658,13 @@ ALTER TABLE `hpp`
 -- Indexes for table `persiapan`
 --
 ALTER TABLE `persiapan`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_persiapan_sps` (`id_sps`);
+
+--
+-- Indexes for table `sps`
+--
+ALTER TABLE `sps`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -685,6 +692,12 @@ ALTER TABLE `persiapan`
 --
 ALTER TABLE `hpp`
   ADD CONSTRAINT `fk_hpp_persiapan` FOREIGN KEY (`id_persiapan`) REFERENCES `persiapan` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `persiapan`
+--
+ALTER TABLE `persiapan`
+  ADD CONSTRAINT `fk_persiapan_sps` FOREIGN KEY (`id_sps`) REFERENCES `sps` (`id`) ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
