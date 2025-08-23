@@ -16,46 +16,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
             case 'add_hpp':
-                $gudang = isset($_POST['gudang']) ? intval($_POST['gudang']) : null;
-                $kategori_barang = isset($_POST['kategori_barang']) ? intval($_POST['kategori_barang']) : null;
-                $jumlah = intval($_POST['jumlah']);
-                $satuan = mysqli_real_escape_string($conn, $_POST['satuan']);
-                $barang_jadi = intval($_POST['barang_jadi']);
-                $consp = floatval($_POST['consp']);
-                
-                $sql = "INSERT INTO hpp (id_persiapan, gudang, kategori_barang, jumlah, satuan, barang_jadi, consp) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                $gudang = intval($_POST['gudang'] ?? 0);
+                $kategori_barang = intval($_POST['kategori_barang'] ?? 0);
+                $jumlah = intval($_POST['jumlah'] ?? 0);
+                $satuan = trim($_POST['satuan'] ?? '');
+                $barang_jadi = intval($_POST['barang_jadi'] ?? 0);
+                $consp = floatval($_POST['consp'] ?? 0);
+                $stok_material = intval($_POST['stok_material'] ?? 0);
+                $purchase_order = trim($_POST['purchase_order'] ?? '');
+                $sppo = trim($_POST['sppo'] ?? '');
+                $harga = floatval($_POST['harga'] ?? 0);
+
+                $sql = "INSERT INTO hpp 
+                        (id_persiapan, gudang, kategori_barang, jumlah, satuan, barang_jadi, consp, stok_material, purchase_order, sppo, harga) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt = mysqli_prepare($conn, $sql);
-                mysqli_stmt_bind_param($stmt, "iiiisid", $id_persiapan, $gudang, $kategori_barang, $jumlah, $satuan, $barang_jadi, $consp);
+                mysqli_stmt_bind_param(
+                    $stmt, "iiiisidsssd",
+                    $id_persiapan, $gudang, $kategori_barang, $jumlah, $satuan,
+                    $barang_jadi, $consp, $stok_material, $purchase_order, $sppo, $harga
+                );
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
                 break;
-                
+
             case 'delete_hpp':
-                $id_hpp = intval($_POST['id_hpp']);
+                $id_hpp = intval($_POST['id_hpp'] ?? 0);
                 $sql = "DELETE FROM hpp WHERE id = ? AND id_persiapan = ?";
                 $stmt = mysqli_prepare($conn, $sql);
                 mysqli_stmt_bind_param($stmt, "ii", $id_hpp, $id_persiapan);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
                 break;
-                
+
             case 'update_hpp':
-                $id_hpp = intval($_POST['id_hpp']);
-                $gudang = isset($_POST['gudang']) ? intval($_POST['gudang']) : null;
-                $kategori_barang = isset($_POST['kategori_barang']) ? intval($_POST['kategori_barang']) : null;
-                $jumlah = intval($_POST['jumlah']);
-                $satuan = mysqli_real_escape_string($conn, $_POST['satuan']);
-                $barang_jadi = intval($_POST['barang_jadi']);
-                $consp = floatval($_POST['consp']);
-                
-                $sql = "UPDATE hpp SET gudang = ?, kategori_barang = ?, jumlah = ?, satuan = ?, barang_jadi = ?, consp = ? WHERE id = ? AND id_persiapan = ?";
+                $id_hpp = intval($_POST['id_hpp'] ?? 0);
+                $gudang = intval($_POST['gudang'] ?? 0);
+                $kategori_barang = intval($_POST['kategori_barang'] ?? 0);
+                $jumlah = intval($_POST['jumlah'] ?? 0);
+                $satuan = trim($_POST['satuan'] ?? '');
+                $barang_jadi = intval($_POST['barang_jadi'] ?? 0);
+                $consp = floatval($_POST['consp'] ?? 0);
+                $stok_material = intval($_POST['stok_material'] ?? 0);
+                $purchase_order = trim($_POST['purchase_order'] ?? '');
+                $sppo = trim($_POST['sppo'] ?? '');
+                $harga = floatval($_POST['harga'] ?? 0);
+
+                $sql = "UPDATE hpp 
+                        SET gudang=?, kategori_barang=?, jumlah=?, satuan=?, barang_jadi=?, consp=?, stok_material=?, purchase_order=?, sppo=?, harga=? 
+                        WHERE id=? AND id_persiapan=?";
                 $stmt = mysqli_prepare($conn, $sql);
-                mysqli_stmt_bind_param($stmt, "iiisidii", $gudang, $kategori_barang, $jumlah, $satuan, $barang_jadi, $consp, $id_hpp, $id_persiapan);
+                mysqli_stmt_bind_param(
+                    $stmt, "iiisidsssiii",
+                    $gudang, $kategori_barang, $jumlah, $satuan, $barang_jadi, $consp,
+                    $stok_material, $purchase_order, $sppo, $harga, $id_hpp, $id_persiapan
+                );
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
                 break;
         }
-        
+
         // Redirect to avoid form resubmission
         header("Location: detail-persiapan.php?id=$id_persiapan");
         exit();
@@ -67,7 +87,6 @@ $sql = "SELECT p.*, s.customer as nama_customer, s.sps_no as kode_sps, s.kirim a
         FROM persiapan p 
         JOIN sps s ON p.id_sps = s.id 
         WHERE p.id = ?";
-        
 $stmt = mysqli_prepare($conn, $sql);
 if (!$stmt) {
     die("Prepare failed: " . mysqli_error($conn));
@@ -83,15 +102,8 @@ if (!$persiapan) {
     exit();
 }
 
-$sql_hpp = "SELECT h.*, 
-                   g.nama as nama_gudang, 
-                   k.nama_kategori as nama_kategori,
-                   h.satuan, 
-                   h.barang_jadi, 
-                   h.consp, 
-                   h.stok_material, 
-                   h.purchase_order, 
-                   h.sppo
+// Get HPP items
+$sql_hpp = "SELECT h.*, g.nama as nama_gudang, k.nama_kategori as nama_kategori
             FROM hpp h
             LEFT JOIN gudang g ON h.gudang = g.id_gudang
             LEFT JOIN kategori_barang k ON h.kategori_barang = k.id_kategori
@@ -106,13 +118,12 @@ mysqli_stmt_close($stmt_hpp);
 // Calculate total HPP
 $total_hpp = 0;
 foreach ($hpp_items as $item) {
-    // Calculate total based on jumlah and harga
-    $jumlah = isset($item['jumlah']) ? floatval($item['jumlah']) : 0;
-    $harga = isset($item['harga']) ? floatval($item['harga']) : 0;
-    $calculated_total = $jumlah * $harga;
-    $total_hpp += $calculated_total;
+    $jumlah = floatval($item['jumlah'] ?? 0);
+    $harga = floatval($item['harga'] ?? 0);
+    $total_hpp += $jumlah * $harga;
 }
 ?>
+
 
 <div class="main-content">
     <div class="row">

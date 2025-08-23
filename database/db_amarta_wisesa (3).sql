@@ -2,10 +2,10 @@
 -- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Waktu pembuatan: 23 Agu 2025 pada 05.33
--- Versi server: 10.4.27-MariaDB
--- Versi PHP: 7.4.33
+-- Host: localhost
+-- Generation Time: Aug 23, 2025 at 01:03 PM
+-- Server version: 10.4.27-MariaDB
+-- PHP Version: 7.4.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `absensi`
+-- Table structure for table `absensi`
 --
 
 CREATE TABLE `absensi` (
@@ -42,7 +42,7 @@ CREATE TABLE `absensi` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `departemen`
+-- Table structure for table `departemen`
 --
 
 CREATE TABLE `departemen` (
@@ -54,7 +54,7 @@ CREATE TABLE `departemen` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `departemen`
+-- Dumping data for table `departemen`
 --
 
 INSERT INTO `departemen` (`id_departemen`, `nama_departemen`, `deskripsi`, `created_at`, `updated_at`) VALUES
@@ -67,7 +67,7 @@ INSERT INTO `departemen` (`id_departemen`, `nama_departemen`, `deskripsi`, `crea
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `gaji`
+-- Table structure for table `gaji`
 --
 
 CREATE TABLE `gaji` (
@@ -89,7 +89,7 @@ CREATE TABLE `gaji` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `gudang`
+-- Table structure for table `gudang`
 --
 
 CREATE TABLE `gudang` (
@@ -104,7 +104,7 @@ CREATE TABLE `gudang` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data untuk tabel `gudang`
+-- Dumping data for table `gudang`
 --
 
 INSERT INTO `gudang` (`id_gudang`, `nama`, `alamat`, `kepala_gudang`, `kapasitas`, `keterangan`, `created_at`, `updated_at`) VALUES
@@ -115,51 +115,49 @@ INSERT INTO `gudang` (`id_gudang`, `nama`, `alamat`, `kepala_gudang`, `kapasitas
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `hpp`
+-- Table structure for table `hpp`
 --
 
 CREATE TABLE `hpp` (
-  `id` int(11) NOT NULL,
-  `id_persiapan` int(11) NOT NULL,
-  `jumlah` int(11) NOT NULL DEFAULT 0,
-  `satuan` varchar(50) NOT NULL DEFAULT 'pcs',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `gudang` int(11) DEFAULT NULL,
-  `Kategori_barang` int(11) DEFAULT NULL,
-  `barang_jadi` int(11) NOT NULL,
-  `consp` decimal(10,2) NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `id_persiapan` int(11) UNSIGNED NOT NULL,
+  `no_urut` int(11) DEFAULT NULL,
+  `bahan` varchar(100) DEFAULT NULL,
+  `qty` int(11) DEFAULT NULL,
+  `barang_jadi` int(11) DEFAULT NULL,
+  `stok_order` int(11) DEFAULT NULL,
+  `efisiensi_consp` decimal(10,2) DEFAULT NULL,
+  `efisiensi_rap` decimal(10,2) DEFAULT NULL,
   `stok_material` int(11) DEFAULT NULL,
-  `purchase_order` int(11) DEFAULT NULL,
-  `sppo` varchar(20) DEFAULT NULL,
-  `harga_gudang` decimal(15,2) NOT NULL,
-  `harga_input` decimal(15,2) NOT NULL,
-  `tenaker_qty` decimal(10,2) NOT NULL,
+  `po` int(11) DEFAULT NULL,
+  `harga_per_meter` decimal(15,2) DEFAULT NULL,
+  `rap_x_harga_per_m` decimal(15,2) DEFAULT NULL,
+  `total_harga_bahan` decimal(15,2) DEFAULT NULL,
+  `biaya_tenaga_kerja_per_qty` decimal(15,2) DEFAULT NULL,
+  `total_biaya_tenaga_kerja` decimal(15,2) DEFAULT NULL,
   `listrik` decimal(15,2) DEFAULT NULL,
   `air` decimal(15,2) DEFAULT NULL,
   `overhead` decimal(15,2) DEFAULT NULL,
-  `margin` decimal(5,2) NOT NULL,
-  `stok_order` int(11) DEFAULT NULL,
-  `rap` decimal(10,2) DEFAULT NULL,
-  `rap_harga_input` decimal(15,2) DEFAULT NULL,
-  `total_tenaker_jumlah` decimal(15,2) DEFAULT NULL,
   `total_biaya` decimal(15,2) DEFAULT NULL,
   `hpp` decimal(15,2) DEFAULT NULL,
-  `harga_jual` decimal(15,2) DEFAULT NULL
+  `profit` decimal(5,2) DEFAULT NULL,
+  `harga_jual` decimal(15,2) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `hpp`
+-- Dumping data for table `hpp`
 --
 
-INSERT INTO `hpp` (`id`, `id_persiapan`, `jumlah`, `satuan`, `created_at`, `updated_at`, `gudang`, `Kategori_barang`, `barang_jadi`, `consp`, `stok_material`, `purchase_order`, `sppo`, `harga_gudang`, `harga_input`, `tenaker_qty`, `listrik`, `air`, `overhead`, `margin`, `stok_order`, `rap`, `rap_harga_input`, `total_tenaker_jumlah`, `total_biaya`, `hpp`, `harga_jual`) VALUES
-(1, 2, 900, 'pcs', '2025-08-22 00:28:14', '2025-08-23 03:32:12', NULL, NULL, 0, '0.00', NULL, NULL, NULL, '0.00', '0.00', '0.00', NULL, NULL, NULL, '0.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(2, 2, 15000, 'pcs', '2025-08-22 00:30:31', '2025-08-23 03:32:12', NULL, NULL, 0, '0.00', NULL, NULL, NULL, '0.00', '0.00', '0.00', NULL, NULL, NULL, '0.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `hpp` (`id`, `id_persiapan`, `no_urut`, `bahan`, `qty`, `barang_jadi`, `stok_order`, `efisiensi_consp`, `efisiensi_rap`, `stok_material`, `po`, `harga_per_meter`, `rap_x_harga_per_m`, `total_harga_bahan`, `biaya_tenaga_kerja_per_qty`, `total_biaya_tenaga_kerja`, `listrik`, `air`, `overhead`, `total_biaya`, `hpp`, `profit`, `harga_jual`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 'Kain Katun', 100, 95, 100, '1.05', '1.10', 105, 1001, '25000.00', '27500.00', '2750000.00', '5000.00', '500000.00', '200000.00', '100000.00', '300000.00', '3550000.00', '35500.00', '30.00', '46150.00', '2025-08-23 10:33:43', '2025-08-23 10:33:43'),
+(2, 1, 2, 'Benang', 100, 95, 100, '1.02', '1.05', 102, 1002, '5000.00', '5250.00', '525000.00', '1000.00', '100000.00', '50000.00', '25000.00', '75000.00', '725000.00', '7250.00', '25.00', '9062.50', '2025-08-23 10:33:43', '2025-08-23 10:33:43');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `inventory`
+-- Table structure for table `inventory`
 --
 
 CREATE TABLE `inventory` (
@@ -177,7 +175,7 @@ CREATE TABLE `inventory` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `inventory`
+-- Dumping data for table `inventory`
 --
 
 INSERT INTO `inventory` (`id`, `kode_barang`, `nama_barang`, `warehouse`, `unit`, `jumlah`, `harga_per_unit`, `keterangan`, `created_at`, `updated_at`, `id_kategori`) VALUES
@@ -196,7 +194,7 @@ INSERT INTO `inventory` (`id`, `kode_barang`, `nama_barang`, `warehouse`, `unit`
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `inventory_gudang`
+-- Table structure for table `inventory_gudang`
 --
 
 CREATE TABLE `inventory_gudang` (
@@ -211,7 +209,7 @@ CREATE TABLE `inventory_gudang` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data untuk tabel `inventory_gudang`
+-- Dumping data for table `inventory_gudang`
 --
 
 INSERT INTO `inventory_gudang` (`id_inventory`, `id_gudang`, `nama_barang`, `jumlah`, `stok_akhir`, `satuan`, `tanggal_masuk`, `tanggal_update`) VALUES
@@ -230,7 +228,7 @@ INSERT INTO `inventory_gudang` (`id_inventory`, `id_gudang`, `nama_barang`, `jum
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `inventory_transaksi`
+-- Table structure for table `inventory_transaksi`
 --
 
 CREATE TABLE `inventory_transaksi` (
@@ -248,7 +246,7 @@ CREATE TABLE `inventory_transaksi` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `inventory_transaksi_gudang`
+-- Table structure for table `inventory_transaksi_gudang`
 --
 
 CREATE TABLE `inventory_transaksi_gudang` (
@@ -266,7 +264,7 @@ CREATE TABLE `inventory_transaksi_gudang` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `inventory_transaksi_gudang`
+-- Dumping data for table `inventory_transaksi_gudang`
 --
 
 INSERT INTO `inventory_transaksi_gudang` (`id`, `inventory_gudang_id`, `jenis`, `jumlah_masuk`, `jumlah_keluar`, `harga_per_unit`, `keterangan`, `tanggal_transaksi`, `user_id`, `created_at`, `updated_at`) VALUES
@@ -295,7 +293,7 @@ INSERT INTO `inventory_transaksi_gudang` (`id`, `inventory_gudang_id`, `jenis`, 
 (28, 11, 'masuk', 10, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-23 08:47:58', NULL, '2025-08-23 01:47:58', '2025-08-23 01:47:58');
 
 --
--- Trigger `inventory_transaksi_gudang`
+-- Triggers `inventory_transaksi_gudang`
 --
 DELIMITER $$
 CREATE TRIGGER `update_stok_after_delete_transaksi` AFTER DELETE ON `inventory_transaksi_gudang` FOR EACH ROW BEGIN
@@ -355,7 +353,7 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `jabatan`
+-- Table structure for table `jabatan`
 --
 
 CREATE TABLE `jabatan` (
@@ -367,7 +365,7 @@ CREATE TABLE `jabatan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `jabatan`
+-- Dumping data for table `jabatan`
 --
 
 INSERT INTO `jabatan` (`id_jabatan`, `nama_jabatan`, `deskripsi`, `created_at`, `updated_at`) VALUES
@@ -382,7 +380,7 @@ INSERT INTO `jabatan` (`id_jabatan`, `nama_jabatan`, `deskripsi`, `created_at`, 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `karyawan`
+-- Table structure for table `karyawan`
 --
 
 CREATE TABLE `karyawan` (
@@ -407,7 +405,7 @@ CREATE TABLE `karyawan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `karyawan`
+-- Dumping data for table `karyawan`
 --
 
 INSERT INTO `karyawan` (`id_karyawan`, `nik`, `nama_lengkap`, `jenis_kelamin`, `tempat_lahir`, `tanggal_lahir`, `alamat`, `no_telepon`, `email`, `type_karyawan`, `status_karyawan`, `tanggal_masuk`, `tanggal_keluar`, `id_jabatan`, `id_departemen`, `foto`, `created_at`, `updated_at`) VALUES
@@ -421,7 +419,7 @@ INSERT INTO `karyawan` (`id_karyawan`, `nik`, `nama_lengkap`, `jenis_kelamin`, `
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `karyawan_harian_borongan`
+-- Table structure for table `karyawan_harian_borongan`
 --
 
 CREATE TABLE `karyawan_harian_borongan` (
@@ -435,7 +433,7 @@ CREATE TABLE `karyawan_harian_borongan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `karyawan_harian_borongan`
+-- Dumping data for table `karyawan_harian_borongan`
 --
 
 INSERT INTO `karyawan_harian_borongan` (`id_karyawan`, `upah_per_hari`, `upah_per_jam`, `upah_borongan`, `metode_pembayaran`, `rekening_bank`, `nama_bank`) VALUES
@@ -446,7 +444,7 @@ INSERT INTO `karyawan_harian_borongan` (`id_karyawan`, `upah_per_hari`, `upah_pe
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `karyawan_tetap`
+-- Table structure for table `karyawan_tetap`
 --
 
 CREATE TABLE `karyawan_tetap` (
@@ -463,7 +461,7 @@ CREATE TABLE `karyawan_tetap` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `karyawan_tetap`
+-- Dumping data for table `karyawan_tetap`
 --
 
 INSERT INTO `karyawan_tetap` (`id_karyawan`, `npwp`, `bpjs_ketenagakerjaan`, `bpjs_kesehatan`, `gaji_pokok`, `tunjangan_jabatan`, `tunjangan_transport`, `tunjangan_makan`, `rekening_bank`, `nama_bank`) VALUES
@@ -473,7 +471,7 @@ INSERT INTO `karyawan_tetap` (`id_karyawan`, `npwp`, `bpjs_ketenagakerjaan`, `bp
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `kategori_barang`
+-- Table structure for table `kategori_barang`
 --
 
 CREATE TABLE `kategori_barang` (
@@ -485,7 +483,7 @@ CREATE TABLE `kategori_barang` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `kategori_barang`
+-- Dumping data for table `kategori_barang`
 --
 
 INSERT INTO `kategori_barang` (`id_kategori`, `nama_kategori`, `keterangan`, `created_at`, `updated_at`) VALUES
@@ -497,7 +495,7 @@ INSERT INTO `kategori_barang` (`id_kategori`, `nama_kategori`, `keterangan`, `cr
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `mesin`
+-- Table structure for table `mesin`
 --
 
 CREATE TABLE `mesin` (
@@ -512,7 +510,7 @@ CREATE TABLE `mesin` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `mesin`
+-- Dumping data for table `mesin`
 --
 
 INSERT INTO `mesin` (`id_mesin`, `seri_number`, `nama_mesin`, `lokasi`, `tanggal_masuk`, `keterangan`, `created_at`, `updated_at`) VALUES
@@ -525,7 +523,7 @@ INSERT INTO `mesin` (`id_mesin`, `seri_number`, `nama_mesin`, `lokasi`, `tanggal
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `pengguna`
+-- Table structure for table `pengguna`
 --
 
 CREATE TABLE `pengguna` (
@@ -541,7 +539,7 @@ CREATE TABLE `pengguna` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `pengguna`
+-- Dumping data for table `pengguna`
 --
 
 INSERT INTO `pengguna` (`id_pengguna`, `id_karyawan`, `username`, `password`, `role`, `status_aktif`, `last_login`, `created_at`, `updated_at`) VALUES
@@ -551,11 +549,11 @@ INSERT INTO `pengguna` (`id_pengguna`, `id_karyawan`, `username`, `password`, `r
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `persiapan`
+-- Table structure for table `persiapan`
 --
 
 CREATE TABLE `persiapan` (
-  `id` int(11) NOT NULL,
+  `id` int(11) UNSIGNED NOT NULL,
   `id_sps` int(11) NOT NULL,
   `spp_no` varchar(50) NOT NULL DEFAULT '',
   `kode_barang` varchar(50) DEFAULT NULL,
@@ -575,7 +573,7 @@ CREATE TABLE `persiapan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
--- Dumping data untuk tabel `persiapan`
+-- Dumping data for table `persiapan`
 --
 
 INSERT INTO `persiapan` (`id`, `id_sps`, `spp_no`, `kode_barang`, `nama_barang`, `jumlah`, `satuan`, `harga`, `total`, `tanggal_persiapan`, `pola`, `marker`, `upload_spk`, `status`, `sp_srx`, `created_at`, `updated_at`) VALUES
@@ -585,7 +583,7 @@ INSERT INTO `persiapan` (`id`, `id_sps`, `spp_no`, `kode_barang`, `nama_barang`,
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `sps`
+-- Table structure for table `sps`
 --
 
 CREATE TABLE `sps` (
@@ -609,7 +607,7 @@ CREATE TABLE `sps` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `sps`
+-- Dumping data for table `sps`
 --
 
 INSERT INTO `sps` (`id`, `tanggal`, `sps_no`, `customer`, `item`, `artikel`, `qty`, `size`, `sample_product`, `design`, `st_chart`, `material_sm`, `pola_sample`, `buat_sample`, `kirim`, `approval`, `sp_srx`) VALUES
@@ -617,50 +615,32 @@ INSERT INTO `sps` (`id`, `tanggal`, `sps_no`, `customer`, `item`, `artikel`, `qt
 (3, '2025-08-20', 'SPS-02', 'Joko-Jakarta', 'Kemeja', 'Kemeja', 1, 'M', NULL, NULL, NULL, NULL, NULL, NULL, '2025-08-27', 'Approved', ''),
 (4, '2025-08-21', 'SPS-04', 'Aji', 'T-Shirt', 'T-Shirt', 1, 'M', NULL, NULL, NULL, NULL, NULL, NULL, '2025-08-30', 'Approved', 'SPK-20250821-0004');
 
--- --------------------------------------------------------
-
---
--- Stand-in struktur untuk tampilan `v_inventory_gudang_summary`
--- (Lihat di bawah untuk tampilan aktual)
---
-CREATE TABLE `v_inventory_gudang_summary` (
-);
-
--- --------------------------------------------------------
-
---
--- Struktur untuk view `v_inventory_gudang_summary`
---
-DROP TABLE IF EXISTS `v_inventory_gudang_summary`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_inventory_gudang_summary`  AS SELECT `ig`.`id_inventory` AS `id_inventory`, `ig`.`id_gudang` AS `id_gudang`, `g`.`nama` AS `nama_gudang`, `ig`.`kode_barang` AS `kode_barang`, `ig`.`nama_barang` AS `nama_barang`, `ig`.`jumlah` AS `jumlah_awal`, `ig`.`stok_akhir` AS `stok_akhir`, `ig`.`satuan` AS `satuan`, `ig`.`tanggal_masuk` AS `tanggal_masuk`, count(`itg`.`id`) AS `total_transaksi`, coalesce(sum(`itg`.`jumlah_masuk`),0) AS `total_masuk`, coalesce(sum(`itg`.`jumlah_keluar`),0) AS `total_keluar` FROM ((`inventory_gudang` `ig` left join `gudang` `g` on(`ig`.`id_gudang` = `g`.`id_gudang`)) left join `inventory_transaksi_gudang` `itg` on(`ig`.`id_inventory` = `itg`.`inventory_gudang_id`)) GROUP BY `ig`.`id_inventory``id_inventory`  ;
-
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indeks untuk tabel `absensi`
+-- Indexes for table `absensi`
 --
 ALTER TABLE `absensi`
   ADD PRIMARY KEY (`id_absensi`),
   ADD UNIQUE KEY `unique_absensi` (`id_karyawan`,`tanggal`);
 
 --
--- Indeks untuk tabel `departemen`
+-- Indexes for table `departemen`
 --
 ALTER TABLE `departemen`
   ADD PRIMARY KEY (`id_departemen`);
 
 --
--- Indeks untuk tabel `gaji`
+-- Indexes for table `gaji`
 --
 ALTER TABLE `gaji`
   ADD PRIMARY KEY (`id_gaji`),
   ADD UNIQUE KEY `unique_gaji` (`id_karyawan`,`periode_bulan`,`periode_tahun`);
 
 --
--- Indeks untuk tabel `gudang`
+-- Indexes for table `gudang`
 --
 ALTER TABLE `gudang`
   ADD PRIMARY KEY (`id_gudang`),
@@ -668,290 +648,43 @@ ALTER TABLE `gudang`
   ADD KEY `idx_kepala_gudang` (`kepala_gudang`);
 
 --
--- Indeks untuk tabel `hpp`
+-- Indexes for table `hpp`
 --
 ALTER TABLE `hpp`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_persiapan` (`id_persiapan`),
-  ADD KEY `idx_hpp_created_at` (`created_at`),
-  ADD KEY `fk_hpp_gudang` (`gudang`),
-  ADD KEY `fk_hpp_kategori_barang` (`Kategori_barang`),
-  ADD KEY `fk_hpp_stok_material` (`stok_material`);
+  ADD KEY `fk_hpp_persiapan` (`id_persiapan`);
 
 --
--- Indeks untuk tabel `inventory`
---
-ALTER TABLE `inventory`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_nama_barang` (`nama_barang`),
-  ADD KEY `idx_warehouse` (`warehouse`),
-  ADD KEY `fk_inventory_kategori` (`id_kategori`);
-
---
--- Indeks untuk tabel `inventory_gudang`
---
-ALTER TABLE `inventory_gudang`
-  ADD PRIMARY KEY (`id_inventory`),
-  ADD KEY `id_gudang` (`id_gudang`);
-
---
--- Indeks untuk tabel `inventory_transaksi`
---
-ALTER TABLE `inventory_transaksi`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `inventory_id` (`inventory_id`);
-
---
--- Indeks untuk tabel `inventory_transaksi_gudang`
---
-ALTER TABLE `inventory_transaksi_gudang`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `inventory_gudang_id` (`inventory_gudang_id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Indeks untuk tabel `jabatan`
---
-ALTER TABLE `jabatan`
-  ADD PRIMARY KEY (`id_jabatan`);
-
---
--- Indeks untuk tabel `karyawan`
---
-ALTER TABLE `karyawan`
-  ADD PRIMARY KEY (`id_karyawan`),
-  ADD UNIQUE KEY `nik` (`nik`),
-  ADD KEY `id_jabatan` (`id_jabatan`),
-  ADD KEY `id_departemen` (`id_departemen`);
-
---
--- Indeks untuk tabel `karyawan_harian_borongan`
---
-ALTER TABLE `karyawan_harian_borongan`
-  ADD PRIMARY KEY (`id_karyawan`);
-
---
--- Indeks untuk tabel `karyawan_tetap`
---
-ALTER TABLE `karyawan_tetap`
-  ADD PRIMARY KEY (`id_karyawan`);
-
---
--- Indeks untuk tabel `kategori_barang`
---
-ALTER TABLE `kategori_barang`
-  ADD PRIMARY KEY (`id_kategori`),
-  ADD KEY `idx_nama_kategori` (`nama_kategori`),
-  ADD KEY `idx_created_at` (`created_at`);
-
---
--- Indeks untuk tabel `mesin`
---
-ALTER TABLE `mesin`
-  ADD PRIMARY KEY (`id_mesin`),
-  ADD UNIQUE KEY `seri_number` (`seri_number`);
-
---
--- Indeks untuk tabel `pengguna`
---
-ALTER TABLE `pengguna`
-  ADD PRIMARY KEY (`id_pengguna`),
-  ADD UNIQUE KEY `username` (`username`),
-  ADD UNIQUE KEY `id_karyawan` (`id_karyawan`);
-
---
--- Indeks untuk tabel `persiapan`
+-- Indexes for table `persiapan`
 --
 ALTER TABLE `persiapan`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_sps` (`id_sps`);
-
---
--- Indeks untuk tabel `sps`
---
-ALTER TABLE `sps`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT untuk tabel yang dibuang
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT untuk tabel `absensi`
---
-ALTER TABLE `absensi`
-  MODIFY `id_absensi` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT untuk tabel `departemen`
---
-ALTER TABLE `departemen`
-  MODIFY `id_departemen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT untuk tabel `gaji`
---
-ALTER TABLE `gaji`
-  MODIFY `id_gaji` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT untuk tabel `gudang`
---
-ALTER TABLE `gudang`
-  MODIFY `id_gudang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
---
--- AUTO_INCREMENT untuk tabel `hpp`
+-- AUTO_INCREMENT for table `hpp`
 --
 ALTER TABLE `hpp`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT untuk tabel `inventory`
---
-ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
-
---
--- AUTO_INCREMENT untuk tabel `inventory_gudang`
---
-ALTER TABLE `inventory_gudang`
-  MODIFY `id_inventory` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
-
---
--- AUTO_INCREMENT untuk tabel `inventory_transaksi`
---
-ALTER TABLE `inventory_transaksi`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT untuk tabel `inventory_transaksi_gudang`
---
-ALTER TABLE `inventory_transaksi_gudang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
-
---
--- AUTO_INCREMENT untuk tabel `jabatan`
---
-ALTER TABLE `jabatan`
-  MODIFY `id_jabatan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT untuk tabel `karyawan`
---
-ALTER TABLE `karyawan`
-  MODIFY `id_karyawan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
---
--- AUTO_INCREMENT untuk tabel `kategori_barang`
---
-ALTER TABLE `kategori_barang`
-  MODIFY `id_kategori` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
---
--- AUTO_INCREMENT untuk tabel `mesin`
---
-ALTER TABLE `mesin`
-  MODIFY `id_mesin` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
-
---
--- AUTO_INCREMENT untuk tabel `pengguna`
---
-ALTER TABLE `pengguna`
-  MODIFY `id_pengguna` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT untuk tabel `persiapan`
+-- AUTO_INCREMENT for table `persiapan`
 --
 ALTER TABLE `persiapan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT untuk tabel `sps`
---
-ALTER TABLE `sps`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
+-- Constraints for dumped tables
 --
 
 --
--- Ketidakleluasaan untuk tabel `absensi`
---
-ALTER TABLE `absensi`
-  ADD CONSTRAINT `absensi_ibfk_1` FOREIGN KEY (`id_karyawan`) REFERENCES `karyawan` (`id_karyawan`) ON DELETE CASCADE;
-
---
--- Ketidakleluasaan untuk tabel `gaji`
---
-ALTER TABLE `gaji`
-  ADD CONSTRAINT `gaji_ibfk_1` FOREIGN KEY (`id_karyawan`) REFERENCES `karyawan` (`id_karyawan`) ON DELETE CASCADE;
-
---
--- Ketidakleluasaan untuk tabel `hpp`
+-- Constraints for table `hpp`
 --
 ALTER TABLE `hpp`
-  ADD CONSTRAINT `fk_hpp_gudang` FOREIGN KEY (`gudang`) REFERENCES `gudang` (`id_gudang`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_hpp_kategori_barang` FOREIGN KEY (`Kategori_barang`) REFERENCES `kategori_barang` (`id_kategori`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_hpp_stok_material` FOREIGN KEY (`stok_material`) REFERENCES `inventory_gudang` (`id_inventory`) ON DELETE CASCADE,
-  ADD CONSTRAINT `hpp_ibfk_1` FOREIGN KEY (`id_persiapan`) REFERENCES `persiapan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Ketidakleluasaan untuk tabel `inventory`
---
-ALTER TABLE `inventory`
-  ADD CONSTRAINT `fk_inventory_kategori` FOREIGN KEY (`id_kategori`) REFERENCES `kategori_barang` (`id_kategori`) ON DELETE CASCADE;
-
---
--- Ketidakleluasaan untuk tabel `inventory_gudang`
---
-ALTER TABLE `inventory_gudang`
-  ADD CONSTRAINT `inventory_gudang_ibfk_1` FOREIGN KEY (`id_gudang`) REFERENCES `gudang` (`id_gudang`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Ketidakleluasaan untuk tabel `inventory_transaksi`
---
-ALTER TABLE `inventory_transaksi`
-  ADD CONSTRAINT `inventory_transaksi_ibfk_1` FOREIGN KEY (`inventory_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Ketidakleluasaan untuk tabel `inventory_transaksi_gudang`
---
-ALTER TABLE `inventory_transaksi_gudang`
-  ADD CONSTRAINT `inventory_transaksi_gudang_ibfk_1` FOREIGN KEY (`inventory_gudang_id`) REFERENCES `inventory_gudang` (`id_inventory`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `inventory_transaksi_gudang_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `pengguna` (`id_pengguna`) ON DELETE SET NULL;
-
---
--- Ketidakleluasaan untuk tabel `karyawan`
---
-ALTER TABLE `karyawan`
-  ADD CONSTRAINT `karyawan_ibfk_1` FOREIGN KEY (`id_jabatan`) REFERENCES `jabatan` (`id_jabatan`) ON DELETE SET NULL,
-  ADD CONSTRAINT `karyawan_ibfk_2` FOREIGN KEY (`id_departemen`) REFERENCES `departemen` (`id_departemen`) ON DELETE SET NULL;
-
---
--- Ketidakleluasaan untuk tabel `karyawan_harian_borongan`
---
-ALTER TABLE `karyawan_harian_borongan`
-  ADD CONSTRAINT `karyawan_harian_borongan_ibfk_1` FOREIGN KEY (`id_karyawan`) REFERENCES `karyawan` (`id_karyawan`) ON DELETE CASCADE;
-
---
--- Ketidakleluasaan untuk tabel `karyawan_tetap`
---
-ALTER TABLE `karyawan_tetap`
-  ADD CONSTRAINT `karyawan_tetap_ibfk_1` FOREIGN KEY (`id_karyawan`) REFERENCES `karyawan` (`id_karyawan`) ON DELETE CASCADE;
-
---
--- Ketidakleluasaan untuk tabel `pengguna`
---
-ALTER TABLE `pengguna`
-  ADD CONSTRAINT `pengguna_ibfk_1` FOREIGN KEY (`id_karyawan`) REFERENCES `karyawan` (`id_karyawan`) ON DELETE SET NULL;
-
---
--- Ketidakleluasaan untuk tabel `persiapan`
---
-ALTER TABLE `persiapan`
-  ADD CONSTRAINT `persiapan_ibfk_1` FOREIGN KEY (`id_sps`) REFERENCES `sps` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_hpp_persiapan` FOREIGN KEY (`id_persiapan`) REFERENCES `persiapan` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
