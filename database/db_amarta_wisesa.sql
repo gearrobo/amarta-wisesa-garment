@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 22 Agu 2025 pada 14.31
+-- Waktu pembuatan: 23 Agu 2025 pada 05.33
 -- Versi server: 10.4.27-MariaDB
 -- Versi PHP: 7.4.33
 
@@ -59,7 +59,7 @@ CREATE TABLE `departemen` (
 
 INSERT INTO `departemen` (`id_departemen`, `nama_departemen`, `deskripsi`, `created_at`, `updated_at`) VALUES
 (1, 'Produksi', 'Departemen yang menangani proses produksi', '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
-(2, 'Quality Assurance', 'Departemen yang menangani kontrol kualitas', '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
+(2, 'Quality Assurance', 'Departemen yang menangani kontrol kualitas', '2025-08-18 15:13:05', '2025-08-22 15:43:18'),
 (3, 'Gudang', 'Departemen yang menangani penyimpanan dan distribusi', '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 (4, 'HR & GA', 'Departemen yang menangani sumber daya manusia', '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 (5, 'Finance', 'Departemen yang menangani keuangan', '2025-08-18 15:13:05', '2025-08-18 15:13:05');
@@ -121,22 +121,40 @@ INSERT INTO `gudang` (`id_gudang`, `nama`, `alamat`, `kepala_gudang`, `kapasitas
 CREATE TABLE `hpp` (
   `id` int(11) NOT NULL,
   `id_persiapan` int(11) NOT NULL,
-  `nama_barang` varchar(255) NOT NULL,
   `jumlah` int(11) NOT NULL DEFAULT 0,
   `satuan` varchar(50) NOT NULL DEFAULT 'pcs',
-  `harga` decimal(15,2) NOT NULL DEFAULT 0.00,
-  `total` decimal(15,2) NOT NULL DEFAULT 0.00,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `gudang` int(11) DEFAULT NULL,
+  `Kategori_barang` int(11) DEFAULT NULL,
+  `barang_jadi` int(11) NOT NULL,
+  `consp` decimal(10,2) NOT NULL,
+  `stok_material` int(11) DEFAULT NULL,
+  `purchase_order` int(11) DEFAULT NULL,
+  `sppo` varchar(20) DEFAULT NULL,
+  `harga_gudang` decimal(15,2) NOT NULL,
+  `harga_input` decimal(15,2) NOT NULL,
+  `tenaker_qty` decimal(10,2) NOT NULL,
+  `listrik` decimal(15,2) DEFAULT NULL,
+  `air` decimal(15,2) DEFAULT NULL,
+  `overhead` decimal(15,2) DEFAULT NULL,
+  `margin` decimal(5,2) NOT NULL,
+  `stok_order` int(11) DEFAULT NULL,
+  `rap` decimal(10,2) DEFAULT NULL,
+  `rap_harga_input` decimal(15,2) DEFAULT NULL,
+  `total_tenaker_jumlah` decimal(15,2) DEFAULT NULL,
+  `total_biaya` decimal(15,2) DEFAULT NULL,
+  `hpp` decimal(15,2) DEFAULT NULL,
+  `harga_jual` decimal(15,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data untuk tabel `hpp`
 --
 
-INSERT INTO `hpp` (`id`, `id_persiapan`, `nama_barang`, `jumlah`, `satuan`, `harga`, `total`, `created_at`, `updated_at`) VALUES
-(1, 2, 'Kain Biru', 900, 'pcs', '120000.00', '108000000.00', '2025-08-22 07:28:14', '2025-08-22 07:28:14'),
-(2, 2, 'Kancing', 15000, 'pcs', '250.00', '3750000.00', '2025-08-22 07:30:31', '2025-08-22 07:30:31');
+INSERT INTO `hpp` (`id`, `id_persiapan`, `jumlah`, `satuan`, `created_at`, `updated_at`, `gudang`, `Kategori_barang`, `barang_jadi`, `consp`, `stok_material`, `purchase_order`, `sppo`, `harga_gudang`, `harga_input`, `tenaker_qty`, `listrik`, `air`, `overhead`, `margin`, `stok_order`, `rap`, `rap_harga_input`, `total_tenaker_jumlah`, `total_biaya`, `hpp`, `harga_jual`) VALUES
+(1, 2, 900, 'pcs', '2025-08-22 00:28:14', '2025-08-23 03:32:12', NULL, NULL, 0, '0.00', NULL, NULL, NULL, '0.00', '0.00', '0.00', NULL, NULL, NULL, '0.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2, 2, 15000, 'pcs', '2025-08-22 00:30:31', '2025-08-23 03:32:12', NULL, NULL, 0, '0.00', NULL, NULL, NULL, '0.00', '0.00', '0.00', NULL, NULL, NULL, '0.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -171,8 +189,9 @@ INSERT INTO `inventory` (`id`, `kode_barang`, `nama_barang`, `warehouse`, `unit`
 (13, NULL, 'Jas Almamater', 'Pasuruan', 'pcs', 2000, '200000.00', '', '2025-08-21 23:41:06', NULL, NULL),
 (14, NULL, 'Kain Flanel', 'Kasin', 'm²', 100, '100000.00', '', '2025-08-22 14:16:42', NULL, NULL),
 (16, NULL, 'Kain Flanel', 'Kasin', 'm²', 100, '100000.00', '', '2025-08-22 15:30:32', NULL, NULL),
-(17, NULL, 'Kain Katun', 'Kasin', 'm²', 100000, '100000.00', '', '2025-08-22 15:32:30', NULL, NULL),
-(20, 'BRG002', 'Kain Perca', 'Kasin', 'm²', 1000, '50000.00', '', '2025-08-22 18:34:38', NULL, NULL);
+(17, 'BRG005', 'Kain Katun', 'Kasin', 'm²', 100000, '100000.00', '', '2025-08-22 15:32:30', '2025-08-22 19:50:54', NULL),
+(20, 'BRG002', 'Kain Perca', 'Kasin', 'm²', 1000, '50000.00', '', '2025-08-22 18:34:38', NULL, NULL),
+(21, 'BRG006', 'Kain Perca', 'Kasin', 'm²', 10, '55000.00', '', '2025-08-23 08:47:58', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -206,7 +225,7 @@ INSERT INTO `inventory_gudang` (`id_inventory`, `id_gudang`, `nama_barang`, `jum
 (8, 3, 'Kancing', 95000, 190000, 'pcs', '2025-08-21', '2025-08-21 16:38:23'),
 (9, 1, 'Kancing', 78000, 156000, 'pcs', '2025-08-21', '2025-08-21 16:38:23'),
 (10, 3, 'Kancing Besar', 5000000, 10000000, 'pcs', '2025-08-21', '2025-08-21 16:38:23'),
-(11, 3, 'Kain Perca', 1000, 2000, 'm²', '2025-08-22', '2025-08-22 11:34:38');
+(11, 3, 'Kain Perca', 1010, 2020, 'm²', '2025-08-22', '2025-08-23 01:47:58');
 
 -- --------------------------------------------------------
 
@@ -272,7 +291,8 @@ INSERT INTO `inventory_transaksi_gudang` (`id`, `inventory_gudang_id`, `jenis`, 
 (24, 7, 'masuk', 100, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-22 15:30:32', NULL, '2025-08-22 08:30:32', '2025-08-22 08:30:32'),
 (25, 5, 'masuk', 100000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-22 15:32:30', NULL, '2025-08-22 08:32:30', '2025-08-22 08:32:30'),
 (26, 5, 'masuk', 200, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-22 16:15:39', NULL, '2025-08-22 09:15:39', '2025-08-22 09:15:39'),
-(27, 11, 'masuk', 1000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-22 18:34:38', NULL, '2025-08-22 11:34:38', '2025-08-22 11:34:38');
+(27, 11, 'masuk', 1000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-22 18:34:38', NULL, '2025-08-22 11:34:38', '2025-08-22 11:34:38'),
+(28, 11, 'masuk', 10, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-23 08:47:58', NULL, '2025-08-23 01:47:58', '2025-08-23 01:47:58');
 
 --
 -- Trigger `inventory_transaksi_gudang`
@@ -391,7 +411,7 @@ CREATE TABLE `karyawan` (
 --
 
 INSERT INTO `karyawan` (`id_karyawan`, `nik`, `nama_lengkap`, `jenis_kelamin`, `tempat_lahir`, `tanggal_lahir`, `alamat`, `no_telepon`, `email`, `type_karyawan`, `status_karyawan`, `tanggal_masuk`, `tanggal_keluar`, `id_jabatan`, `id_departemen`, `foto`, `created_at`, `updated_at`) VALUES
-(1, 'K001', 'Budi Santoso', 'L', 'Jakarta', '1985-05-15', 'Jl. Merdeka No. 123', '081234567890', 'budi@amarta.com', 'tetap', 'aktif', '2020-01-15', NULL, 2, 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
+(1, 'K001', 'Budi Santoso', 'L', 'Jakarta', '1985-05-15', 'Jl. Merdeka No. 123', '081234567890', 'budi@amarta.com', 'tetap', 'aktif', '2020-01-15', NULL, 2, 3, NULL, '2025-08-18 15:13:05', '2025-08-22 15:03:54'),
 (2, 'K002', 'Siti Nurhaliza', 'P', 'Bandung', '1990-08-20', 'Jl. Sudirman No. 45', '082345678901', 'siti@amarta.com', 'tetap', 'aktif', '2019-03-10', NULL, 5, 4, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 (3, 'KH001', 'Ahmad Dahlan', 'L', 'Yogyakarta', '1995-12-10', 'Jl. Malioboro No. 78', '083456789012', 'ahmad@amarta.com', 'harian', 'aktif', '2023-06-01', NULL, 1, 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 (4, 'KH002', 'Rina Marlina', 'P', 'Medan', '1998-03-25', 'Jl. Thamrin No. 90', '084567890123', 'rina@amarta.com', 'harian', 'aktif', '2023-07-15', NULL, 1, 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
@@ -653,8 +673,10 @@ ALTER TABLE `gudang`
 ALTER TABLE `hpp`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_persiapan` (`id_persiapan`),
-  ADD KEY `idx_hpp_nama_barang` (`nama_barang`),
-  ADD KEY `idx_hpp_created_at` (`created_at`);
+  ADD KEY `idx_hpp_created_at` (`created_at`),
+  ADD KEY `fk_hpp_gudang` (`gudang`),
+  ADD KEY `fk_hpp_kategori_barang` (`Kategori_barang`),
+  ADD KEY `fk_hpp_stok_material` (`stok_material`);
 
 --
 -- Indeks untuk tabel `inventory`
@@ -764,7 +786,7 @@ ALTER TABLE `absensi`
 -- AUTO_INCREMENT untuk tabel `departemen`
 --
 ALTER TABLE `departemen`
-  MODIFY `id_departemen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_departemen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `gaji`
@@ -788,7 +810,7 @@ ALTER TABLE `hpp`
 -- AUTO_INCREMENT untuk tabel `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT untuk tabel `inventory_gudang`
@@ -806,7 +828,7 @@ ALTER TABLE `inventory_transaksi`
 -- AUTO_INCREMENT untuk tabel `inventory_transaksi_gudang`
 --
 ALTER TABLE `inventory_transaksi_gudang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT untuk tabel `jabatan`
@@ -870,6 +892,9 @@ ALTER TABLE `gaji`
 -- Ketidakleluasaan untuk tabel `hpp`
 --
 ALTER TABLE `hpp`
+  ADD CONSTRAINT `fk_hpp_gudang` FOREIGN KEY (`gudang`) REFERENCES `gudang` (`id_gudang`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_hpp_kategori_barang` FOREIGN KEY (`Kategori_barang`) REFERENCES `kategori_barang` (`id_kategori`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_hpp_stok_material` FOREIGN KEY (`stok_material`) REFERENCES `inventory_gudang` (`id_inventory`) ON DELETE CASCADE,
   ADD CONSTRAINT `hpp_ibfk_1` FOREIGN KEY (`id_persiapan`) REFERENCES `persiapan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --

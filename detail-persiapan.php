@@ -16,14 +16,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
             case 'add_hpp':
-                $nama_barang = mysqli_real_escape_string($conn, $_POST['nama_barang']);
+                $gudang = isset($_POST['gudang']) ? intval($_POST['gudang']) : null;
+                $kategori_barang = isset($_POST['kategori_barang']) ? intval($_POST['kategori_barang']) : null;
                 $jumlah = intval($_POST['jumlah']);
-                $harga = floatval($_POST['harga']);
-                $total = $jumlah * $harga;
+                $satuan = mysqli_real_escape_string($conn, $_POST['satuan']);
+                $barang_jadi = intval($_POST['barang_jadi']);
+                $consp = floatval($_POST['consp']);
                 
-                $sql = "INSERT INTO hpp (id_persiapan, nama_barang, jumlah, harga, total) VALUES (?, ?, ?, ?, ?)";
+                $sql = "INSERT INTO hpp (id_persiapan, gudang, kategori_barang, jumlah, satuan, barang_jadi, consp) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 $stmt = mysqli_prepare($conn, $sql);
-                mysqli_stmt_bind_param($stmt, "isidd", $id_persiapan, $nama_barang, $jumlah, $harga, $total);
+                mysqli_stmt_bind_param($stmt, "iiiisid", $id_persiapan, $gudang, $kategori_barang, $jumlah, $satuan, $barang_jadi, $consp);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
                 break;
@@ -39,14 +41,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
             case 'update_hpp':
                 $id_hpp = intval($_POST['id_hpp']);
-                $nama_barang = mysqli_real_escape_string($conn, $_POST['nama_barang']);
+                $gudang = isset($_POST['gudang']) ? intval($_POST['gudang']) : null;
+                $kategori_barang = isset($_POST['kategori_barang']) ? intval($_POST['kategori_barang']) : null;
                 $jumlah = intval($_POST['jumlah']);
-                $harga = floatval($_POST['harga']);
-                $total = $jumlah * $harga;
+                $satuan = mysqli_real_escape_string($conn, $_POST['satuan']);
+                $barang_jadi = intval($_POST['barang_jadi']);
+                $consp = floatval($_POST['consp']);
                 
-                $sql = "UPDATE hpp SET nama_barang = ?, jumlah = ?, harga = ?, total = ? WHERE id = ? AND id_persiapan = ?";
+                $sql = "UPDATE hpp SET gudang = ?, kategori_barang = ?, jumlah = ?, satuan = ?, barang_jadi = ?, consp = ? WHERE id = ? AND id_persiapan = ?";
                 $stmt = mysqli_prepare($conn, $sql);
-                mysqli_stmt_bind_param($stmt, "sidiii", $nama_barang, $jumlah, $harga, $total, $id_hpp, $id_persiapan);
+                mysqli_stmt_bind_param($stmt, "iiisidii", $gudang, $kategori_barang, $jumlah, $satuan, $barang_jadi, $consp, $id_hpp, $id_persiapan);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
                 break;
@@ -79,8 +83,19 @@ if (!$persiapan) {
     exit();
 }
 
-// Get HPP items for this persiapan
-$sql_hpp = "SELECT * FROM hpp WHERE id_persiapan = ? ORDER BY created_at DESC";
+$sql_hpp = "SELECT h.*, 
+                   g.nama as nama_gudang, 
+                   k.nama_kategori as nama_kategori,
+                   h.satuan, 
+                   h.barang_jadi, 
+                   h.consp, 
+                   h.stok_material, 
+                   h.purchase_order, 
+                   h.sppo
+            FROM hpp h
+            LEFT JOIN gudang g ON h.gudang = g.id_gudang
+            LEFT JOIN kategori_barang k ON h.kategori_barang = k.id_kategori
+            WHERE h.id_persiapan = ? ORDER BY h.created_at DESC";
 $stmt_hpp = mysqli_prepare($conn, $sql_hpp);
 mysqli_stmt_bind_param($stmt_hpp, "i", $id_persiapan);
 mysqli_stmt_execute($stmt_hpp);
@@ -91,7 +106,11 @@ mysqli_stmt_close($stmt_hpp);
 // Calculate total HPP
 $total_hpp = 0;
 foreach ($hpp_items as $item) {
-    $total_hpp += $item['total'];
+    // Calculate total based on jumlah and harga
+    $jumlah = isset($item['jumlah']) ? floatval($item['jumlah']) : 0;
+    $harga = isset($item['harga']) ? floatval($item['harga']) : 0;
+    $calculated_total = $jumlah * $harga;
+    $total_hpp += $calculated_total;
 }
 ?>
 
@@ -134,6 +153,21 @@ foreach ($hpp_items as $item) {
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
+                                        <label class="form-label"><strong>Nama Barang</strong></label>
+                                        <p class="form-control-plaintext"><?= htmlspecialchars($persiapan['nama_barang'] ?? '-'); ?></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label"><strong>Jumlah</strong></label>
+                                        <p class="form-control-plaintext"><?= number_format($persiapan['jumlah'] ?? 0); ?> <?= htmlspecialchars($persiapan['satuan'] ?? ''); ?></p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
                                         <label class="form-label"><strong>Tanggal Kirim</strong></label>
                                         <p class="form-control-plaintext"><?= date('d/m/Y', strtotime($persiapan['tanggal_kirim'])); ?></p>
                                     </div>
@@ -164,26 +198,25 @@ foreach ($hpp_items as $item) {
                     <div class="card mt-3">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Daftar HPP (Harga Pokok Produksi)</h5>
-                        </div>
-                        <div>
-                            <button type="button" class="btn btn-primary btn-sm text-white d-flex align-items-center" 
-                                    data-bs-toggle="modal" data-bs-target="#addHppModal">
-                                <i class="fas fa-plus me-1"></i> <!-- icon plus -->
-                                <span>Tambah HPP</span>          <!-- teks -->
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addHppModal">
+                                <i class="fas fa-plus"></i> Tambah HPP
                             </button>
                         </div>
-
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Nama Barang</th>
+                                            <th>Gudang</th>
+                                            <th>Kategori Barang</th>
                                             <th>Jumlah</th>
                                             <th>Satuan</th>
-                                            <th>Harga Satuan</th>
-                                            <th>Total</th>
+                                            <th>Barang Jadi</th>
+                                            <th>Consp</th>
+                                            <th>Stok Material</th>
+                                            <th>Purchase Order</th>
+                                            <th>SPPO</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -192,13 +225,17 @@ foreach ($hpp_items as $item) {
                                             <?php foreach ($hpp_items as $index => $item): ?>
                                                 <tr>
                                                     <td><?= $index + 1; ?></td>
-                                                    <td><?= htmlspecialchars($item['nama_barang']); ?></td>
+                                                    <td><?= htmlspecialchars($item['nama_gudang'] ?? '-'); ?></td>
+                                                    <td><?= htmlspecialchars($item['nama_kategori'] ?? '-'); ?></td>
                                                     <td><?= number_format($item['jumlah']); ?></td>
-                                                    <td><?= htmlspecialchars($item['satuan']); ?></td>
-                                                    <td>Rp <?= number_format($item['harga'], 0, ',', '.'); ?></td>
-                                                    <td>Rp <?= number_format($item['total'], 0, ',', '.'); ?></td>
+                                                    <td><?= htmlspecialchars($item['satuan'] ?? '-'); ?></td>
+                                                    <td><?= htmlspecialchars($item['barang_jadi'] ?? '-'); ?></td>
+                                                    <td><?= htmlspecialchars($item['consp'] ?? '-'); ?></td>
+                                                    <td><?= htmlspecialchars($item['stok_material'] ?? '-'); ?></td>
+                                                    <td><?= htmlspecialchars($item['purchase_order'] ?? '-'); ?></td>
+                                                    <td><?= htmlspecialchars($item['sppo'] ?? '-'); ?></td>
                                                     <td>
-                                                        <button type="button" class="btn btn-sm btn-warning" onclick="editHpp(<?= $item['id']; ?>, '<?= addslashes($item['nama_barang']); ?>', <?= $item['jumlah']; ?>, <?= $item['harga']; ?>)">
+                                                        <button type="button" class="btn btn-sm btn-warning" onclick="editHpp(<?= $item['id']; ?>, <?= $item['gudang']; ?>, <?= $item['kategori_barang']; ?>, <?= $item['jumlah']; ?>, '<?= addslashes($item['satuan']); ?>', <?= $item['barang_jadi']; ?>, <?= $item['consp']; ?>)">
                                                             <i class="fas fa-edit"></i>
                                                         </button>
                                                         <form method="POST" style="display: inline-block;" onsubmit="return confirm('Yakin ingin menghapus item ini?')">
@@ -213,17 +250,17 @@ foreach ($hpp_items as $item) {
                                             <?php endforeach; ?>
                                         <?php else: ?>
                                             <tr>
-                                                <td colspan="6" class="text-center">Belum ada data HPP</td>
+                                                <td colspan="11" class="text-center">Belum ada data HPP</td>
                                             </tr>
                                         <?php endif; ?>
                                     </tbody>
-                                    <tfoot>
+                                    <!-- <tfoot>
                                         <tr class="table-active">
                                             <th colspan="4" class="text-end">Total HPP:</th>
                                             <th>Rp <?= number_format($total_hpp, 0, ',', '.'); ?></th>
                                             <th></th>
                                         </tr>
-                                    </tfoot>
+                                    </tfoot> -->
                                 </table>
                             </div>
                         </div>
@@ -280,16 +317,53 @@ foreach ($hpp_items as $item) {
                 <div class="modal-body">
                     <input type="hidden" name="action" value="add_hpp">
                     <div class="mb-3">
-                        <label for="nama_barang" class="form-label">Nama Barang</label>
-                        <input type="text" class="form-control" id="nama_barang" name="nama_barang" required>
+                        <label for="gudang" class="form-label">Gudang</label>
+                        <select class="form-control" id="gudang" name="gudang" required>
+                            <option value="">Pilih Gudang</option>
+                            <?php
+                            $sql_gudang = "SELECT * FROM gudang ORDER BY nama";
+                            $result_gudang = mysqli_query($conn, $sql_gudang);
+                            while ($gudang = mysqli_fetch_assoc($result_gudang)) {
+                                echo '<option value="' . $gudang['id_gudang'] . '">' . htmlspecialchars($gudang['nama']) . '</option>';
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="kategori_barang" class="form-label">Kategori Barang</label>
+                        <select class="form-control" id="kategori_barang" name="kategori_barang" required>
+                            <option value="">Pilih Kategori</option>
+                            <?php
+                            $sql_kategori = "SELECT * FROM kategori_barang ORDER BY nama_kategori";
+                            $result_kategori = mysqli_query($conn, $sql_kategori);
+                            while ($kategori = mysqli_fetch_assoc($result_kategori)) {
+                                echo '<option value="' . $kategori['id_kategori'] . '">' . htmlspecialchars($kategori['nama_kategori']) . '</option>';
+                            }
+                            ?>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="jumlah" class="form-label">Jumlah</label>
                         <input type="number" class="form-control" id="jumlah" name="jumlah" min="1" required>
                     </div>
                     <div class="mb-3">
-                        <label for="harga" class="form-label">Harga Satuan</label>
-                        <input type="number" class="form-control" id="harga" name="harga" min="0" step="0.01" required>
+                        <label for="satuan" class="form-label">Satuan</label>
+                        <select class="form-control" id="satuan" name="satuan" required>
+                            <option value="pcs">Pcs</option>
+                            <option value="m">Meter</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="barang_jadi" class="form-label">Barang Jadi</label>
+                        <input type="number" class="form-control" id="barang_jadi" name="barang_jadi" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="consp" class="form-label">Consp</label>
+                        <input type="number" class="form-control" id="consp" name="consp" min="0" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="stok_material" class="form-label">Stok Material</label>
+                        <input type="number" class="form-control" id="stok_material" name="stok_material" min="0" readonly>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -314,16 +388,53 @@ foreach ($hpp_items as $item) {
                     <input type="hidden" name="action" value="update_hpp">
                     <input type="hidden" name="id_hpp" id="edit_id_hpp">
                     <div class="mb-3">
-                        <label for="edit_nama_barang" class="form-label">Nama Barang</label>
-                        <input type="text" class="form-control" id="edit_nama_barang" name="nama_barang" required>
+                        <label for="edit_gudang" class="form-label">Gudang</label>
+                        <select class="form-control" id="edit_gudang" name="gudang" required>
+                            <option value="">Pilih Gudang</option>
+                            <?php
+                            $sql_gudang = "SELECT * FROM gudang ORDER BY nama";
+                            $result_gudang = mysqli_query($conn, $sql_gudang);
+                            while ($gudang = mysqli_fetch_assoc($result_gudang)) {
+                                echo '<option value="' . $gudang['id_gudang'] . '">' . htmlspecialchars($gudang['nama']) . '</option>';
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_kategori_barang" class="form-label">Kategori Barang</label>
+                        <select class="form-control" id="edit_kategori_barang" name="kategori_barang" required>
+                            <option value="">Pilih Kategori</option>
+                            <?php
+                            $sql_kategori = "SELECT * FROM kategori_barang ORDER BY nama_kategori";
+                            $result_kategori = mysqli_query($conn, $sql_kategori);
+                            while ($kategori = mysqli_fetch_assoc($result_kategori)) {
+                                echo '<option value="' . $kategori['id_kategori'] . '">' . htmlspecialchars($kategori['nama_kategori']) . '</option>';
+                            }
+                            ?>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="edit_jumlah" class="form-label">Jumlah</label>
                         <input type="number" class="form-control" id="edit_jumlah" name="jumlah" min="1" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_harga" class="form-label">Harga Satuan</label>
-                        <input type="number" class="form-control" id="edit_harga" name="harga" min="0" step="0.01" required>
+                        <label for="edit_satuan" class="form-label">Satuan</label>
+                        <select class="form-control" id="edit_satuan" name="satuan" required>
+                            <option value="pcs">Pcs</option>
+                            <option value="m">Meter</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_barang_jadi" class="form-label">Barang Jadi</label>
+                        <input type="number" class="form-control" id="edit_barang_jadi" name="barang_jadi" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_consp" class="form-label">Consp</label>
+                        <input type="number" class="form-control" id="edit_consp" name="consp" min="0" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_stok_material" class="form-label">Stok Material</label>
+                        <input type="number" class="form-control" id="edit_stok_material" name="stok_material" min="0" readonly>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -342,15 +453,70 @@ function hapusPersiapan(id) {
     }
 }
 
-function editHpp(id, nama_barang, jumlah, harga) {
+function editHpp(id, gudang, kategori_barang, jumlah, satuan, barang_jadi, consp) {
     document.getElementById('edit_id_hpp').value = id;
-    document.getElementById('edit_nama_barang').value = nama_barang;
+    document.getElementById('edit_gudang').value = gudang;
+    document.getElementById('edit_kategori_barang').value = kategori_barang;
     document.getElementById('edit_jumlah').value = jumlah;
-    document.getElementById('edit_harga').value = harga;
+    document.getElementById('edit_satuan').value = satuan;
+    document.getElementById('edit_barang_jadi').value = barang_jadi;
+    document.getElementById('edit_consp').value = consp;
     
     var modal = new bootstrap.Modal(document.getElementById('editHppModal'));
     modal.show();
 }
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to handle stock quantity fetching for both modals
+    function setupStockQuantityFetching(gudangSelectId, kategoriSelectId, stokMaterialInputId) {
+        const gudangSelect = document.getElementById(gudangSelectId);
+        const kategoriSelect = document.getElementById(kategoriSelectId);
+        const stokMaterialInput = document.getElementById(stokMaterialInputId);
+
+        function fetchStockQuantity() {
+            const gudangId = gudangSelect.value;
+            const kategoriId = kategoriSelect.value;
+
+            if (gudangId && kategoriId) {
+                fetch(`get_stock_quantity.php?gudang_id=${gudangId}&kategori_id=${kategoriId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            stokMaterialInput.value = data.stok_material;
+                        } else {
+                            stokMaterialInput.value = 0; // Reset if no stock found
+                        }
+                    })
+                    .catch(error => console.error('Error fetching stock quantity:', error));
+            } else {
+                stokMaterialInput.value = ''; // Clear if no selection
+            }
+        }
+
+        if (gudangSelect && kategoriSelect && stokMaterialInput) {
+            gudangSelect.addEventListener('change', fetchStockQuantity);
+            kategoriSelect.addEventListener('change', fetchStockQuantity);
+            
+            // Fetch initial value if both are already selected
+            if (gudangSelect.value && kategoriSelect.value) {
+                fetchStockQuantity();
+            }
+        }
+    }
+
+    // Setup for Add HPP Modal
+    setupStockQuantityFetching('gudang', 'kategori_barang', 'stok_material');
+    
+    // Setup for Edit HPP Modal when it's shown
+    const editHppModal = document.getElementById('editHppModal');
+    if (editHppModal) {
+        editHppModal.addEventListener('shown.bs.modal', function () {
+            setupStockQuantityFetching('edit_gudang', 'edit_kategori_barang', 'edit_stok_material');
+        });
+    }
+});
 </script>
 
 <?php
