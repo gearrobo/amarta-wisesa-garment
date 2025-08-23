@@ -41,7 +41,7 @@ include 'includes/header.php';
                                     <i class="fas fa-industry fa-3x text-success mb-3"></i>
                                     <h5 class="card-title">Data Produk</h5>
                                     <p class="card-text">Kelola data produk dan item</p>
-                                    <a href="#" class="btn btn-success">Kelola</a>
+                                    <a href="data-produk.php" class="btn btn-success">Kelola Data Produk</a>
                                 </div>
                             </div>
                         </div>
