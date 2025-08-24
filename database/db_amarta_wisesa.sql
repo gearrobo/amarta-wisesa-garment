@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 24, 2025 at 06:38 AM
+-- Generation Time: Aug 24, 2025 at 02:26 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -110,8 +110,7 @@ CREATE TABLE `gudang` (
 INSERT INTO `gudang` (`id`, `nama`, `alamat`, `kepala_gudang`, `kapasitas`, `keterangan`, `created_at`, `updated_at`) VALUES
 (1, 'Probolinggo', 'Jl. Probolinggo', 'Admin Probolinggo', 5000, 'Gudang utama untuk penyimpanan bahan baku', '2025-08-20 03:28:41', '2025-08-21 03:57:55'),
 (2, 'Pasuruan', 'Jl. Pasuruan', 'Admin Pasuruan', 3000, 'Gudang untuk produk jadi dan finishing', '2025-08-20 03:28:41', '2025-08-21 03:57:19'),
-(3, 'Kasin', 'Jl. Brigjend. Katamso No.48-50, Kauman, Kec. Klojen, Kota Malang, Jawa Timur 65119', 'Stefanus', 4000, 'Gudang khusus untuk bahan baku tekstil', '2025-08-20 03:28:41', '2025-08-21 03:56:40'),
-(4, 'Kasin', 'JL kauman', 'Stefanus', 2000, '', '2025-08-24 03:44:51', '2025-08-24 03:44:51');
+(3, 'Kasin', 'Jl. Brigjend. Katamso No.48-50, Kauman, Kec. Klojen, Kota Malang, Jawa Timur 65119', 'Stefanus', 4000, 'Gudang khusus untuk bahan baku tekstil', '2025-08-20 03:28:41', '2025-08-21 03:56:40');
 
 -- --------------------------------------------------------
 
@@ -174,14 +173,6 @@ CREATE TABLE `hpp` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `hpp`
---
-
-INSERT INTO `hpp` (`id`, `id_persiapan`, `id_inventory`, `no_urut`, `bahan`, `qty`, `barang_jadi`, `stok_order`, `efisiensi_consp`, `efisiensi_rap`, `stok_material`, `po`, `harga_per_meter`, `rap_x_harga_per_m`, `total_harga_bahan`, `biaya_tenaga_kerja_per_qty`, `total_biaya_tenaga_kerja`, `listrik`, `air`, `overhead`, `total_biaya`, `hpp`, `profit`, `harga_jual`, `created_at`, `updated_at`) VALUES
-(3, 2, 8, 'HPP68A9CB49B578C', 'Kancing', 12, 12, 12, '1.05', '1.10', 13, 3082, '150000.00', '165000.00', '1980000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '1980000.00', '165000.00', '0.00', '165000.00', '2025-08-23 14:08:09', '2025-08-24 03:51:05'),
-(5, 2, 11, 'HPP68A9CB49B578C', 'Kain Perca', 2000, 30, 0, '1.00', '1.00', 2020, 0, '100000.00', '100000.00', '200000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '200000000.00', '100000.00', '30.00', '130000.00', '2025-08-24 04:30:57', '2025-08-24 04:30:57');
-
 -- --------------------------------------------------------
 
 --
@@ -202,23 +193,6 @@ CREATE TABLE `inventory` (
   `id_kategori` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `inventory`
---
-
-INSERT INTO `inventory` (`id`, `kode_barang`, `nama_barang`, `warehouse`, `unit`, `jumlah`, `harga_per_unit`, `keterangan`, `created_at`, `updated_at`, `id_kategori`) VALUES
-(8, NULL, 'Kain Flanel', 'Kasin', 'm²', 771, '150000.00', 'Beli untuk Kebutuhan Project Jakarta', '2025-08-21 10:59:11', '2025-08-23 21:08:09', NULL),
-(9, NULL, 'Kancing', 'Kasin', 'pcs', 95000, '250.00', 'Kebutuhan Project Jakarta', '2025-08-21 11:00:12', NULL, NULL),
-(10, NULL, 'Kancing', 'Probolinggo', 'pcs', 78000, '250.00', 'Stock Opname', '2025-08-21 11:04:00', NULL, NULL),
-(11, NULL, 'Benang Polyester', 'Probolinggo', 'kg', 20, '100000.00', '', '2025-08-21 21:37:32', NULL, NULL),
-(12, NULL, 'Kancing Besar', 'Kasin', 'pcs', 5000000, '10.00', '', '2025-08-21 23:17:59', NULL, NULL),
-(13, NULL, 'Jas Almamater', 'Pasuruan', 'pcs', 2000, '200000.00', '', '2025-08-21 23:41:06', NULL, NULL),
-(14, NULL, 'Kain Flanel', 'Kasin', 'm²', 100, '100000.00', '', '2025-08-22 14:16:42', NULL, NULL),
-(16, NULL, 'Kain Flanel', 'Kasin', 'm²', 100, '100000.00', '', '2025-08-22 15:30:32', NULL, NULL),
-(17, 'BRG005', 'Kain Katun', 'Kasin', 'm²', 100000, '100000.00', '', '2025-08-22 15:32:30', '2025-08-22 19:50:54', NULL),
-(20, 'BRG002', 'Kain Perca', 'Kasin', 'm²', 1000, '50000.00', '', '2025-08-22 18:34:38', NULL, NULL),
-(21, 'BRG006', 'Kain Perca', 'Kasin', 'm²', 10, '55000.00', '', '2025-08-23 08:47:58', NULL, NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -236,16 +210,6 @@ CREATE TABLE `inventory_gudang` (
   `tanggal_masuk` date DEFAULT NULL,
   `tanggal_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `inventory_gudang`
---
-
-INSERT INTO `inventory_gudang` (`id`, `id_inventory`, `id_gudang`, `nama_barang`, `jumlah`, `stok_akhir`, `satuan`, `tanggal_masuk`, `tanggal_update`) VALUES
-(8, 8, 3, 'Kancing', 95000, 190000, 'pcs', '2025-08-21', '2025-08-21 16:38:23'),
-(9, 9, 1, 'Kancing', 78000, 156000, 'pcs', '2025-08-21', '2025-08-21 16:38:23'),
-(10, 10, 3, 'Kancing Besar', 5000000, 10000000, 'pcs', '2025-08-21', '2025-08-21 16:38:23'),
-(11, 11, 3, 'Kain Perca', 1010, 2020, 'm²', '2025-08-22', '2025-08-23 01:47:58');
 
 -- --------------------------------------------------------
 
@@ -284,35 +248,6 @@ CREATE TABLE `inventory_transaksi_gudang` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `inventory_transaksi_gudang`
---
-
-INSERT INTO `inventory_transaksi_gudang` (`id`, `inventory_gudang_id`, `jenis`, `jumlah_masuk`, `jumlah_keluar`, `harga_per_unit`, `keterangan`, `tanggal_transaksi`, `user_id`, `created_at`, `updated_at`) VALUES
-(2, 1, 'masuk', 500, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-15 00:00:00', NULL, '2025-08-21 16:07:27', '2025-08-21 16:07:27'),
-(3, 2, 'masuk', 200, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-20 00:00:00', NULL, '2025-08-21 16:07:27', '2025-08-21 16:07:27'),
-(4, 3, 'masuk', 1000, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-25 00:00:00', NULL, '2025-08-21 16:07:27', '2025-08-21 16:07:27'),
-(5, 4, 'masuk', 300, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-28 00:00:00', NULL, '2025-08-21 16:07:27', '2025-08-21 16:07:27'),
-(6, 5, 'masuk', 100000, 0, NULL, 'Stok awal dari inventory_gudang', '2025-08-21 00:00:00', NULL, '2025-08-21 16:07:27', '2025-08-21 16:07:27'),
-(9, 1, 'masuk', 500, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-15 00:00:00', NULL, '2025-08-21 16:10:56', '2025-08-21 16:10:56'),
-(10, 2, 'masuk', 200, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-20 00:00:00', NULL, '2025-08-21 16:10:56', '2025-08-21 16:10:56'),
-(11, 3, 'masuk', 1000, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-25 00:00:00', NULL, '2025-08-21 16:10:56', '2025-08-21 16:10:56'),
-(12, 4, 'masuk', 300, 0, NULL, 'Stok awal dari inventory_gudang', '2024-01-28 00:00:00', NULL, '2025-08-21 16:10:56', '2025-08-21 16:10:56'),
-(13, 5, 'masuk', 100000, 0, NULL, 'Stok awal dari inventory_gudang', '2025-08-21 00:00:00', NULL, '2025-08-21 16:10:56', '2025-08-21 16:10:56'),
-(16, 6, 'masuk', 5000, 0, NULL, 'Stok awal masuk', '2025-08-21 00:00:00', NULL, '2025-08-21 16:16:37', '2025-08-21 16:16:37'),
-(17, 7, 'masuk', 783, 0, NULL, 'Migrasi data dari inventory lama - Beli untuk Kebutuhan Project Jakarta', '2025-08-21 10:59:11', NULL, '2025-08-21 16:38:23', '2025-08-21 16:38:23'),
-(18, 8, 'masuk', 95000, 0, NULL, 'Migrasi data dari inventory lama - Kebutuhan Project Jakarta', '2025-08-21 11:00:12', NULL, '2025-08-21 16:38:23', '2025-08-21 16:38:23'),
-(19, 9, 'masuk', 78000, 0, NULL, 'Migrasi data dari inventory lama - Stock Opname', '2025-08-21 11:04:00', NULL, '2025-08-21 16:38:23', '2025-08-21 16:38:23'),
-(20, 2, 'masuk', 20, 0, NULL, 'Migrasi data dari inventory lama - ', '2025-08-21 21:37:32', NULL, '2025-08-21 16:38:23', '2025-08-21 16:38:23'),
-(21, 10, 'masuk', 5000000, 0, NULL, 'Migrasi data dari inventory lama - ', '2025-08-21 23:17:59', NULL, '2025-08-21 16:38:23', '2025-08-21 16:38:23'),
-(22, 6, 'masuk', 2000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-21 23:41:06', NULL, '2025-08-21 16:41:06', '2025-08-21 16:41:06'),
-(23, 7, 'masuk', 100, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-22 14:16:42', NULL, '2025-08-22 07:16:42', '2025-08-22 07:16:42'),
-(24, 7, 'masuk', 100, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-22 15:30:32', NULL, '2025-08-22 08:30:32', '2025-08-22 08:30:32'),
-(25, 5, 'masuk', 100000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-22 15:32:30', NULL, '2025-08-22 08:32:30', '2025-08-22 08:32:30'),
-(26, 5, 'masuk', 200, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-22 16:15:39', NULL, '2025-08-22 09:15:39', '2025-08-22 09:15:39'),
-(27, 11, 'masuk', 1000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-22 18:34:38', NULL, '2025-08-22 11:34:38', '2025-08-22 11:34:38'),
-(28, 11, 'masuk', 10, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-23 08:47:58', NULL, '2025-08-23 01:47:58', '2025-08-23 01:47:58');
 
 --
 -- Triggers `inventory_transaksi_gudang`
@@ -510,9 +445,8 @@ CREATE TABLE `kategori_barang` (
 
 INSERT INTO `kategori_barang` (`id_kategori`, `nama_kategori`, `keterangan`, `created_at`, `updated_at`) VALUES
 (2, 'Benang', 'Kategori untuk berbagai jenis benang', '2025-08-22 07:47:00', '2025-08-22 07:47:00'),
-(6, 'Kain Flanel', '', '2025-08-22 08:29:56', '2025-08-22 08:29:56'),
 (7, 'Kain Katun', '', '2025-08-22 08:31:53', '2025-08-22 08:31:53'),
-(8, 'Kain Perca', '', '2025-08-22 08:49:03', '2025-08-22 08:49:03');
+(8, 'Jarum', '', '2025-08-22 08:49:03', '2025-08-24 12:17:46');
 
 -- --------------------------------------------------------
 
@@ -706,8 +640,8 @@ ALTER TABLE `inventory`
 --
 ALTER TABLE `inventory_gudang`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_inventory_gudang_inventory` (`id_inventory`),
-  ADD KEY `fk_inventory_gudang_gudang` (`id_gudang`);
+  ADD KEY `fk_inventory_gudang_gudang` (`id_gudang`),
+  ADD KEY `fk_inventory_gudang_inventory` (`id_inventory`);
 
 --
 -- Indexes for table `persiapan`
@@ -745,6 +679,12 @@ ALTER TABLE `hpp`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT for table `inventory`
+--
+ALTER TABLE `inventory`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `inventory_gudang`
 --
 ALTER TABLE `inventory_gudang`
@@ -778,7 +718,7 @@ ALTER TABLE `hpp`
 --
 ALTER TABLE `inventory_gudang`
   ADD CONSTRAINT `fk_inventory_gudang_gudang` FOREIGN KEY (`id_gudang`) REFERENCES `gudang` (`id`),
-  ADD CONSTRAINT `fk_inventory_gudang_inventory` FOREIGN KEY (`id_inventory`) REFERENCES `inventory` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_inventory_gudang_inventory` FOREIGN KEY (`id_inventory`) REFERENCES `inventory` (`id`);
 
 --
 -- Constraints for table `persiapan`
