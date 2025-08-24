@@ -152,6 +152,7 @@ if ($stmt_files) {
                             <th>Stok Akhir</th>
                             <th>Harga per Meter</th>
                             <th>Total Harga Bahan</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -164,7 +165,14 @@ if ($stmt_files) {
                             <td><?= number_format($item['stok_akhir'] ?? 0); ?> <?= htmlspecialchars($item['satuan'] ?? ''); ?></td>
                             <td>Rp <?= number_format($item['harga_per_meter'] ?? 0, 0, ',', '.'); ?></td>
                             <td>Rp <?= number_format($item['total_harga_bahan'] ?? 0, 0, ',', '.'); ?></td>
-                        </tr>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="tes.php?id=<?= $id_persiapan; ?>" class="btn btn-sm btn-info" title="Detail">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </div>
+                            </td>
+        </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
