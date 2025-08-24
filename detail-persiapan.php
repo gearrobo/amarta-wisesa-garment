@@ -1,5 +1,5 @@
 <?php
-// include 'includes/header.php';
+include 'includes/header.php';
 include 'config/db.php';
 
 // Ambil id persiapan dari URL
