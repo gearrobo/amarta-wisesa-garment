@@ -108,17 +108,17 @@ if (isset($_POST['save'])) {
             $stmt_gudang->close();
 
             // 4. Cek apakah barang sudah ada di inventory_gudang
-            $sql_check = "SELECT id_inventory, jumlah, stok_akhir FROM inventory_gudang 
-                         WHERE nama_barang = ? AND id_gudang = ?";
+            $sql_check = "SELECT id, jumlah, stok_akhir FROM inventory_gudang 
+             WHERE nama_barang = ? AND id_gudang = ?";
             $stmt_check = $conn->prepare($sql_check);
             $stmt_check->bind_param("si", $nama_barang, $id_gudang);
             $stmt_check->execute();
             $result_check = $stmt_check->get_result();
-            
+
             if ($result_check->num_rows > 0) {
                 // Update existing barang
                 $existing_data = $result_check->fetch_assoc();
-                $existing_id = $existing_data['id_inventory'];
+                $existing_id = $existing_data['id'];
                 $existing_jumlah = $existing_data['jumlah'];
                 $existing_stok = $existing_data['stok_akhir'];
                 
@@ -126,8 +126,8 @@ if (isset($_POST['save'])) {
                 $new_stok = $existing_stok + $jumlah;
                 
                 $sql_update = "UPDATE inventory_gudang 
-                              SET jumlah = ?, stok_akhir = ?, tanggal_update = NOW()
-                              WHERE id_inventory = ?";
+                            SET jumlah = ?, stok_akhir = ?, tanggal_update = NOW()
+                            WHERE id = ?";
                 $stmt_update = $conn->prepare($sql_update);
                 $stmt_update->bind_param("iii", $new_jumlah, $new_stok, $existing_id);
                 
@@ -138,13 +138,13 @@ if (isset($_POST['save'])) {
                 
                 $inventory_gudang_id = $existing_id;
             } else {
-                // Insert new barang ke inventory_gudang
+                // Insert new barang ke inventory_gudang - PERBAIKAN DISINI
                 $sql_insert_gudang = "INSERT INTO inventory_gudang 
-                                    (id_gudang, nama_barang, jumlah, stok_akhir, satuan, tanggal_masuk)
-                                    VALUES (?, ?, ?, ?, ?, CURDATE())";
+                                    (id_inventory, id_gudang, nama_barang, jumlah, stok_akhir, satuan, tanggal_masuk)
+                                    VALUES (?, ?, ?, ?, ?, ?, CURDATE())";
                 
                 $stmt_insert = $conn->prepare($sql_insert_gudang);
-                $stmt_insert->bind_param("isiis", $id_gudang, $nama_barang, $jumlah, $jumlah, $unit);
+                $stmt_insert->bind_param("iisiis", $inventory_id, $id_gudang, $nama_barang, $jumlah, $jumlah, $unit);
                 
                 if (!$stmt_insert->execute()) {
                     throw new Exception("Insert inventory_gudang failed: " . $stmt_insert->error);
@@ -153,6 +153,7 @@ if (isset($_POST['save'])) {
                 $inventory_gudang_id = $stmt_insert->insert_id;
                 $stmt_insert->close();
             }
+
 
             // 5. Buat transaksi di inventory_transaksi_gudang
             $sql_transaksi = "INSERT INTO inventory_transaksi_gudang 
