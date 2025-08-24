@@ -140,7 +140,6 @@ if ($stmt_files) {
             <h5 class="card-title mb-0">Data Gudang / Pemakaian Bahan</h5>
         </div>
         <div class="card-body">
-            <?php if (!empty($gudang_items)): ?>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped">
                     <thead class="table-light">
@@ -152,7 +151,11 @@ if ($stmt_files) {
                             <th>Stok Akhir</th>
                             <th>Harga per Meter</th>
                             <th>Total Harga Bahan</th>
-                            <th>Aksi</th>
+                            <th>Aksi <div class="btn-group btn-group-sm" role="group">
+                                    <a href="data-hpp.php?id=<?= $id_persiapan; ?>" class="btn btn-sm btn-info" title="Detail">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </div></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -167,7 +170,7 @@ if ($stmt_files) {
                             <td>Rp <?= number_format($item['total_harga_bahan'] ?? 0, 0, ',', '.'); ?></td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <a href="tes.php?id=<?= $id_persiapan; ?>" class="btn btn-sm btn-info" title="Detail">
+                                    <a href="data-hpp.php?id=<?= $id_persiapan; ?>" class="btn btn-sm btn-info" title="Detail">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </div>
@@ -177,11 +180,6 @@ if ($stmt_files) {
                     </tbody>
                 </table>
             </div>
-            <?php else: ?>
-            <div class="alert alert-info mb-0">
-                <i class="fas fa-info-circle me-2"></i>Tidak ada data gudang untuk persiapan ini.
-            </div>
-            <?php endif; ?>
         </div>
     </div>
 
