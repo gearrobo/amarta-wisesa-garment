@@ -87,7 +87,7 @@ if (isset($_POST['save'])) {
             $stmt->close();
 
             // 2. Dapatkan ID gudang berdasarkan nama warehouse
-            $sql_gudang = "SELECT id_gudang FROM gudang WHERE nama = ?";
+            $sql_gudang = "SELECT id FROM gudang WHERE nama = ?";
             $stmt_gudang = $conn->prepare($sql_gudang);
             if (!$stmt_gudang) {
                 throw new Exception("Prepare gudang failed: " . $conn->error);
@@ -104,7 +104,7 @@ if (isset($_POST['save'])) {
             }
             
             $gudang_data = $result_gudang->fetch_assoc();
-            $id_gudang = $gudang_data['id_gudang'];
+            $id_gudang = $gudang_data['id'];
             $stmt_gudang->close();
 
             // 4. Cek apakah barang sudah ada di inventory_gudang

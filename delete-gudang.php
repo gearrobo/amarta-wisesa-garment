@@ -7,6 +7,7 @@ include "config/db.php";
 
 // Check if ID is provided
 if (!isset($_GET['id'])) {
+    $_SESSION['error'] = "ID gudang tidak ditemukan!";
     header("Location: data-gudang.php");
     exit();
 }
@@ -18,7 +19,7 @@ mysqli_autocommit($conn, FALSE);
 
 try {
     // First, check if the warehouse exists
-    $stmt = $conn->prepare("SELECT * FROM gudang WHERE id_gudang = ?");
+    $stmt = $conn->prepare("SELECT * FROM gudang WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -35,15 +36,16 @@ try {
         $check_inventory->close();
 
         if ($inventory_count > 0) {
-            // If there are inventory records, delete them first
-            $delete_inventory = $conn->prepare("DELETE FROM inventory_gudang WHERE id_gudang = ?");
-            $delete_inventory->bind_param("i", $id);
-            $delete_inventory->execute();
-            $delete_inventory->close();
+            // If there are inventory records, we cannot delete the warehouse due to foreign key constraints
+            // Rollback transaction
+            mysqli_rollback($conn);
+            $_SESSION['error'] = "Tidak dapat menghapus gudang '" . htmlspecialchars($data['nama']) . "' karena masih terdapat " . $inventory_count . " item inventory yang terkait. Hapus semua inventory terlebih dahulu.";
+            header("Location: data-gudang.php");
+            exit();
         }
 
         // Now delete the warehouse
-        $stmt = $conn->prepare("DELETE FROM gudang WHERE id_gudang = ?");
+        $stmt = $conn->prepare("DELETE FROM gudang WHERE id = ?");
         $stmt->bind_param("i", $id);
         
         if ($stmt->execute()) {

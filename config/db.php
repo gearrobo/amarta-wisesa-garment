@@ -3,9 +3,9 @@ $host = 'localhost';
 $username = 'root';
 $password = '';
 $db_name = 'db_amarta_wisesa';
-$socket = '/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock';
 
-$conn = mysqli_connect($host, $username, $password, $db_name, null, $socket);
+// Remove socket parameter for Windows compatibility
+$conn = mysqli_connect($host, $username, $password, $db_name);
 
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());

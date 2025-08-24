@@ -17,7 +17,7 @@ $error = '';
 $success = '';
 
 // Get warehouse details
-$sql = "SELECT * FROM gudang WHERE id_gudang = ?";
+$sql = "SELECT * FROM gudang WHERE id = ?";
         
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $id_gudang);
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Update warehouse data
     $sql = "UPDATE gudang SET 
             nama = ?, alamat = ?, kepala_gudang = ?, kapasitas = ?, keterangan = ?
-            WHERE id_gudang = ?";
+            WHERE id = ?";
 
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "sssisi", 
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $success = "Data gudang berhasil diperbarui!";
         
         // Refresh data
-        $sql = "SELECT * FROM gudang WHERE id_gudang = ?";
+        $sql = "SELECT * FROM gudang WHERE id = ?";
         $stmt = mysqli_prepare($conn, $sql);
         mysqli_stmt_bind_param($stmt, "i", $id_gudang);
         mysqli_stmt_execute($stmt);

@@ -15,7 +15,7 @@ if (!isset($_GET['id'])) {
 $id_gudang = $_GET['id'];
 
 // Get warehouse details
-$sql = "SELECT * FROM gudang WHERE id_gudang = ?";
+$sql = "SELECT * FROM gudang WHERE id = ?";
         
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $id_gudang);
@@ -163,10 +163,10 @@ if ($stmt_inventory) {
                             <h5 class="card-title mb-0">Aksi</h5>
                         </div>
                         <div class="card-body">
-                            <a href="edit-gudang.php?id=<?= $gudang['id_gudang']; ?>" class="btn btn-warning w-100 mb-2">
+                            <a href="edit-gudang.php?id=<?= $gudang['id']; ?>" class="btn btn-warning w-100 mb-2">
                                 <i class="fas fa-edit"></i> Edit Data
                             </a>
-                            <button type="button" class="btn btn-danger w-100" onclick="hapusGudang(<?= $gudang['id_gudang']; ?>)">
+                            <button type="button" class="btn btn-danger w-100" onclick="hapusGudang(<?= $gudang['id']; ?>)">
                                 <i class="fas fa-trash"></i> Hapus Data
                             </button>
                         </div>

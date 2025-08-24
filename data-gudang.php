@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Get all warehouses
-$sql = "SELECT * FROM gudang ORDER BY id_gudang DESC";
+$sql = "SELECT * FROM gudang ORDER BY id DESC"; // Perbaiki nama kolom id
 $result = mysqli_query($conn, $sql);
 if (!$result) {
     $gudangList = [];
@@ -210,13 +210,13 @@ if (!$result) {
                                             <td><?= number_format($gudang['kapasitas']); ?> m²</td>
                                             <td>
                                                 <div class="btn-group btn-group-sm" role="group">
-                                                    <a href="detail-gudang.php?id=<?= $gudang['id_gudang']; ?>" class="btn btn-sm btn-info" title="Detail">
+                                                    <a href="detail-gudang.php?id=<?= $gudang['id']; ?>" class="btn btn-sm btn-info" title="Detail">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
-                                                    <a href="edit-gudang.php?id=<?= $gudang['id_gudang']; ?>" class="btn btn-sm btn-warning" title="Edit">
+                                                    <a href="edit-gudang.php?id=<?= $gudang['id']; ?>" class="btn btn-sm btn-warning" title="Edit">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <button type="button" class="btn btn-sm btn-danger" onclick="hapusGudang(<?= $gudang['id_gudang']; ?>)" title="Hapus">
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="hapusGudang(<?= $gudang['id']; ?>)" title="Hapus">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </div>
@@ -242,7 +242,7 @@ if (!$result) {
                         SELECT ig.*, g.nama as nama_gudang,
                                COALESCE(ig.stok_akhir, ig.jumlah) as stok_tersedia
                         FROM inventory_gudang ig 
-                        JOIN gudang g ON ig.id_gudang = g.id_gudang 
+                        JOIN gudang g ON ig.id_gudang = g.id 
                         WHERE 1=1
                     ";
                     
@@ -273,11 +273,11 @@ if (!$result) {
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Inventory Gudang</h5>
                         </div>
-                        <div>
+                        <!-- <div>
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahInventoryGudangModal">
                                 <i class="fas fa-plus"></i> <strong>TAMBAH INVENTORY GUDANG</strong>
                             </button>
-                        </div>
+                        </div> -->
                         <div class="card-body">
                             <!-- Filter Controls -->
                             <div class="row mb-3">
@@ -288,21 +288,21 @@ if (!$result) {
                                             <select name="filter_gudang" class="form-control" onchange="this.form.submit()">
                                                 <option value="">Semua Gudang</option>
                                                 <?php foreach ($gudangList as $gudang): ?>
-                                                <option value="<?= $gudang['id_gudang']; ?>" <?= ($filter_gudang == $gudang['id_gudang']) ? 'selected' : ''; ?>>
+                                                <option value="<?= $gudang['id']; ?>" <?= ($filter_gudang == $gudang['id']) ? 'selected' : ''; ?>>
                                                     <?= htmlspecialchars($gudang['nama']); ?>
                                                 </option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
-                                        <div class="col-md-5">
+                                        <!-- <div class="col-md-5">
                                             <input type="text" name="search_nama" class="form-control" placeholder="Cari nama barang..." 
                                                    value="<?= htmlspecialchars($search_nama); ?>">
-                                        </div>
-                                        <div class="col-md-2">
+                                        </div> -->
+                                        <!-- <div class="col-md-2">
                                             <button type="submit" class="btn btn-primary w-100">
                                                 <i class="fas fa-search"></i>
                                             </button>
-                                        </div>
+                                        </div> -->
                                     </form>
                                 </div>
                             </div>
@@ -418,7 +418,7 @@ if (!$result) {
                         <select name="id_gudang" class="form-control" required>
                             <option value="">Pilih Gudang</option>
                             <?php foreach ($gudangList as $gudang): ?>
-                            <option value="<?= $gudang['id_gudang']; ?>"><?= htmlspecialchars($gudang['nama']); ?></option>
+                            <option value="<?= $gudang['id']; ?>"><?= htmlspecialchars($gudang['nama']); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
