@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 24, 2025 at 02:38 PM
+-- Generation Time: Aug 24, 2025 at 05:42 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -154,7 +154,7 @@ CREATE TABLE `hpp` (
   `barang_jadi` int(11) DEFAULT NULL,
   `stok_order` int(11) DEFAULT NULL,
   `efisiensi_consp` decimal(10,2) DEFAULT NULL,
-  `efisiensi_rap` decimal(10,2) DEFAULT NULL,
+  `efisiensi_rap` int(50) DEFAULT NULL,
   `stok_material` int(11) DEFAULT NULL,
   `po` int(11) DEFAULT NULL,
   `harga_per_meter` decimal(15,2) DEFAULT NULL,
@@ -172,6 +172,13 @@ CREATE TABLE `hpp` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `hpp`
+--
+
+INSERT INTO `hpp` (`id`, `id_persiapan`, `id_inventory`, `no_urut`, `bahan`, `qty`, `barang_jadi`, `stok_order`, `efisiensi_consp`, `efisiensi_rap`, `stok_material`, `po`, `harga_per_meter`, `rap_x_harga_per_m`, `total_harga_bahan`, `biaya_tenaga_kerja_per_qty`, `total_biaya_tenaga_kerja`, `listrik`, `air`, `overhead`, `total_biaya`, `hpp`, `profit`, `harga_jual`, `created_at`, `updated_at`) VALUES
+(7, 2, 13, 'HPP68A9CB49B578C', 'Kain Katun', 1000, 20, 980, '1.00', 980, 5000, 0, '100000.00', '98000000.00', '98000000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '98000000000.00', '98000000.00', '30.00', '127400000.00', '2025-08-24 12:57:56', '2025-08-24 12:57:56');
 
 -- --------------------------------------------------------
 
@@ -198,7 +205,9 @@ CREATE TABLE `inventory` (
 --
 
 INSERT INTO `inventory` (`id`, `kode_barang`, `nama_barang`, `warehouse`, `unit`, `jumlah`, `harga_per_unit`, `keterangan`, `created_at`, `updated_at`, `id_kategori`) VALUES
-(5, 'SN-09XXPi-90', 'Kain Katun', 'Kasin', 'meter', 5000, '100000.00', '', '2025-08-24 19:38:04', NULL, NULL);
+(5, 'SN-09XXPi-90', 'Kain Katun', 'Kasin', 'meter', 5000, '100000.00', '', '2025-08-24 19:38:04', NULL, NULL),
+(6, 'SN-09XXPi-80', 'Benang', 'Kasin', 'roll', 5000, '100000.00', '', '2025-08-24 19:41:57', NULL, NULL),
+(7, 'SN-09XXPi-70', 'Jarum', 'Kasin', 'pcs', 5000, '100000.00', '', '2025-08-24 19:42:37', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -223,7 +232,9 @@ CREATE TABLE `inventory_gudang` (
 --
 
 INSERT INTO `inventory_gudang` (`id`, `id_inventory`, `id_gudang`, `nama_barang`, `jumlah`, `stok_akhir`, `satuan`, `tanggal_masuk`, `tanggal_update`) VALUES
-(13, 5, 3, 'Kain Katun', 5000, 5000, 'meter', '2025-08-24', '2025-08-24 12:38:04');
+(13, 5, 3, 'Kain Katun', 5000, 5000, 'meter', '2025-08-24', '2025-08-24 12:38:04'),
+(14, 6, 3, 'Benang', 5000, 5000, 'roll', '2025-08-24', '2025-08-24 12:41:57'),
+(15, 7, 3, 'Jarum', 5000, 5000, 'pcs', '2025-08-24', '2025-08-24 12:42:37');
 
 -- --------------------------------------------------------
 
@@ -268,7 +279,9 @@ CREATE TABLE `inventory_transaksi_gudang` (
 --
 
 INSERT INTO `inventory_transaksi_gudang` (`id`, `inventory_gudang_id`, `jenis`, `jumlah_masuk`, `jumlah_keluar`, `harga_per_unit`, `keterangan`, `tanggal_transaksi`, `user_id`, `created_at`, `updated_at`) VALUES
-(1, 13, 'masuk', 5000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-24 19:38:04', NULL, '2025-08-24 12:38:04', '2025-08-24 12:38:04');
+(1, 13, 'masuk', 5000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-24 19:38:04', NULL, '2025-08-24 12:38:04', '2025-08-24 12:38:04'),
+(2, 14, 'masuk', 5000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-24 19:41:57', NULL, '2025-08-24 12:41:57', '2025-08-24 12:41:57'),
+(3, 15, 'masuk', 5000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-24 19:42:37', NULL, '2025-08-24 12:42:37', '2025-08-24 12:42:37');
 
 --
 -- Triggers `inventory_transaksi_gudang`
@@ -531,7 +544,7 @@ INSERT INTO `pengguna` (`id_pengguna`, `id_karyawan`, `username`, `password`, `r
 
 CREATE TABLE `persiapan` (
   `id` int(11) UNSIGNED NOT NULL,
-  `id_sps` int(11) NOT NULL,
+  `id_sps` int(10) UNSIGNED NOT NULL,
   `spp_no` varchar(50) NOT NULL DEFAULT '',
   `kode_barang` varchar(50) DEFAULT NULL,
   `nama_barang` varchar(100) DEFAULT NULL,
@@ -555,7 +568,7 @@ CREATE TABLE `persiapan` (
 
 INSERT INTO `persiapan` (`id`, `id_sps`, `spp_no`, `kode_barang`, `nama_barang`, `jumlah`, `satuan`, `harga`, `total`, `tanggal_persiapan`, `pola`, `marker`, `upload_spk`, `status`, `sp_srx`, `created_at`, `updated_at`) VALUES
 (1, 3, '', '123', 'Kain Biru', 500, 'meter', '10.00', '5000.00', '2025-08-27', NULL, NULL, NULL, 'pending', '', '2025-08-20 14:45:29', '2025-08-20 14:45:29'),
-(2, 4, '', '123', 'T-Shirt', 900, 'meter', '120000.00', '5000.00', '2025-08-30', '1755752875_FNS- KTD SH S M 01(KATADATA MEN)-PROD.hpg', '1755752875_FNS- KTD SH S M 01(KATADATA MEN)-PROD.hpg', '1755754247_Surat Perintah Kerja (SPK).pdf', 'proses', 'SPK0001', '2025-08-21 09:42:15', '2025-08-22 14:33:40');
+(2, 4, '', '123', 'T-Shirt', 900, 'pcs', '120000.00', '5000.00', '2025-08-30', '1755752875_FNS- KTD SH S M 01(KATADATA MEN)-PROD.hpg', '1755752875_FNS- KTD SH S M 01(KATADATA MEN)-PROD.hpg', '1755754247_Surat Perintah Kerja (SPK).pdf', 'proses', 'SPK0001', '2025-08-21 09:42:15', '2025-08-24 20:00:23');
 
 -- --------------------------------------------------------
 
@@ -578,11 +591,30 @@ CREATE TABLE `produk` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `produksi`
+--
+
+CREATE TABLE `produksi` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `id_sps` int(10) UNSIGNED NOT NULL,
+  `id_persiapan` int(10) UNSIGNED NOT NULL,
+  `kerjaan` varchar(255) NOT NULL,
+  `target` int(11) DEFAULT 0,
+  `hasil` int(11) DEFAULT 0,
+  `pekerja` varchar(100) DEFAULT NULL,
+  `status` enum('proses','pending','selesai') DEFAULT 'pending',
+  `qc` varchar(100) DEFAULT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `sps`
 --
 
 CREATE TABLE `sps` (
-  `id` int(11) NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `tanggal` date DEFAULT NULL,
   `sps_no` varchar(20) DEFAULT NULL,
   `customer` varchar(100) DEFAULT NULL,
@@ -690,6 +722,14 @@ ALTER TABLE `produk`
   ADD PRIMARY KEY (`id_produk`);
 
 --
+-- Indexes for table `produksi`
+--
+ALTER TABLE `produksi`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_produksi_sps` (`id_sps`),
+  ADD KEY `fk_produksi_persiapan` (`id_persiapan`);
+
+--
 -- Indexes for table `sps`
 --
 ALTER TABLE `sps`
@@ -709,19 +749,19 @@ ALTER TABLE `gudang`
 -- AUTO_INCREMENT for table `hpp`
 --
 ALTER TABLE `hpp`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `inventory_gudang`
 --
 ALTER TABLE `inventory_gudang`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `inventory_transaksi`
@@ -733,7 +773,7 @@ ALTER TABLE `inventory_transaksi`
 -- AUTO_INCREMENT for table `inventory_transaksi_gudang`
 --
 ALTER TABLE `inventory_transaksi_gudang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `persiapan`
@@ -746,6 +786,18 @@ ALTER TABLE `persiapan`
 --
 ALTER TABLE `produk`
   MODIFY `id_produk` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `produksi`
+--
+ALTER TABLE `produksi`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `sps`
+--
+ALTER TABLE `sps`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
@@ -769,7 +821,14 @@ ALTER TABLE `inventory_gudang`
 -- Constraints for table `persiapan`
 --
 ALTER TABLE `persiapan`
-  ADD CONSTRAINT `fk_persiapan_sps` FOREIGN KEY (`id_sps`) REFERENCES `sps` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_persiapan_sps` FOREIGN KEY (`id_sps`) REFERENCES `sps` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `produksi`
+--
+ALTER TABLE `produksi`
+  ADD CONSTRAINT `fk_produksi_persiapan` FOREIGN KEY (`id_persiapan`) REFERENCES `persiapan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_produksi_sps` FOREIGN KEY (`id_sps`) REFERENCES `sps` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
