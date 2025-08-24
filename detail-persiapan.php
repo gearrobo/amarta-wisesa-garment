@@ -1,132 +1,165 @@
 <?php
-include 'includes/header.php';
+// include 'includes/header.php';
 include 'config/db.php';
 
-// Simpan data HPP
-if (isset($_POST['save'])) {
-    $id_persiapan = $_POST['id_persiapan'];
-    $no_urut = $_POST['no_urut'];
-    $bahan = $_POST['bahan'];
-    $qty = $_POST['qty'];
-    $barang_jadi = $_POST['barang_jadi'];
-    $stok_order = $_POST['stok_order'];
-    $efisiensi_consp = $_POST['efisiensi_consp'];
-    $efisiensi_rap = $_POST['efisiensi_rap'];
-    $stok_material = $_POST['stok_material'];
-    $po = $_POST['po'];
-    $harga_per_meter = $_POST['harga_per_meter'];
-    $rap_x_harga_per_m = $_POST['rap_x_harga_per_m'];
-    $total_harga_bahan = $_POST['total_harga_bahan'];
-    $biaya_tenaga_kerja_per_qty = $_POST['biaya_tenaga_kerja_per_qty'];
-    $total_biaya_tenaga_kerja = $_POST['total_biaya_tenaga_kerja'];
-    $listrik = $_POST['listrik'];
-    $air = $_POST['air'];
-    $overhead = $_POST['overhead'];
-    $total_biaya = $_POST['total_biaya'];
-    $hpp = $_POST['hpp'];
-    $profit = $_POST['profit'];
-    $harga_jual = $_POST['harga_jual'];
+// Ambil id persiapan dari URL
+$id_persiapan = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-    $sql = "INSERT INTO hpp (
-        id_persiapan, no_urut, bahan, qty, barang_jadi, stok_order, 
-        efisiensi_consp, efisiensi_rap, stok_material, po, harga_per_meter, 
-        rap_x_harga_per_m, total_harga_bahan, biaya_tenaga_kerja_per_qty, 
-        total_biaya_tenaga_kerja, listrik, air, overhead, total_biaya, 
-        hpp, profit, harga_jual
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+// ---------------- GET DETAIL PERSIAPAN ----------------
+$sql = "SELECT p.*, c.nama AS customer_nama, c.alamat AS customer_alamat, c.no_telp AS customer_no_telp
+        FROM persiapan p
+        LEFT JOIN customer c ON p.id_customer = c.id
+        WHERE p.id = ?";
+$stmt = mysqli_prepare($conn, $sql);
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param(
-        "iisiiiiiddddddddddd",
-        $id_persiapan, $no_urut, $bahan, $qty, $barang_jadi, $stok_order, 
-        $efisiensi_consp, $efisiensi_rap, $stok_material, $po, $harga_per_meter, 
-        $rap_x_harga_per_m, $total_harga_bahan, $biaya_tenaga_kerja_per_qty, 
-        $total_biaya_tenaga_kerja, $listrik, $air, $overhead, $total_biaya, 
-        $hpp, $profit, $harga_jual
-    );
-
-    if ($stmt->execute()) {
-        echo "<div class='alert alert-success'>Data HPP berhasil disimpan.</div>";
-    } else {
-        echo "<div class='alert alert-danger'>Error: " . $stmt->error . "</div>";
-    }
+if (!$stmt) {
+    die("SQL Error: " . mysqli_error($conn));
 }
 
-// Tampilkan data HPP + relasi persiapan
-$result = $conn->query("
-    SELECT hpp.*, persiapan.spp_no, persiapan.nama_barang
-    FROM hpp 
-    JOIN persiapan ON hpp.id_persiapan = persiapan.id
-    ORDER BY hpp.id DESC
-");
+mysqli_stmt_bind_param($stmt, "i", $id_persiapan);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$data_persiapan = mysqli_fetch_assoc($result);
+mysqli_stmt_close($stmt);
+
+if (!$data_persiapan) {
+    die("Data persiapan tidak ditemukan.");
+}
+
+
+// ---------------- GET TIMELINE ----------------
+$sql_timeline = "SELECT * FROM timeline WHERE id_persiapan = ? ORDER BY tanggal";
+$stmt_timeline = mysqli_prepare($conn, $sql_timeline);
+mysqli_stmt_bind_param($stmt_timeline, "i", $id_persiapan);
+mysqli_stmt_execute($stmt_timeline);
+$result_timeline = mysqli_stmt_get_result($stmt_timeline);
+$timeline = mysqli_fetch_all($result_timeline, MYSQLI_ASSOC);
+mysqli_stmt_close($stmt_timeline);
+
+// ---------------- GET DATA GUDANG ----------------
+$sql_gudang = "SELECT 
+        hpp.bahan,
+        hpp.qty,
+        hpp.harga_per_meter,
+        hpp.total_harga_bahan,
+        ig.stok_akhir,
+        ig.satuan,
+        g.nama AS nama_gudang
+    FROM hpp
+    LEFT JOIN inventory_gudang ig ON hpp.id_inventory = ig.id_inventory
+    LEFT JOIN gudang g ON ig.id_gudang = g.id
+    WHERE hpp.id_persiapan = ?";
+$stmt_gudang = mysqli_prepare($conn, $sql_gudang);
+mysqli_stmt_bind_param($stmt_gudang, "i", $id_persiapan);
+mysqli_stmt_execute($stmt_gudang);
+$result_gudang = mysqli_stmt_get_result($stmt_gudang);
+$gudang_items = mysqli_fetch_all($result_gudang, MYSQLI_ASSOC);
+mysqli_stmt_close($stmt_gudang);
+
 ?>
 
-<div class="main-content">
-    <h3>Manajemen HPP</h3>
+<div class="container mt-4">
+    <h2>Detail Persiapan</h2>
 
-    <!-- Form Tambah HPP -->
-    <form method="POST">
-        <div class="row">
-            <div class="col-md-3">
-                <label>ID Persiapan</label>
-                <input type="number" name="id_persiapan" class="form-control" required>
-            </div>
-            <div class="col-md-2">
-                <label>No Urut</label>
-                <input type="number" name="no_urut" class="form-control">
-            </div>
-            <div class="col-md-3">
-                <label>Bahan</label>
-                <input type="text" name="bahan" class="form-control">
-            </div>
-            <div class="col-md-2">
-                <label>Qty</label>
-                <input type="number" name="qty" class="form-control">
-            </div>
-            <div class="col-md-2">
-                <label>Barang Jadi</label>
-                <input type="number" name="barang_jadi" class="form-control">
-            </div>
+    <!-- Informasi Persiapan -->
+    <div class="card mt-3">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Informasi Persiapan</h5>
         </div>
+        <div class="card-body">
+            <p><strong>Nomor Persiapan:</strong> <?= htmlspecialchars($persiapan['nomor']); ?></p>
+            <p><strong>Tanggal:</strong> <?= htmlspecialchars($persiapan['tanggal']); ?></p>
+            <p><strong>Customer:</strong> <?= htmlspecialchars($persiapan['customer']); ?></p>
+            <p><strong>Item:</strong> <?= htmlspecialchars($persiapan['item']); ?></p>
+            <p><strong>Qty Order:</strong> <?= htmlspecialchars($persiapan['qty']); ?></p>
+            <p><strong>Keterangan:</strong> <?= htmlspecialchars($persiapan['keterangan']); ?></p>
+        </div>
+    </div>
 
-        <!-- Tambahkan input lainnya sesuai kebutuhan -->
+    <!-- Detail Produksi & Analisis Biaya -->
+    <div class="card mt-3">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Detail Produksi & Analisis Biaya</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Total Biaya Produksi:</strong> Rp <?= number_format($persiapan['total_biaya'], 0, ',', '.'); ?></p>
+            <p><strong>Harga Jual:</strong> Rp <?= number_format($persiapan['harga_jual'], 0, ',', '.'); ?></p>
+            <p><strong>Estimasi Laba:</strong> Rp <?= number_format($persiapan['estimasi_laba'], 0, ',', '.'); ?></p>
+        </div>
+    </div>
 
-        <button type="submit" name="save" class="btn btn-primary mt-3">Simpan</button>
-    </form>
+    <!-- Data Gudang / Pemakaian Bahan -->
+    <?php if (!empty($gudang_items)): ?>
+    <div class="card mt-3">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Data Gudang / Pemakaian Bahan</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead class="table-light">
+                    <tr>
+                        <th>No</th>
+                        <th>Gudang</th>
+                        <th>Bahan</th>
+                        <th>Qty Digunakan</th>
+                        <th>Stok Akhir</th>
+                        <th>Harga per Meter</th>
+                        <th>Total Harga Bahan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($gudang_items as $index => $item): ?>
+                    <tr>
+                        <td><?= $index + 1; ?></td>
+                        <td><?= htmlspecialchars($item['nama_gudang'] ?? '-'); ?></td>
+                        <td><?= htmlspecialchars($item['bahan']); ?></td>
+                        <td><?= number_format($item['qty']); ?> <?= $item['satuan']; ?></td>
+                        <td><?= number_format($item['stok_akhir']); ?> <?= $item['satuan']; ?></td>
+                        <td>Rp <?= number_format($item['harga_per_meter'], 0, ',', '.'); ?></td>
+                        <td>Rp <?= number_format($item['total_harga_bahan'], 0, ',', '.'); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <?php endif; ?>
 
-    <hr>
+    <!-- Files Section -->
+    <div class="card mt-3">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Files</h5>
+        </div>
+        <div class="card-body">
+            <?php if (empty($files)): ?>
+                <p>Tidak ada file diunggah.</p>
+            <?php else: ?>
+                <ul>
+                    <?php foreach ($files as $file): ?>
+                        <li><a href="uploads/<?= htmlspecialchars($file['filename']); ?>" target="_blank"><?= htmlspecialchars($file['filename']); ?></a></li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+        </div>
+    </div>
 
-    <!-- Tabel Data HPP -->
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>No Urut</th>
-                <th>Bahan</th>
-                <th>Qty</th>
-                <th>Barang Jadi</th>
-                <th>Total Biaya</th>
-                <th>HPP</th>
-                <th>Profit</th>
-                <th>Harga Jual</th>
-                <th>Persiapan</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php while ($row = $result->fetch_assoc()) { ?>
-                <tr>
-                    <td><?= $row['id'] ?></td>
-                    <td><?= $row['no_urut'] ?></td>
-                    <td><?= $row['bahan'] ?></td>
-                    <td><?= $row['qty'] ?></td>
-                    <td><?= $row['barang_jadi'] ?></td>
-                    <td><?= number_format($row['total_biaya'], 2) ?></td>
-                    <td><?= number_format($row['hpp'], 2) ?></td>
-                    <td><?= number_format($row['profit'], 2) ?>%</td>
-                    <td><?= number_format($row['harga_jual'], 2) ?></td>
-                    <td><?= $row['spp_no'] ?> - <?= $row['nama_barang'] ?></td>
-                </tr>
-            <?php } ?>
-        </tbody>
-    </table>
+    <!-- Timeline Section -->
+    <div class="card mt-3 mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Timeline Produksi</h5>
+        </div>
+        <div class="card-body">
+            <?php if (empty($timeline)): ?>
+                <p>Belum ada timeline.</p>
+            <?php else: ?>
+                <ul>
+                    <?php foreach ($timeline as $event): ?>
+                        <li><?= htmlspecialchars($event['tanggal']); ?> - <?= htmlspecialchars($event['deskripsi']); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+        </div>
+    </div>
 </div>
+
+<?php include 'includes/footer.php'; ?>
