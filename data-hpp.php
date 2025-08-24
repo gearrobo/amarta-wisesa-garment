@@ -1,4 +1,5 @@
 <?php
+session_start();
 include 'config/db.php';
 
 // Get Persiapan ID from URL parameter
@@ -217,7 +218,27 @@ if (isset($_POST['save'])) {
         );
         
         if ($stmt->execute()) {
+            $hpp_id = $stmt->insert_id;
             $success_msg = "Data HPP berhasil ditambahkan untuk SPP " . $persiapan_data['spp_no'];
+
+            // Create inventory transaction to reduce stock if inventory is selected
+            if ($id_inventory) {
+                $sql_transaksi = "INSERT INTO inventory_transaksi_gudang 
+                                  (inventory_gudang_id, jenis, jumlah_keluar, keterangan, tanggal_transaksi, user_id) 
+                                  VALUES (?, 'keluar', ?, ?, NOW(), ?)";
+                $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+                $keterangan_transaksi = "Pengurangan stok untuk HPP ID: " . $hpp_id . " - " . $bahan;
+
+                $stmt_transaksi = $conn->prepare($sql_transaksi);
+                $stmt_transaksi->bind_param("iisi", $id_inventory, $qty, $keterangan_transaksi, $user_id);
+                
+                if ($stmt_transaksi->execute()) {
+                    $success_msg .= " dan stok inventory berhasil dikurangi";
+                } else {
+                    $error_msg = "Data HPP berhasil ditambahkan tetapi gagal mengurangi stok inventory: " . $stmt_transaksi->error;
+                }
+                $stmt_transaksi->close();
+            }
         } else {
             $error_msg = "Gagal menambahkan data: " . $stmt->error;
         }
