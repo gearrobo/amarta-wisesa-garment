@@ -34,6 +34,130 @@ $sps_result = $sps_stmt->get_result();
 $sps_data = $sps_result->fetch_assoc();
 $sps_stmt->close();
 
+// Get HPP ID for editing
+$hpp_id = isset($_GET['edit']) ? intval($_GET['edit']) : 0;
+$hpp_data = null;
+
+// If we're editing, fetch the HPP data
+if ($hpp_id > 0) {
+    $hpp_query = "SELECT hpp.*, ig.nama_barang as nama_bahan, g.nama as nama_gudang
+                  FROM hpp
+                  LEFT JOIN inventory_gudang ig ON hpp.id_inventory = ig.id
+                  LEFT JOIN gudang g ON ig.id_gudang = g.id
+                  WHERE hpp.id = ? AND hpp.id_persiapan = ?";
+    $hpp_stmt = $conn->prepare($hpp_query);
+    $hpp_stmt->bind_param("ii", $hpp_id, $id_persiapan);
+    $hpp_stmt->execute();
+    $hpp_result = $hpp_stmt->get_result();
+    $hpp_data = $hpp_result->fetch_assoc();
+    $hpp_stmt->close();
+}
+
+// Update Data HPP
+if (isset($_POST['update'])) {
+    $hpp_id = $_POST['hpp_id'];
+    $id_inventory = $_POST['id_inventory'] ?? null;
+    $no_urut = $_POST['no_urut'];
+    $bahan = $_POST['bahan'];
+    $qty = $_POST['qty'];
+    $barang_jadi = $_POST['barang_jadi'];
+    $stok_order = $_POST['stok_order'] ?? 0;
+    $efisiensi_consp = $_POST['efisiensi_consp'] ?? 0;
+    $efisiensi_rap = $_POST['efisiensi_rap'] ?? 0;
+    $stok_material = $_POST['stok_material'] ?? 0;
+    $po = $_POST['po'] ?? 0;
+    $harga_per_meter = $_POST['harga_per_meter'] ?? 0;
+    $biaya_tenaga_kerja_per_qty = $_POST['biaya_tenaga_kerja_per_qty'] ?? 0;
+    $listrik = $_POST['listrik'] ?? 0;
+    $air = $_POST['air'] ?? 0;
+    $overhead = $_POST['overhead'] ?? 0;
+    $profit = $_POST['profit'] ?? 0;
+
+    // Hitung nilai-nilai yang perlu dihitung
+    $rap_x_harga_per_m = $efisiensi_rap * $harga_per_meter;
+    $total_harga_bahan = $qty * $rap_x_harga_per_m;
+    $total_biaya_tenaga_kerja = $qty * $biaya_tenaga_kerja_per_qty;
+    $total_biaya = $total_harga_bahan + $total_biaya_tenaga_kerja + $listrik + $air + $overhead;
+    $hpp = $qty > 0 ? $total_biaya / $qty : 0;
+    $harga_jual = $hpp * (1 + ($profit / 100));
+
+    $sql = "UPDATE hpp SET 
+                id_inventory = ?, 
+                no_urut = ?, 
+                bahan = ?, 
+                qty = ?, 
+                barang_jadi = ?, 
+                stok_order = ?, 
+                efisiensi_consp = ?, 
+                efisiensi_rap = ?, 
+                stok_material = ?, 
+                po = ?, 
+                harga_per_meter = ?, 
+                rap_x_harga_per_m = ?, 
+                total_harga_bahan = ?, 
+                biaya_tenaga_kerja_per_qty = ?, 
+                total_biaya_tenaga_kerja = ?, 
+                listrik = ?, 
+                air = ?, 
+                overhead = ?, 
+                total_biaya = ?, 
+                hpp = ?, 
+                profit = ?, 
+                harga_jual = ?
+            WHERE id = ? AND id_persiapan = ?";
+    
+    $stmt = $conn->prepare($sql);
+    if ($stmt) {
+        $stmt->bind_param("issiiidddiiddddddddddii", 
+            $id_inventory, 
+            $no_urut, 
+            $bahan, 
+            $qty, 
+            $barang_jadi, 
+            $stok_order, 
+            $efisiensi_consp, 
+            $efisiensi_rap, 
+            $stok_material, 
+            $po, 
+            $harga_per_meter, 
+            $rap_x_harga_per_m, 
+            $total_harga_bahan, 
+            $biaya_tenaga_kerja_per_qty, 
+            $total_biaya_tenaga_kerja, 
+            $listrik, 
+            $air, 
+            $overhead, 
+            $total_biaya, 
+            $hpp, 
+            $profit, 
+            $harga_jual,
+            $hpp_id,
+            $id_persiapan
+        );
+        
+        if ($stmt->execute()) {
+            $success_msg = "Data HPP berhasil diperbarui";
+            // Refresh data
+            $hpp_query = "SELECT hpp.*, ig.nama_barang as nama_bahan, g.nama as nama_gudang
+                          FROM hpp
+                          LEFT JOIN inventory_gudang ig ON hpp.id_inventory = ig.id
+                          LEFT JOIN gudang g ON ig.id_gudang = g.id
+                          WHERE hpp.id = ? AND hpp.id_persiapan = ?";
+            $hpp_stmt = $conn->prepare($hpp_query);
+            $hpp_stmt->bind_param("ii", $hpp_id, $id_persiapan);
+            $hpp_stmt->execute();
+            $hpp_result = $hpp_stmt->get_result();
+            $hpp_data = $hpp_result->fetch_assoc();
+            $hpp_stmt->close();
+        } else {
+            $error_msg = "Gagal memperbarui data: " . $stmt->error;
+        }
+        $stmt->close();
+    } else {
+        $error_msg = "Error dalam persiapan query: " . $conn->error;
+    }
+}
+
 // Tambah Data HPP
 if (isset($_POST['save'])) {
     $id_inventory = $_POST['id_inventory'] ?? null;
@@ -218,6 +342,15 @@ $inventory_result = $conn->query($inventory_query);
             font-weight: 600;
         }
         
+        .btn-warning-custom {
+            background: linear-gradient(135deg, var(--warning) 0%, #e67e22 100%);
+            border: none;
+            border-radius: 6px;
+            padding: 5px 15px;
+            font-weight: 600;
+            color: white;
+        }
+        
         .btn-danger-custom {
             background: linear-gradient(135deg, var(--accent) 0%, #c0392b 100%);
             border: none;
@@ -350,7 +483,7 @@ $inventory_result = $conn->query($inventory_query);
                 <p class="mb-0">Artikel: <?= htmlspecialchars($sps_data['artikel']) ?> | Produk: <?= htmlspecialchars($persiapan_data['nama_barang']) ?></p>
             </div>
             <div>
-                <a href="hpp_list.php" class="btn btn-light">Kembali ke Semua HPP</a>
+                <a href="persiapan.php" class="btn btn-light">Kembali ke Semua HPP</a>
             </div>
         </div>
     </div>
@@ -392,7 +525,7 @@ $inventory_result = $conn->query($inventory_query);
                             $count++;
                         }
                         $result->data_seek(0); // Reset pointer
-                        echo 'Rp ' . number_format($count > 0 ? $total_hpp / $count : 0, 0, ',', '.');
+                        echo 'Rp ' . number_format($count > 0 ? $total_hpp  : 0, 0, ',', '.');
                     } else {
                         echo 'Rp 0';
                     }
@@ -449,8 +582,9 @@ $inventory_result = $conn->query($inventory_query);
 
     <!-- Tabel -->
     <div class="card card-custom">
-        <div class="card-header card-header-custom">
+        <div class="card-header card-header-custom d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0">Daftar Data HPP untuk SPP <?= htmlspecialchars($persiapan_data['spp_no']) ?></h5>
+            <input type="text" class="form-control search-input" placeholder="Cari data HPP..." style="max-width: 300px;">
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -486,7 +620,10 @@ $inventory_result = $conn->query($inventory_query);
                             <td>Rp <?= number_format($row['harga_jual'] ?? 0, 2, ',', '.') ?></td>
                             <td><span class="status-badge status-active"><?= htmlspecialchars($row['profit'] ?? 0) ?>%</span></td>
                             <td>
-                                <a href="?id=<?= $id_persiapan ?>&delete=<?= $row['id'] ?>" class="btn btn-sm btn-danger-custom"
+                                <a href="?id=<?= $id_persiapan ?>&edit=<?= $row['id'] ?>" class="btn btn-warning-custom btn-sm mb-1">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="?id=<?= $id_persiapan ?>&delete=<?= $row['id'] ?>" class="btn btn-danger-custom btn-sm"
                                     onclick="return confirm('Yakin hapus data HPP ini?')">
                                     <i class="fas fa-trash"></i>
                                 </a>
@@ -525,6 +662,7 @@ $inventory_result = $conn->query($inventory_query);
                             <select name="id_inventory" class="form-control" id="addInventory" onchange="updateInventoryInfo('add')">
                                 <option value="">Pilih Inventory</option>
                                 <?php
+                                $inventory_result->data_seek(0);
                                 while($opt = $inventory_result->fetch_assoc()):
                                 ?>
                                     <option value="<?= $opt['id'] ?>" 
@@ -633,14 +771,146 @@ $inventory_result = $conn->query($inventory_query);
     </div>
 </div>
 
+<!-- Modal Edit -->
+<?php if ($hpp_id > 0 && $hpp_data): ?>
+<div class="modal fade show" id="editModal" tabindex="-1" style="display: block; padding-right: 17px;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post">
+                <div class="modal-header modal-header-custom">
+                    <h5 class="modal-title">Edit Data HPP</h5>
+                    <a href="?id=<?= $id_persiapan ?>" class="btn-close btn-close-white"></a>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="hpp_id" value="<?= $hpp_data['id'] ?>">
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">Inventory</label>
+                            <select name="id_inventory" class="form-control" id="editInventory" onchange="updateInventoryInfo('edit')">
+                                <option value="">Pilih Inventory</option>
+                                <?php
+                                $inventory_result->data_seek(0);
+                                while($opt = $inventory_result->fetch_assoc()):
+                                    $selected = ($opt['id'] == $hpp_data['id_inventory']) ? 'selected' : '';
+                                ?>
+                                    <option value="<?= $opt['id'] ?>" 
+                                            data-stok="<?= $opt['stok_akhir'] ?>" 
+                                            data-harga="<?= $opt['harga_per_unit'] ?>" 
+                                            data-gudang="<?= $opt['nama_gudang'] ?>"
+                                            data-bahan="<?= $opt['nama_barang'] ?>"
+                                            <?= $selected ?>>
+                                        <?= $opt['nama_gudang'] ?> - <?= $opt['nama_barang'] ?> (Stok: <?= $opt['stok_akhir'] ?>)
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="editInventoryInfo" class="inventory-info">
+                        <strong>Informasi Inventory:</strong>
+                        <div>Gudang: <span id="editGudangInfo"><?= $hpp_data['nama_gudang'] ?? '-' ?></span></div>
+                        <div>Stok Tersedia: <span id="editStokInfo"><?= $hpp_data['stok_material'] ?? 0 ?></span></div>
+                        <div>Harga per Unit: Rp <span id="editHargaInfo"><?= number_format($hpp_data['harga_per_meter'] ?? 0, 2, ',', '.') ?></span></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">No Urut</label>
+                            <input type="text" name="no_urut" class="form-control" value="<?= $hpp_data['no_urut'] ?>" required>
+                        </div>
+                        <div class="col-md-8 mb-2">
+                            <label class="form-label">Bahan</label>
+                            <input type="text" name="bahan" class="form-control" id="editBahan" value="<?= $hpp_data['bahan'] ?>" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">QTY</label>
+                            <input type="number" name="qty" class="form-control" value="<?= $hpp_data['qty'] ?>" required min="1">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Barang Jadi</label>
+                            <input type="number" name="barang_jadi" class="form-control" value="<?= $hpp_data['barang_jadi'] ?>" required min="0">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Stok Order</label>
+                            <input type="number" name="stok_order" class="form-control" value="<?= $hpp_data['stok_order'] ?? 0 ?>" min="0">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Efisiensi Consp</label>
+                            <input type="number" step="0.01" name="efisiensi_consp" class="form-control" value="<?= $hpp_data['efisiensi_consp'] ?? 1.00 ?>" min="0.1" max="2.0">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Efisiensi RAP</label>
+                            <input type="number" step="0.01" name="efisiensi_rap" class="form-control" value="<?= $hpp_data['efisiensi_rap'] ?? 1.00 ?>" min="0.1" max="2.0">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Stok Material</label>
+                            <input type="number" name="stok_material" class="form-control" id="editStokMaterial" value="<?= $hpp_data['stok_material'] ?? 0 ?>" min="0">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">PO</label>
+                            <input type="number" name="po" class="form-control" value="<?= $hpp_data['po'] ?? 0 ?>" min="0">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Harga per Meter</label>
+                            <input type="number" step="0.01" name="harga_per_meter" class="form-control" id="editHargaPerMeter" value="<?= $hpp_data['harga_per_meter'] ?? 0 ?>" min="0">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Biaya Tenaga Kerja per Qty</label>
+                            <input type="number" step="0.01" name="biaya_tenaga_kerja_per_qty" class="form-control" value="<?= $hpp_data['biaya_tenaga_kerja_per_qty'] ?? 0 ?>" min="0">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Listrik</label>
+                            <input type="number" step="0.01" name="listrik" class="form-control" value="<?= $hpp_data['listrik'] ?? 0 ?>" min="0">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Air</label>
+                            <input type="number" step="0.01" name="air" class="form-control" value="<?= $hpp_data['air'] ?? 0 ?>" min="0">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Overhead</label>
+                            <input type="number" step="0.01" name="overhead" class="form-control" value="<?= $hpp_data['overhead'] ?? 0 ?>" min="0">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Profit (%)</label>
+                            <input type="number" step="0.01" name="profit" class="form-control" value="<?= $hpp_data['profit'] ?? 30 ?>" min="0" max="100">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="update" class="btn btn-primary-custom">Update Data</button>
+                    <a href="?id=<?= $id_persiapan ?>" class="btn btn-secondary">Batal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade show"></div>
+<?php endif; ?>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 function updateInventoryInfo(type) {
-    const selectElement = document.getElementById('addInventory');
-    const infoElement = document.getElementById('addInventoryInfo');
-    const gudangElement = document.getElementById('addGudangInfo');
-    const stokElement = document.getElementById('addStokInfo');
-    const hargaElement = document.getElementById('addHargaInfo');
+    const selectElement = document.getElementById(type + 'Inventory');
+    const infoElement = document.getElementById(type + 'InventoryInfo');
+    const gudangElement = document.getElementById(type + 'GudangInfo');
+    const stokElement = document.getElementById(type + 'StokInfo');
+    const hargaElement = document.getElementById(type + 'HargaInfo');
     
     const selectedOption = selectElement.options[selectElement.selectedIndex];
     
@@ -657,9 +927,9 @@ function updateInventoryInfo(type) {
         infoElement.style.display = 'block';
         
         // Auto-fill fields
-        document.getElementById('addBahan').value = bahan;
-        document.getElementById('addStokMaterial').value = stok;
-        document.getElementById('addHargaPerMeter').value = harga;
+        document.getElementById(type + 'Bahan').value = bahan;
+        document.getElementById(type + 'StokMaterial').value = stok;
+        document.getElementById(type + 'HargaPerMeter').value = harga;
     } else {
         infoElement.style.display = 'none';
     }
@@ -667,11 +937,7 @@ function updateInventoryInfo(type) {
 
 // Search functionality
 document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.createElement('input');
-    searchInput.type = 'text';
-    searchInput.placeholder = 'Cari data HPP...';
-    searchInput.className = 'form-control search-input mb-3';
-    searchInput.style.maxWidth = '300px';
+    const searchInput = document.querySelector('.search-input');
     
     searchInput.addEventListener('keyup', function() {
         const searchText = this.value.toLowerCase();
@@ -687,8 +953,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    const cardHeader = document.querySelector('.card-header-custom');
-    cardHeader.appendChild(searchInput);
+    // Auto show edit modal if editing
+    <?php if ($hpp_id > 0 && $hpp_data): ?>
+    const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+    editModal.show();
+    <?php endif; ?>
 });
 </script>
 </body>

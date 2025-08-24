@@ -167,7 +167,7 @@ if ($stmt_files) {
                             <td>Rp <?= number_format($item['total_harga_bahan'] ?? 0, 0, ',', '.'); ?></td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <a href="tes.php?id=<?= $id_persiapan; ?>" class="btn btn-sm btn-info" title="Detail">
+                                    <a href="data-hpp.php?id=<?= $id_persiapan; ?>" class="btn btn-sm btn-info" title="Detail">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </div>
