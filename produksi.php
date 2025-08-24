@@ -12,8 +12,22 @@ include 'config/db.php';
 // Include header
 include 'includes/header.php';
 
-// Handle form submissions (if any)
-// Add your form handling logic here
+// Handle form submissions
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $nama = $_POST['nama'];
+    $tanggal = $_POST['tanggal'];
+
+    // Insert into database
+    $sql = "INSERT INTO produksi (nama, tanggal) VALUES (?, ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "ss", $nama, $tanggal);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    $_SESSION['success'] = "Data produksi berhasil ditambahkan!";
+    header("Location: produksi.php");
+    exit();
+}
 
 $sql = "SELECT * FROM produksi ORDER BY id_produksi DESC";
 $result = mysqli_query($conn, $sql);
@@ -24,6 +38,8 @@ if (!$result) {
     $produksiList = mysqli_fetch_all($result, MYSQLI_ASSOC);
 }
 ?>
+
+
 
 <div class="main-content">
     <div class="row">
@@ -37,6 +53,26 @@ if (!$result) {
                     <li class="breadcrumb-item active">Data Produksi</li>
                 </ol>
             </nav>
+
+            <!-- Form for adding new production -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Tambah Produksi</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="">
+            <div class="mb-3">
+                <label for="nama" class="form-label">Nama Produksi</label>
+                <input type="text" name="nama" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="tanggal" class="form-label">Tanggal</label>
+                <input type="date" name="tanggal" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Simpan</button>
+        </form>
+    </div>
+</div>
 
             <!-- Alert Messages -->
             <?php if (isset($_SESSION['success'])): ?>
