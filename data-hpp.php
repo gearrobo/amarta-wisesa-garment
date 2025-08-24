@@ -108,7 +108,7 @@ if (isset($_POST['update'])) {
     
     $stmt = $conn->prepare($sql);
     if ($stmt) {
-        $stmt->bind_param("issiiidddiiddddddddddii", 
+        $stmt->bind_param("issiiididiiddddddddddii", 
             $id_inventory, 
             $no_urut, 
             $bahan, 
@@ -190,7 +190,7 @@ if (isset($_POST['save'])) {
     
     $stmt = $conn->prepare($sql);
     if ($stmt) {
-        $stmt->bind_param("iissiiidddiiddddddddddd", 
+        $stmt->bind_param("iissiiididiiddddddddddd", 
             $id_persiapan, 
             $id_inventory, 
             $no_urut, 
@@ -717,7 +717,7 @@ $inventory_result = $conn->query($inventory_query);
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Efisiensi RAP</label>
-                            <input type="number" step="0.01" name="efisiensi_rap" class="form-control" value="1.00" min="0.1" max="2.0">
+                            <input type="number" name="efisiensi_rap" class="form-control" value="0">
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Stok Material</label>
@@ -847,7 +847,7 @@ $inventory_result = $conn->query($inventory_query);
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Efisiensi RAP</label>
-                            <input type="number" step="0.01" name="efisiensi_rap" class="form-control" value="<?= $hpp_data['efisiensi_rap'] ?? 1.00 ?>" min="0.1" max="2.0">
+                            <input type="number" name="efisiensi_rap" class="form-control" value="<?= $hpp_data['efisiensi_rap']?>">
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Stok Material</label>
