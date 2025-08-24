@@ -52,16 +52,24 @@ if (isset($_POST['save'])) {
     $sppo           = $_POST['sppo'];
     $harga          = floatval($_POST['harga']);
 
-    $sql = "INSERT INTO hpp (id_persiapan, no_urut, gudang, id_inventory, jumlah, satuan, barang_jadi, consp, stok_material, purchase_order, sppo, harga) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO hpp 
+        (id_persiapan, id_inventory, no_urut, qty, satuan, barang_jadi, efisiensi_consp, stok_material, po, total_harga_bahan) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     if ($stmt = mysqli_prepare($conn, $sql)) {
         mysqli_stmt_bind_param(
-        $stmt, "isiiissssssd",
-        $id_persiapan, $no_urut, $gudang, $kategori_barang, $jumlah,
-        $satuan, $barang_jadi, $consp, $stok_material, $purchase_order,
-        $sppo, $harga
-    );
+          $stmt, "iisisssidi",
+          $id_persiapan, 
+          $kategori_barang,   // ini id_inventory
+          $no_urut, 
+          $jumlah, 
+          $satuan, 
+          $barang_jadi, 
+          $consp, 
+          $stok_material, 
+          $purchase_order, 
+          $harga   // bisa dipakai untuk total_harga_bahan dulu
+      );
         
         if (mysqli_stmt_execute($stmt)) {
             mysqli_stmt_close($stmt);
@@ -92,15 +100,23 @@ if (isset($_POST['update'])) {
     $harga          = $_POST['harga'];
 
     $sql = "UPDATE hpp 
-            SET gudang=?, kategori_barang=?, jumlah=?, satuan=?, barang_jadi=?, consp=?, stok_material=?, purchase_order=?, sppo=?, harga=? 
-            WHERE id_hpp=? AND id_persiapan=?";
+        SET id_inventory=?, qty=?, satuan=?, barang_jadi=?, efisiensi_consp=?, stok_material=?, po=?, total_harga_bahan=? 
+        WHERE id=? AND id_persiapan=?";
 
     if ($stmt = mysqli_prepare($conn, $sql)) {
         mysqli_stmt_bind_param(
-          $stmt, "ii d ssssss dii",
-          $gudang, $kategori_barang, $jumlah, $satuan, $barang_jadi, $consp,
-          $stok_material, $purchase_order, $sppo, $harga, $id_hpp, $id_persiapan
-        );
+        $stmt, "iisssiddi",
+        $kategori_barang, // id_inventory
+        $jumlah,
+        $satuan,
+        $barang_jadi,
+        $consp,
+        $stok_material,
+        $purchase_order,
+        $harga,
+        $id_hpp,
+        $id_persiapan
+      );
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
     }
@@ -111,7 +127,7 @@ if (isset($_POST['update'])) {
 // ---------------------------
 if (isset($_GET['delete'])) {
     $id_hpp = $_GET['delete'];
-    $sql = "DELETE FROM hpp WHERE id_hpp=?";
+    $sql = "DELETE FROM hpp WHERE id=?";
     if ($stmt = mysqli_prepare($conn, $sql)) {
         mysqli_stmt_bind_param($stmt, "i", $id_hpp);
         mysqli_stmt_execute($stmt);
@@ -127,10 +143,10 @@ $total_hpp = 0;
 $id_persiapan = intval($_GET['id'] ?? 0);
 
 
-$sql = "SELECT hpp.*, g.nama, inv.nama_barang 
+$sql = "SELECT hpp.*, g.nama AS nama_gudang, inv.nama_barang 
         FROM hpp 
-        LEFT JOIN gudang g ON hpp.gudang = g.id 
         LEFT JOIN inventory_gudang ig ON hpp.id_inventory = ig.id_inventory 
+        LEFT JOIN gudang g ON ig.id_gudang = g.id 
         LEFT JOIN inventory inv ON ig.id_inventory = inv.id 
         WHERE hpp.id_persiapan=? 
         ORDER BY hpp.no_urut ASC";

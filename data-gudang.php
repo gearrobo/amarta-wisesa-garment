@@ -118,7 +118,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // Get all warehouses
 $sql = "SELECT * FROM gudang ORDER BY id_gudang DESC";
 $result = mysqli_query($conn, $sql);
-$gudangList = mysqli_fetch_all($result, MYSQLI_ASSOC);
+if (!$result) {
+    $gudangList = [];
+    error_log("Database query failed: " . mysqli_error($conn));
+} else {
+    $gudangList = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    if (!$gudangList) {
+        $gudangList = [];
+    }
+}
 ?>
 
 <div class="main-content">
@@ -173,14 +181,10 @@ $gudangList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Daftar Gudang</h5>
-                        
                         </div>
                         <div>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahGudangModal">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahGudangModal">
                                     <i class="fas fa-plus"></i> <strong>TAMBAH DAFTAR GUDANG</strong>
-                                </button>
-                                <button type="button" class="btn btn-success">
-                                    <i class="fas fa-file-excel"></i> <strong>EXPORT EXCEL</strong>
                                 </button>
                             </div>
                         <div class="card-body">
@@ -254,7 +258,15 @@ $gudangList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                     $inventoryGudangQuery .= " ORDER BY ig.nama_barang ASC";
                     
                     $inventoryGudangResult = mysqli_query($conn, $inventoryGudangQuery);
-                    $inventoryGudangList = mysqli_fetch_all($inventoryGudangResult, MYSQLI_ASSOC);
+                    if (!$inventoryGudangResult) {
+                        $inventoryGudangList = [];
+                        error_log("Database query failed: " . mysqli_error($conn));
+                    } else {
+                        $inventoryGudangList = mysqli_fetch_all($inventoryGudangResult, MYSQLI_ASSOC);
+                        if (!$inventoryGudangList) {
+                            $inventoryGudangList = [];
+                        }
+                    }
                     ?>
                     
                     <div class="card">
