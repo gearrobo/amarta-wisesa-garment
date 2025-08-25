@@ -3,7 +3,7 @@
 session_start();
 
 // Include header and database configuration
-include 'includes/header.php';
+// include 'includes/header.php';
 include 'config/db.php';
 
 // Check if ID is provided
@@ -24,6 +24,8 @@ mysqli_stmt_bind_param($stmt, "i", $id);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $inventory = mysqli_fetch_assoc($result);
+
+
 
 if (!$inventory) {
     header("Location: inventory.php");
@@ -59,7 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         mysqli_stmt_bind_param($stmt, "ssssidsi", 
             $kode_barang, $nama_barang, $warehouse, $unit, 
             $jumlah, $harga_per_unit, $keterangan, $id
+       
         );
+
 
         if (mysqli_stmt_execute($stmt)) {
             $success = "Data inventory berhasil diperbarui!";
@@ -75,7 +79,66 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "Gagal memperbarui data: " . mysqli_error($conn);
         }
     }
-}
+
+        $stmt = $conn->prepare("SELECT id, nama FROM gudang WHERE nama = ?");
+        $stmt->bind_param("s", $warehouse);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($row = $result->fetch_assoc()) {
+            $id_gudang = $row['id'];   
+        } 
+
+        $stmt6 = $conn->prepare("SELECT * FROM inventory_gudang WHERE id_gudang = ? AND nama_barang = ?");
+        $stmt6->bind_param("is", $id_gudang, $nama_barang);
+        $stmt6->execute();
+        $result6 = $stmt6->get_result();
+
+        if ($row6 = $result6->fetch_assoc()) {
+            $stock_existing = $row6['jumlah'];
+            $id_inventory_gudang = $row6['id'];
+        } else {
+            echo "Data tidak ditemukan";
+        }
+
+        $jumlah_awal = $inventory['jumlah'];
+
+        if ($jumlah > $jumlah_awal){
+            $jumlah_baru = $stock_existing + ($jumlah - $jumlah_awal);
+            echo $jumlah_baru;
+            $sql_update = "UPDATE inventory_gudang 
+               SET jumlah = ?, stok_akhir = ?, tanggal_update = NOW() 
+               WHERE id = ?";
+
+            $stmt = $conn->prepare($sql_update);
+            $stmt->bind_param("iii", $jumlah_baru, $jumlah_baru, $id_inventory_gudang); 
+            // i = integer, s = string, d = double
+
+            if ($stmt->execute()) {
+                echo "Update berhasil!";
+            } else {
+                echo "Gagal update: " . $stmt->error;
+            }
+        }elseif ($jumlah < $jumlah_awal) {
+            $jumlah_baru = $stock_existing - ($jumlah_awal - $jumlah);
+            echo $jumlah_baru;
+            $sql_update = "UPDATE inventory_gudang 
+               SET jumlah = ?, stok_akhir = ?, tanggal_update = NOW() 
+               WHERE id = ?";
+
+            $stmt = $conn->prepare($sql_update);
+            $stmt->bind_param("iii", $jumlah_baru, $jumlah_baru, $id_inventory_gudang); 
+            // i = integer, s = string, d = double
+
+            if ($stmt->execute()) {
+                echo "Update berhasil!";
+            } else {
+                echo "Gagal update: " . $stmt->error;
+            }
+        }
+        
+    }
+
 ?>
 
 <div class="main-content">

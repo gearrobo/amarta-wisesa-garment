@@ -209,13 +209,13 @@ $kategori_barang = $conn->query("SELECT * FROM kategori_barang ORDER BY nama_kat
 $total_stok = $conn->query("SELECT SUM(jumlah) as total FROM inventory")->fetch_assoc()['total'] ?? 0;
 
 // Hitung jumlah barang keluar (dengan asumsi ada tabel transaksi)
-$barang_keluar = $conn->query("SELECT SUM(jumlah_keluar) as total FROM inventory_transaksi WHERE jenis = 'keluar'")->fetch_assoc()['total'] ?? 0;
+$barang_keluar = $conn->query("SELECT SUM(jumlah_keluar) as total FROM inventory_transaksi_gudang WHERE jenis = 'keluar'")->fetch_assoc()['total'] ?? 0;
 
 // Hitung jumlah barang masuk (total jenis barang/nama barang yang berbeda)
 $barang_masuk = $conn->query("SELECT COUNT(DISTINCT nama_barang) as total FROM inventory")->fetch_assoc()['total'] ?? 0;
 
 // Hitung jumlah barang masuk dari transaksi (dengan asumsi ada tabel transaksi)
-$barang_masuk_transaksi = $conn->query("SELECT SUM(jumlah_masuk) as total FROM inventory_transaksi WHERE jenis = 'masuk'")->fetch_assoc()['total'] ?? 0;
+$barang_masuk_transaksi = $conn->query("SELECT SUM(jumlah_masuk) as total FROM inventory_transaksi_gudang WHERE jenis = 'masuk'")->fetch_assoc()['total'] ?? 0;
 
 // Jika tabel inventory_transaksi belum ada, gunakan jumlah jenis barang
 if ($barang_keluar == 0 && $barang_masuk_transaksi == 0) {
