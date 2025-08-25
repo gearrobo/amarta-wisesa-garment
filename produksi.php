@@ -2,79 +2,220 @@
 include 'includes/header.php';
 include 'config/db.php';
 
-// Ambil data dari persiapan + join ke sps untuk customer & item
-$sql = "SELECT 
-            p.id,
-            s.customer AS nama_customer,
-            s.item,
-            p.jumlah,
-            p.sp_srx AS no_spk
-        FROM persiapan p
-        JOIN sps s ON p.id_sps = s.id";
-$result = $conn->query($sql);
+// --- Handle Simpan Produksi ---
+if (isset($_POST['save'])) {
+    $id_sps      = intval($_POST['id_sps']);
+    $id_persiapan = intval($_POST['id_persiapan']);
+    $kerjaan     = $_POST['kerjaan'];
+    $target      = intval($_POST['target']);
+    $hasil       = intval($_POST['hasil']);
+    $pekerja     = $_POST['pekerja'];
+    $status      = $_POST['status'];
+    $qc          = $_POST['qc'];
+
+    if ($_POST['id'] == "") {
+        // Insert baru
+        $stmt = $conn->prepare("INSERT INTO produksi 
+            (id_sps, id_persiapan, kerjaan, target, hasil, pekerja, status, qc) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("iisiiiss", $id_sps, $id_persiapan, $kerjaan, $target, $hasil, $pekerja, $status, $qc);
+        $stmt->execute();
+    } else {
+        // Update
+        $id = intval($_POST['id']);
+        $stmt = $conn->prepare("UPDATE produksi 
+            SET id_sps=?, id_persiapan=?, kerjaan=?, target=?, hasil=?, pekerja=?, status=?, qc=? 
+            WHERE id=?");
+        $stmt->bind_param("iisiiissi", $id_sps, $id_persiapan, $kerjaan, $target, $hasil, $pekerja, $status, $qc, $id);
+        $stmt->execute();
+    }
+    header("Location: produksi.php");
+    exit();
+}
+
+// --- Handle Hapus ---
+if (isset($_GET['delete'])) {
+    $id = intval($_GET['delete']);
+    $conn->query("DELETE FROM produksi WHERE id=$id");
+    header("Location: produksi.php");
+    exit();
+}
+
+// --- Ambil Data Produksi ---
+$sql = "SELECT p.*, s.sps_no, s.customer, ps.spp_no, ps.nama_barang 
+        FROM produksi p
+        LEFT JOIN sps s ON p.id_sps = s.id
+        LEFT JOIN persiapan ps ON p.id_persiapan = ps.id
+        ORDER BY p.id DESC";
+$produksi = $conn->query($sql);
+
+// --- Ambil SPS untuk dropdown awal ---
+$sps = $conn->query("SELECT id, sps_no, customer, item FROM sps ORDER BY sps_no ASC");
 ?>
 
 <div class="main-content">
+    <h2>Data Produksi</h2>
+    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#produksiModal" onclick="addProduksi()">Tambah Produksi</button>
 
-    <div>
-        <h1 class="h3 mb-4">Produksi</h1>
-        
-        <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
-                <li class="breadcrumb-item active">Produksi</li>
-            </ol>
-        </nav>
-    </div>
-
-    <!-- Table Container -->
-    <div class="table-container">
-        <div class="table-responsive">
-            <table id="produksiTable" class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Nama Customer</th>
-                        <th>Item</th>
-                        <th>Jumlah</th>
-                        <th>No SPK</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if ($result->num_rows > 0): ?>
-                        <?php while($row = $result->fetch_assoc()): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($row['nama_customer']) ?></td>
-                                <td><?= htmlspecialchars($row['item']) ?></td>
-                                <td><?= htmlspecialchars($row['jumlah']) ?></td>
-                                <td><?= htmlspecialchars($row['no_spk']) ?></td>
-                                <td>
-                                    <div class="btn-group btn-group-sm" role="group">
-                                    <a href="detail-produksi.php?id=<?= $row['id'] ?>" class="btn btn-info" title="Detail">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <button class="btn btn-warning" onclick="editPersiapan(<?= $row['id'] ?>)" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-danger" onclick="deletePersiapan(<?= $row['id'] ?>)" title="Hapus">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <a href="generate_summary.php?id=<?= $row['id'] ?>" class="btn btn-secondary" title="Print" target="_blank">
-                                        <i class="fas fa-print"></i>
-                                    </a>
-                                </div>
-                                </td>
-                            </tr>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <tr><td colspan="5" class="text-center">Belum ada data</td></tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>No SPS</th>
+                <th>Customer</th>
+                <th>SPP No / Barang</th>
+                <th>Pekerjaan</th>
+                <th>Target</th>
+                <th>Hasil</th>
+                <th>Pekerja</th>
+                <th>Status</th>
+                <th>QC</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php $no=1; while($row = $produksi->fetch_assoc()): ?>
+            <tr>
+                <td><?= $no++ ?></td>
+                <td><?= $row['sps_no'] ?></td>
+                <td><?= $row['customer'] ?></td>
+                <td><?= $row['spp_no'].' | '.$row['nama_barang'] ?></td>
+                <td><?= $row['kerjaan'] ?></td>
+                <td><?= $row['target'] ?></td>
+                <td><?= $row['hasil'] ?></td>
+                <td><?= $row['pekerja'] ?></td>
+                <td><?= $row['status'] ?></td>
+                <td><?= $row['qc'] ?></td>
+                <td>
+                    <button class="btn btn-warning btn-sm" 
+                        onclick="editProduksi(<?= htmlspecialchars(json_encode($row)) ?>)">Edit</button>
+                    <a href="?delete=<?= $row['id'] ?>" class="btn btn-danger btn-sm"
+                        onclick="return confirm('Hapus data ini?')">Hapus</a>
+                </td>
+            </tr>
+            <?php endwhile; ?>
+        </tbody>
+    </table>
 </div>
 
+<!-- Modal Tambah/Edit Produksi -->
+<div class="modal fade" id="produksiModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post">
+        <div class="modal-header">
+          <h5 class="modal-title">Form Produksi</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" name="id" id="id">
 
-<?php include'includes/footer.php'; ?>
+            <!-- Dropdown SPS -->
+            <div class="mb-3">
+                <label>No SPS</label>
+                <select name="id_sps" id="id_sps" class="form-control" required>
+                    <option value="">-- Pilih SPS --</option>
+                    <?php while($row = $sps->fetch_assoc()): ?>
+                        <option value="<?= $row['id'] ?>">
+                            <?= $row['sps_no'] ?> | <?= $row['customer'] ?> | <?= $row['item'] ?>
+                        </option>
+                    <?php endwhile; ?>
+                </select>
+            </div>
+
+            <!-- Dropdown Persiapan -->
+            <div class="mb-3">
+                <label>SPP No / Barang</label>
+                <select name="id_persiapan" id="id_persiapan" class="form-control" required>
+                    <option value="">-- Pilih Persiapan --</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>Pekerjaan</label>
+                <input type="text" name="kerjaan" id="kerjaan" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Target</label>
+                <input type="number" name="target" id="target" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label>Hasil</label>
+                <input type="number" name="hasil" id="hasil" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label>Pekerja</label>
+                <input type="text" name="pekerja" id="pekerja" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label>Status</label>
+                <select name="status" id="status" class="form-control">
+                    <option value="pending">Pending</option>
+                    <option value="proses">Proses</option>
+                    <option value="selesai">Selesai</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label>QC</label>
+                <input type="text" name="qc" id="qc" class="form-control">
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" name="save" class="btn btn-success">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- jQuery & Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+function addProduksi(){
+    $("#id").val("");
+    $("#id_sps").val("");
+    $("#id_persiapan").html('<option value="">-- Pilih Persiapan --</option>');
+    $("#kerjaan, #target, #hasil, #pekerja, #qc").val("");
+    $("#status").val("pending");
+}
+
+// Edit: isi form dengan data row
+function editProduksi(data){
+    $("#id").val(data.id);
+    $("#id_sps").val(data.id_sps).trigger("change");
+    setTimeout(function(){ $("#id_persiapan").val(data.id_persiapan); }, 500);
+    $("#kerjaan").val(data.kerjaan);
+    $("#target").val(data.target);
+    $("#hasil").val(data.hasil);
+    $("#pekerja").val(data.pekerja);
+    $("#status").val(data.status);
+    $("#qc").val(data.qc);
+    $("#produksiModal").modal("show");
+}
+
+// AJAX untuk ambil Persiapan berdasarkan SPS
+$("#id_sps").change(function(){
+    var id_sps = $(this).val();
+    $.ajax({
+        url: "produksi.php",
+        type: "POST",
+        data: {get_persiapan: 1, id_sps: id_sps},
+        success: function(data){
+            $("#id_persiapan").html(data);
+        }
+    });
+});
+</script>
+
+<?php
+// --- AJAX Handler untuk Persiapan ---
+if (isset($_POST['get_persiapan'])) {
+    $id_sps = intval($_POST['id_sps']);
+    $result = $conn->query("SELECT id, spp_no, nama_barang FROM persiapan WHERE id_sps=$id_sps");
+    echo '<option value="">-- Pilih Persiapan --</option>';
+    while($r = $result->fetch_assoc()){
+        echo '<option value="'.$r['id'].'">'.$r['spp_no'].' | '.$r['nama_barang'].'</option>';
+    }
+    exit();
+}
+?>
