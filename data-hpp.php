@@ -82,33 +82,60 @@ if (isset($_POST['update'])) {
     $hpp = $qty > 0 ? $total_biaya / $qty : 0;
     $harga_jual = $hpp * (1 + ($profit / 100));
 
-    $sql = "UPDATE hpp SET 
-                id_inventory = ?, 
-                no_urut = ?, 
-                bahan = ?, 
-                qty = ?, 
-                barang_jadi = ?, 
-                stok_order = ?, 
-                efisiensi_consp = ?, 
-                efisiensi_rap = ?, 
-                stok_material = ?, 
-                po = ?, 
-                harga_per_meter = ?, 
-                rap_x_harga_per_m = ?, 
-                total_harga_bahan = ?, 
-                biaya_tenaga_kerja_per_qty = ?, 
-                total_biaya_tenaga_kerja = ?, 
-                listrik = ?, 
-                air = ?, 
-                overhead = ?, 
-                total_biaya = ?, 
-                hpp = ?, 
-                profit = ?, 
-                harga_jual = ?
-            WHERE id = ? AND id_persiapan = ?";
+    // Mulai transaction untuk menjaga konsistensi data
+    $conn->begin_transaction();
 
-    $stmt = $conn->prepare($sql);
-    if ($stmt) {
+    try {
+        // 1. Ambil data HPP lama untuk perbandingan stok
+        $old_hpp_query = "SELECT id_inventory, stok_material FROM hpp WHERE id = ?";
+        $old_hpp_stmt = $conn->prepare($old_hpp_query);
+        $old_hpp_stmt->bind_param("i", $hpp_id);
+        $old_hpp_stmt->execute();
+        $old_hpp_result = $old_hpp_stmt->get_result();
+        
+        if (!$old_hpp_result || $old_hpp_result->num_rows === 0) {
+            throw new Exception("Data HPP lama tidak ditemukan untuk ID: " . $hpp_id);
+        }
+        
+        $old_hpp_data = $old_hpp_result->fetch_assoc();
+        $old_hpp_stmt->close();
+
+        $old_id_inventory = $old_hpp_data['id_inventory'];
+        $old_stok_material = $old_hpp_data['stok_material'];
+        
+        error_log("Data HPP lama - ID Inventory: " . $old_id_inventory . ", Stok Material: " . $old_stok_material);
+
+        // 2. Update data HPP
+        $sql = "UPDATE hpp SET 
+                    id_inventory = ?, 
+                    no_urut = ?, 
+                    bahan = ?, 
+                    qty = ?, 
+                    barang_jadi = ?, 
+                    stok_order = ?, 
+                    efisiensi_consp = ?, 
+                    efisiensi_rap = ?, 
+                    stok_material = ?, 
+                    po = ?, 
+                    harga_per_meter = ?, 
+                    rap_x_harga_per_m = ?, 
+                    total_harga_bahan = ?, 
+                    biaya_tenaga_kerja_per_qty = ?, 
+                    total_biaya_tenaga_kerja = ?, 
+                    listrik = ?, 
+                    air = ?, 
+                    overhead = ?, 
+                    total_biaya = ?, 
+                    hpp = ?, 
+                    profit = ?, 
+                    harga_jual = ?
+                WHERE id = ? AND id_persiapan = ?";
+
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Error dalam persiapan query: " . $conn->error);
+        }
+
         $stmt->bind_param(
             "issiiididiiddddddddddii",
             $id_inventory,
@@ -137,91 +164,116 @@ if (isset($_POST['update'])) {
             $id_persiapan
         );
 
-        if (mysqli_stmt_execute($stmt)) {
-            // Dapatkan ID gudang berdasarkan nama
-            $stmt_gudang = $conn->prepare("SELECT id FROM gudang WHERE nama = ?");
-            $stmt_gudang->bind_param("s", $warehouse);
-            $stmt_gudang->execute();
-            $result_gudang = $stmt_gudang->get_result();
+        if (!$stmt->execute()) {
+            throw new Exception("Gagal memperbarui data HPP: " . $stmt->error);
+        }
+        
+        $stmt->close();
 
-            if ($row_gudang = $result_gudang->fetch_assoc()) {
-                $id_gudang = $row_gudang['id'];
+        // 3. Handle perubahan stok inventory jika menggunakan inventory
+        if ($id_inventory) {
+            // Validasi stok tersedia
+            $check_stock = $conn->prepare("SELECT stok_akhir FROM inventory_gudang WHERE id = ?");
+            $check_stock->bind_param("i", $id_inventory);
+            $check_stock->execute();
+            $stock_result = $check_stock->get_result();
+            $stock_data = $stock_result->fetch_assoc();
+            $check_stock->close();
 
-                // Cek apakah data sudah ada di inventory_gudang
-                $stmt_check = $conn->prepare("SELECT id, jumlah FROM inventory_gudang WHERE id_gudang = ? AND nama_barang = ?");
-                $stmt_check->bind_param("is", $id_gudang, $nama_barang);
-                $stmt_check->execute();
-                $result_check = $stmt_check->get_result();
-
-                if ($result_check->num_rows > 0) {
-                    // Data sudah ada, lakukan update
-                    $row_check = $result_check->fetch_assoc();
-                    $id_inventory_gudang = $row_check['id'];
-                    $stok_sekarang = $row_check['jumlah'];
-
-                    // Hitung stok akhir (stok sekarang + (jumlah baru - jumlah lama))
-                    $stok_akhir = $stok_sekarang + ($jumlah_baru - $jumlah_lama);
-
-                    // Update inventory_gudang
-                    $sql_update = "UPDATE inventory_gudang 
-                               SET jumlah = ?, stok_akhir = ?, tanggal_update = NOW() 
-                               WHERE id = ?";
-                    $stmt_update = $conn->prepare($sql_update);
-                    $stmt_update->bind_param("iii", $stok_akhir, $stok_akhir, $id_inventory_gudang);
-
-                    if ($stmt_update->execute()) {
-                        $success_msg = "Data inventory berhasil diperbarui dan stok gudang telah diupdate!";
-
-                        // Catat transaksi inventory
-                        $sql_transaksi = "INSERT INTO inventory_transaksi_gudang 
-                                      (inventory_gudang_id, jenis, jumlah_keluar, keterangan, tanggal_transaksi, user_id) 
-                                      VALUES (?, 'keluar', ?, ?, NOW(), ?)";
-                        $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
-                        $keterangan_transaksi = "Pengurangan stok untuk HPP ID: " . $hpp_id . " - " . $bahan;
-
-                        $stmt_transaksi = $conn->prepare($sql_transaksi);
-                        $selisih = $jumlah_baru - $jumlah_lama;
-                        $stmt_transaksi->bind_param("iisi", $id_inventory_gudang, $selisih, $keterangan_transaksi, $user_id);
-                        $stmt_transaksi->execute();
-                        $stmt_transaksi->close();
-                    } else {
-                        $error_msg = "Data inventory berhasil diperbarui tetapi gagal update stok gudang: " . $stmt_update->error;
-                    }
-                } else {
-                    // Data belum ada, buat record baru
-                    $sql_insert = "INSERT INTO inventory_gudang (id_gudang, nama_barang, jumlah, stok_akhir, tanggal_update) 
-                               VALUES (?, ?, ?, ?, NOW())";
-                    $stmt_insert = $conn->prepare($sql_insert);
-                    $stmt_insert->bind_param("isii", $id_gudang, $nama_barang, $jumlah_baru, $jumlah_baru);
-
-                    if ($stmt_insert->execute()) {
-                        $success_msg = "Data inventory berhasil diperbarui dan record stok gudang baru telah dibuat!";
-                    } else {
-                        $error_msg = "Data inventory berhasil diperbarui tetapi gagal membuat record stok gudang: " . $stmt_insert->error;
-                    }
-                }
-            } else {
-                $error_msg = "Gudang tidak ditemukan!";
+            if ($stock_data['stok_akhir'] < $stok_material) {
+                throw new Exception("Stok tidak mencukupi! Stok tersedia: " . $stock_data['stok_akhir'] . ", butuh: " . $stok_material);
             }
 
-            // Refresh data
-            $hpp_query = "SELECT hpp.*, ig.nama_barang as nama_bahan, g.nama as nama_gudang
-                          FROM hpp
-                          LEFT JOIN inventory_gudang ig ON hpp.id_inventory = ig.id
-                          LEFT JOIN gudang g ON ig.id_gudang = g.id
-                          WHERE hpp.id = ? AND hpp.id_persiapan = ?";
-            $hpp_stmt = $conn->prepare($hpp_query);
-            $hpp_stmt->bind_param("ii", $hpp_id, $id_persiapan);
-            $hpp_stmt->execute();
-            $hpp_result = $hpp_stmt->get_result();
-            $hpp_data = $hpp_result->fetch_assoc();
-            $hpp_stmt->close();
-        } else {
-            $error_msg = "Gagal memperbarui data: " . $stmt->error;
+            // Jika inventory berubah atau stok material berubah
+            if ($old_id_inventory != $id_inventory || $old_stok_material != $stok_material) {
+                // Kembalikan stok lama jika inventory lama ada
+                if ($old_id_inventory && $old_stok_material > 0) {
+                    $sql_return_stock = "UPDATE inventory_gudang 
+                                        SET jumlah = jumlah + ?, 
+                                            stok_akhir = stok_akhir + ?, 
+                                            tanggal_update = NOW() 
+                                        WHERE id = ?";
+                    
+                    $stmt_return = $conn->prepare($sql_return_stock);
+                    $stmt_return->bind_param("iii", $old_stok_material, $old_stok_material, $old_id_inventory);
+                    
+                    if (!$stmt_return->execute()) {
+                        throw new Exception("Gagal mengembalikan stok lama: " . $stmt_return->error);
+                    }
+                    $stmt_return->close();
+
+                    // Catat transaksi pengembalian stok lama
+                    $sql_transaksi_return = "INSERT INTO inventory_transaksi_gudang 
+                                          (inventory_gudang_id, jenis, jumlah_masuk, keterangan, tanggal_transaksi, user_id) 
+                                          VALUES (?, 'masuk', ?, ?, NOW(), ?)";
+                    
+                    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+                    $keterangan_return = "Pengembalian stok dari update HPP ID: " . $hpp_id . " - " . $bahan;
+
+                    $stmt_transaksi_return = $conn->prepare($sql_transaksi_return);
+                    $stmt_transaksi_return->bind_param("iisi", $old_id_inventory, $old_stok_material, $keterangan_return, $user_id);
+                    
+                    if (!$stmt_transaksi_return->execute()) {
+                        throw new Exception("Gagal mencatat transaksi pengembalian: " . $stmt_transaksi_return->error);
+                    }
+                    $stmt_transaksi_return->close();
+                }
+
+                // Kurangi stok baru
+                $sql_update_stock = "UPDATE inventory_gudang 
+                                    SET jumlah = jumlah - ?, 
+                                        stok_akhir = stok_akhir - ?, 
+                                        tanggal_update = NOW() 
+                                    WHERE id = ?";
+                
+                $stmt_update = $conn->prepare($sql_update_stock);
+                $stmt_update->bind_param("iii", $stok_material, $stok_material, $id_inventory);
+                
+                if (!$stmt_update->execute()) {
+                    throw new Exception("Gagal mengupdate stok baru: " . $stmt_update->error);
+                }
+                
+                $stmt_update->close();
+
+                // Catat transaksi pengurangan stok baru
+                $sql_transaksi = "INSERT INTO inventory_transaksi_gudang 
+                                (inventory_gudang_id, jenis, jumlah_keluar, keterangan, tanggal_transaksi, user_id) 
+                                VALUES (?, 'keluar', ?, ?, NOW(), ?)";
+                
+                $keterangan_transaksi = "Pengurangan stok untuk HPP ID: " . $hpp_id . " - " . $bahan;
+
+                $stmt_transaksi = $conn->prepare($sql_transaksi);
+                $stmt_transaksi->bind_param("iisi", $id_inventory, $stok_material, $keterangan_transaksi, $user_id);
+                
+                if (!$stmt_transaksi->execute()) {
+                    throw new Exception("Gagal mencatat transaksi: " . $stmt_transaksi->error);
+                }
+                
+                $stmt_transaksi->close();
+            }
         }
-        $stmt->close();
-    } else {
-        $error_msg = "Error dalam persiapan query: " . $conn->error;
+
+        // Commit transaction jika semua berhasil
+        $conn->commit();
+        $success_msg = "Data HPP berhasil diperbarui";
+
+        // Refresh data untuk ditampilkan di modal edit
+        $hpp_query = "SELECT hpp.*, ig.nama_barang as nama_bahan, g.nama as nama_gudang
+                      FROM hpp
+                      LEFT JOIN inventory_gudang ig ON hpp.id_inventory = ig.id
+                      LEFT JOIN gudang g ON ig.id_gudang = g.id
+                      WHERE hpp.id = ? AND hpp.id_persiapan = ?";
+        $hpp_stmt = $conn->prepare($hpp_query);
+        $hpp_stmt->bind_param("ii", $hpp_id, $id_persiapan);
+        $hpp_stmt->execute();
+        $hpp_result = $hpp_stmt->get_result();
+        $hpp_data = $hpp_result->fetch_assoc();
+        $hpp_stmt->close();
+
+    } catch (Exception $e) {
+        // Rollback transaction jika ada error
+        $conn->rollback();
+        $error_msg = $e->getMessage();
     }
 }
 
@@ -369,31 +421,90 @@ if (isset($_POST['save'])) {
 if (isset($_GET['delete'])) {
     $id = intval($_GET['delete']);
 
-    // Verifikasi bahwa HPP yang akan dihapus memang milik persiapan ini
-    $verify_query = "SELECT id FROM hpp WHERE id = ? AND id_persiapan = ?";
-    $verify_stmt = $conn->prepare($verify_query);
-    $verify_stmt->bind_param("ii", $id, $id_persiapan);
-    $verify_stmt->execute();
-    $verify_result = $verify_stmt->get_result();
+    // Mulai transaction untuk menjaga konsistensi data
+    $conn->begin_transaction();
 
-    if ($verify_result->num_rows === 0) {
-        $error_msg = "Error: Data HPP tidak valid untuk persiapan ini";
-    } else {
+    try {
+        // Verifikasi bahwa HPP yang akan dihapus memang milik persiapan ini
+        $verify_query = "SELECT id, id_inventory, stok_material, bahan FROM hpp WHERE id = ? AND id_persiapan = ?";
+        $verify_stmt = $conn->prepare($verify_query);
+        $verify_stmt->bind_param("ii", $id, $id_persiapan);
+        $verify_stmt->execute();
+        $verify_result = $verify_stmt->get_result();
+
+        if ($verify_result->num_rows === 0) {
+            throw new Exception("Error: Data HPP tidak valid untuk persiapan ini");
+        }
+
+        $hpp_data = $verify_result->fetch_assoc();
+        $id_inventory = $hpp_data['id_inventory'];
+        $stok_material = $hpp_data['stok_material'];
+        $bahan = $hpp_data['bahan'];
+        $verify_stmt->close();
+
+        // Jika data HPP menggunakan inventory, kembalikan stok ke inventory_gudang
+        if ($id_inventory && $stok_material > 0) {
+            // Update stok di inventory_gudang - tambahkan kembali stok yang digunakan
+            $sql_update_stock = "UPDATE inventory_gudang 
+                                SET jumlah = jumlah + ?, 
+                                    stok_akhir = stok_akhir + ?, 
+                                    tanggal_update = NOW() 
+                                WHERE id = ?";
+            
+            $stmt_update = $conn->prepare($sql_update_stock);
+            $stmt_update->bind_param("iii", $stok_material, $stok_material, $id_inventory);
+            
+            if (!$stmt_update->execute()) {
+                throw new Exception("Gagal mengembalikan stok: " . $stmt_update->error);
+            }
+            
+            $stmt_update->close();
+
+            // Catat transaksi inventory (pengembalian stok)
+            $sql_transaksi = "INSERT INTO inventory_transaksi_gudang 
+                            (inventory_gudang_id, jenis, jumlah_masuk, keterangan, tanggal_transaksi, user_id) 
+                            VALUES (?, 'masuk', ?, ?, NOW(), ?)";
+            
+            $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+            $keterangan_transaksi = "Pengembalian stok dari penghapusan HPP ID: " . $id . " - " . $bahan;
+
+            $stmt_transaksi = $conn->prepare($sql_transaksi);
+            $stmt_transaksi->bind_param("iisi", $id_inventory, $stok_material, $keterangan_transaksi, $user_id);
+            
+            if (!$stmt_transaksi->execute()) {
+                throw new Exception("Gagal mencatat transaksi pengembalian: " . $stmt_transaksi->error);
+            }
+            
+            $stmt_transaksi->close();
+        }
+
+        // Hapus data HPP
         $sql = "DELETE FROM hpp WHERE id=?";
         $stmt = $conn->prepare($sql);
-        if ($stmt) {
-            $stmt->bind_param("i", $id);
-            if ($stmt->execute()) {
-                $success_msg = "Data HPP berhasil dihapus";
-            } else {
-                $error_msg = "Gagal menghapus data: " . $stmt->error;
-            }
-            $stmt->close();
-        } else {
-            $error_msg = "Error dalam persiapan query: " . $conn->error;
+        if (!$stmt) {
+            throw new Exception("Error dalam persiapan query: " . $conn->error);
         }
+        
+        $stmt->bind_param("i", $id);
+        if (!$stmt->execute()) {
+            throw new Exception("Gagal menghapus data: " . $stmt->error);
+        }
+        
+        $stmt->close();
+
+        // Commit transaction jika semua berhasil
+        $conn->commit();
+        $success_msg = "Data HPP berhasil dihapus";
+        
+        if ($id_inventory && $stok_material > 0) {
+            $success_msg .= " dan stok berhasil dikembalikan ke gudang";
+        }
+
+    } catch (Exception $e) {
+        // Rollback transaction jika ada error
+        $conn->rollback();
+        $error_msg = $e->getMessage();
     }
-    $verify_stmt->close();
 }
 
 // Ambil Data HPP hanya untuk persiapan ini
