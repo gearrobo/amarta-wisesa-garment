@@ -3,7 +3,7 @@
 session_start();
 
 // Include header and database configuration
-// include 'includes/header.php';
+include 'includes/header.php';
 include 'config/db.php';
 
 // Check if ID is provided
