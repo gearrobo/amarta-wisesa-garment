@@ -12,20 +12,17 @@ if (!isset($_GET['id'])) {
     exit();
 }
 
-$id = intval($_GET['id']); // Sanitize ID
+$id = intval($_GET['id']);
 $error = '';
 $success = '';
 
 // Get inventory details
 $sql = "SELECT * FROM inventory WHERE id = ?";
-        
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $id);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $inventory = mysqli_fetch_assoc($result);
-
-
 
 if (!$inventory) {
     header("Location: inventory.php");
@@ -43,12 +40,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nama_barang = mysqli_real_escape_string($conn, $_POST['nama_barang']);
     $warehouse = mysqli_real_escape_string($conn, $_POST['warehouse']);
     $unit = mysqli_real_escape_string($conn, $_POST['unit']);
-    $jumlah = intval($_POST['jumlah']);
+    $jumlah_baru = intval($_POST['jumlah']);
     $harga_per_unit = floatval($_POST['harga_per_unit']);
     $keterangan = mysqli_real_escape_string($conn, $_POST['keterangan'] ?? '');
+    
+    // Simpan nilai jumlah lama sebelum diubah
+    $jumlah_lama = $inventory['jumlah'];
 
     // Validate required fields
-    if (empty($nama_barang) || empty($warehouse) || empty($unit) || $jumlah <= 0 || $harga_per_unit <= 0) {
+    if (empty($nama_barang) || empty($warehouse) || empty($unit) || $jumlah_baru <= 0 || $harga_per_unit <= 0) {
         $error = "Semua field wajib diisi dengan nilai yang valid!";
     } else {
         // Update inventory data
@@ -60,15 +60,64 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt = mysqli_prepare($conn, $sql);
         mysqli_stmt_bind_param($stmt, "ssssidsi", 
             $kode_barang, $nama_barang, $warehouse, $unit, 
-            $jumlah, $harga_per_unit, $keterangan, $id
-       
+            $jumlah_baru, $harga_per_unit, $keterangan, $id
         );
 
-
         if (mysqli_stmt_execute($stmt)) {
-            $success = "Data inventory berhasil diperbarui!";
+            // Dapatkan ID gudang berdasarkan nama
+            $stmt_gudang = $conn->prepare("SELECT id FROM gudang WHERE nama = ?");
+            $stmt_gudang->bind_param("s", $warehouse);
+            $stmt_gudang->execute();
+            $result_gudang = $stmt_gudang->get_result();
             
-            // Refresh data
+            if ($row_gudang = $result_gudang->fetch_assoc()) {
+                $id_gudang = $row_gudang['id'];
+                
+                // Cek apakah data sudah ada di inventory_gudang
+                $stmt_check = $conn->prepare("SELECT id, jumlah FROM inventory_gudang WHERE id_gudang = ? AND nama_barang = ?");
+                $stmt_check->bind_param("is", $id_gudang, $nama_barang);
+                $stmt_check->execute();
+                $result_check = $stmt_check->get_result();
+                
+                if ($result_check->num_rows > 0) {
+                    // Data sudah ada, lakukan update
+                    $row_check = $result_check->fetch_assoc();
+                    $id_inventory_gudang = $row_check['id'];
+                    $stok_sekarang = $row_check['jumlah'];
+                    
+                    // Hitung stok akhir (stok sekarang + (jumlah baru - jumlah lama))
+                    $stok_akhir = $stok_sekarang + ($jumlah_baru - $jumlah_lama);
+                    
+                    // Update inventory_gudang
+                    $sql_update = "UPDATE inventory_gudang 
+                                   SET jumlah = ?, stok_akhir = ?, tanggal_update = NOW() 
+                                   WHERE id = ?";
+                    $stmt_update = $conn->prepare($sql_update);
+                    $stmt_update->bind_param("iii", $stok_akhir, $stok_akhir, $id_inventory_gudang);
+                    
+                    if ($stmt_update->execute()) {
+                        $success = "Data inventory berhasil diperbarui dan stok gudang telah diupdate!";
+                    } else {
+                        $error = "Data inventory berhasil diperbarui tetapi gagal update stok gudang: " . $stmt_update->error;
+                    }
+                } else {
+                    // Data belum ada, buat record baru
+                    $sql_insert = "INSERT INTO inventory_gudang (id_gudang, nama_barang, jumlah, stok_akhir, tanggal_update) 
+                                   VALUES (?, ?, ?, ?, NOW())";
+                    $stmt_insert = $conn->prepare($sql_insert);
+                    $stmt_insert->bind_param("isii", $id_gudang, $nama_barang, $jumlah_baru, $jumlah_baru);
+                    
+                    if ($stmt_insert->execute()) {
+                        $success = "Data inventory berhasil diperbarui dan record stok gudang baru telah dibuat!";
+                    } else {
+                        $error = "Data inventory berhasil diperbarui tetapi gagal membuat record stok gudang: " . $stmt_insert->error;
+                    }
+                }
+            } else {
+                $error = "Gudang tidak ditemukan!";
+            }
+            
+            // Refresh data inventory
             $sql = "SELECT * FROM inventory WHERE id = ?";
             $stmt = mysqli_prepare($conn, $sql);
             mysqli_stmt_bind_param($stmt, "i", $id);
@@ -76,71 +125,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $result = mysqli_stmt_get_result($stmt);
             $inventory = mysqli_fetch_assoc($result);
         } else {
-            $error = "Gagal memperbarui data: " . mysqli_error($conn);
+            $error = "Gagal memperbarui data inventory: " . mysqli_error($conn);
         }
     }
-
-        $stmt = $conn->prepare("SELECT id, nama FROM gudang WHERE nama = ?");
-        $stmt->bind_param("s", $warehouse);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($row = $result->fetch_assoc()) {
-            $id_gudang = $row['id'];   
-        } 
-
-        $stmt6 = $conn->prepare("SELECT * FROM inventory_gudang WHERE id_gudang = ? AND nama_barang = ?");
-        $stmt6->bind_param("is", $id_gudang, $nama_barang);
-        $stmt6->execute();
-        $result6 = $stmt6->get_result();
-
-        if ($row6 = $result6->fetch_assoc()) {
-            $stock_existing = $row6['jumlah'];
-            $id_inventory_gudang = $row6['id'];
-        } else {
-            echo "Data tidak ditemukan";
-        }
-
-        $jumlah_awal = $inventory['jumlah'];
-
-        if ($jumlah > $jumlah_awal){
-            $jumlah_baru = $stock_existing + ($jumlah - $jumlah_awal);
-            echo $jumlah_baru;
-            $sql_update = "UPDATE inventory_gudang 
-               SET jumlah = ?, stok_akhir = ?, tanggal_update = NOW() 
-               WHERE id = ?";
-
-            $stmt = $conn->prepare($sql_update);
-            $stmt->bind_param("iii", $jumlah_baru, $jumlah_baru, $id_inventory_gudang); 
-            // i = integer, s = string, d = double
-
-            if ($stmt->execute()) {
-                echo "Update berhasil!";
-            } else {
-                echo "Gagal update: " . $stmt->error;
-            }
-        }elseif ($jumlah < $jumlah_awal) {
-            $jumlah_baru = $stock_existing - ($jumlah_awal - $jumlah);
-            echo $jumlah_baru;
-            $sql_update = "UPDATE inventory_gudang 
-               SET jumlah = ?, stok_akhir = ?, tanggal_update = NOW() 
-               WHERE id = ?";
-
-            $stmt = $conn->prepare($sql_update);
-            $stmt->bind_param("iii", $jumlah_baru, $jumlah_baru, $id_inventory_gudang); 
-            // i = integer, s = string, d = double
-
-            if ($stmt->execute()) {
-                echo "Update berhasil!";
-            } else {
-                echo "Gagal update: " . $stmt->error;
-            }
-        }
-        
-    }
-
+}
 ?>
 
+<!-- HTML form remains the same -->
 <div class="main-content">
     <div class="row">
         <div class="col-12">
@@ -184,7 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <select name="nama_barang" class="form-control" required>
                                         <option value="">Pilih Kategori Barang</option>
                                         <?php 
-                                        $kategori_barang->data_seek(0); // Reset pointer
+                                        $kategori_barang->data_seek(0);
                                         while($row_kategori = $kategori_barang->fetch_assoc()): 
                                         ?>
                                         <option value="<?= htmlspecialchars($row_kategori['nama_kategori']); ?>" 
@@ -204,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <select name="warehouse" class="form-control" required>
                                         <option value="">Pilih Warehouse</option>
                                         <?php 
-                                        $nama_gudang->data_seek(0); // Reset pointer
+                                        $nama_gudang->data_seek(0);
                                         while($row_gudang = $nama_gudang->fetch_assoc()): 
                                         ?>
                                         <option value="<?= htmlspecialchars($row_gudang['nama']); ?>" 
