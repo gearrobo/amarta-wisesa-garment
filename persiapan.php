@@ -289,9 +289,15 @@ $belum_harga_count = $belum_harga_result ? $belum_harga_result->fetch_assoc()['b
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <a href="detail-persiapan.php?id=<?= $row['id'] ?>" class="btn btn-info" title="Detail">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+                                    <?php if (strtolower($status) === 'selesai'): ?>
+                                        <a href="detail-persiapan.php?id=<?= $row['id'] ?>" class="btn btn-info" title="Detail">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    <?php else: ?>
+                                        <button class="btn btn-secondary" title="Detail Persiapan Enable saat Status Selesai" disabled>
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    <?php endif; ?>
                                     <button class="btn btn-warning" onclick="editPersiapan(<?= $row['id'] ?>)" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </button>

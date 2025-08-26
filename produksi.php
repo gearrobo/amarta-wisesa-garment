@@ -100,7 +100,7 @@ if ($result && $result->num_rows > 0) {
     
     // Tampilkan data
     while ($row = $result->fetch_assoc()) {
-        $id_persiapan_baru = $row['id'];
+        $id_persiapan_baru = $row['id_sps'];
         $stmt = $conn->prepare("SELECT id, sps_no, customer, item FROM sps WHERE id = ? ORDER BY sps_no ASC");
         $stmt->bind_param("i", $id_persiapan_baru);
         $stmt->execute();

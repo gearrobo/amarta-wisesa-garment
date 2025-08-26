@@ -28,24 +28,14 @@ $result = mysqli_stmt_get_result($stmt);
 $data_persiapan = mysqli_fetch_assoc($result);
 mysqli_stmt_close($stmt);
 
+$id_sps_produksi = $data_persiapan['id_sps'];
+
+
 if (!$data_persiapan) {
     die("Data persiapan tidak ditemukan.");
 }
 
 // ---------------- GET TIMELINE ----------------
-$sql_timeline = "SELECT * FROM timeline WHERE id_persiapan = ? ORDER BY tanggal";
-$stmt_timeline = mysqli_prepare($conn, $sql_timeline);
-
-if ($stmt_timeline) {
-    mysqli_stmt_bind_param($stmt_timeline, "i", $id_persiapan);
-    mysqli_stmt_execute($stmt_timeline);
-    $result_timeline = mysqli_stmt_get_result($stmt_timeline);
-    $timeline = $result_timeline ? mysqli_fetch_all($result_timeline, MYSQLI_ASSOC) : [];
-    mysqli_stmt_close($stmt_timeline);
-} else {
-    $timeline = [];
-    error_log("Error preparing timeline query: " . mysqli_error($conn));
-}
 
 // ---------------- GET DATA GUDANG ----------------
 $sql_gudang = "SELECT 
@@ -75,14 +65,6 @@ if ($stmt_gudang) {
 }
 
 // ---------------- GET PRODUKSI ----------------
-// $sql = "SELECT p.*, s.sps_no, s.customer, ps.spp_no, ps.nama_barang 
-//         FROM produksi p
-//         LEFT JOIN sps s ON p.id_sps = s.id
-//         LEFT JOIN persiapan ps ON p.id_persiapan = ps.id
-//         ORDER BY p.id DESC";
-// $produksi = $conn->query($sql);
-
-
 $sql = "SELECT p.*, s.sps_no, s.customer, ps.spp_no, ps.nama_barang 
         FROM produksi p
         LEFT JOIN sps s ON p.id_sps = s.id
@@ -91,7 +73,7 @@ $sql = "SELECT p.*, s.sps_no, s.customer, ps.spp_no, ps.nama_barang
         ORDER BY p.id DESC";
 
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id_persiapan);
+$stmt->bind_param("i", $id_sps_produksi);
 $stmt->execute();
 $produksi = $stmt->get_result();
 
@@ -197,6 +179,12 @@ $produksi = $stmt->get_result();
             <h5 class="card-title mb-0">Langkah Kerja</h5>
         </div>
         <div class="card-body">
+             <!-- Tombol Perhitungan HPP -->
+            <div class="mb-3">
+                <a href="produksi.php?id=<?= $id_persiapan; ?>" class="btn btn-primary">
+                    <i class="fas fa-calculator me-2"></i>Tambah Langkah Kerja
+                </a>
+            </div>
             <table id="produksiTable" class="table table-bordered">
                 <thead>
                     <tr>
