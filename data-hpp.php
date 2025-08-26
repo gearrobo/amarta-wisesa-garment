@@ -764,7 +764,7 @@ $inventory_result = $conn->query($inventory_query);
             </div>
             <div class="col-md-3 mb-3">
                 <div class="card card-custom summary-card">
-                    <div class="summary-title">Rata-rata HPP</div>
+                    <div class="summary-title">Total HPP</div>
                     <div class="summary-number">
                         <?php
                         $total_hpp = 0;

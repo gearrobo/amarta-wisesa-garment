@@ -125,7 +125,7 @@ if ($result && $result->num_rows > 0) {
     </div>
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#produksiModal" onclick="addProduksi()">Tambah Produksi</button>
 
-    <table class="table table-bordered">
+    <table id="produksiTable" class="table table-bordered">
         <thead>
             <tr>
                 <th>No</th>
@@ -155,6 +155,7 @@ if ($result && $result->num_rows > 0) {
                 <td><?= $row['status'] ?></td>
                 <td><?= $row['qc'] ?></td>
                 <td>
+                    <div class="btn-group btn-group-sm" role="group">
                     <?php if($row['status'] != 'selesai'): ?>
                         <a href="?approve=<?= $row['id'] ?>" class="btn btn-success btn-sm"
                             onclick="return confirm('Apakah anda yakin ingin menyelesaikan proses ini?')"
@@ -163,9 +164,10 @@ if ($result && $result->num_rows > 0) {
                         </a>
                     <?php endif; ?>
                     <button class="btn btn-warning btn-sm" 
-                        onclick="editProduksi(<?= htmlspecialchars(json_encode($row)) ?>)">Edit</button>
+                        onclick="editProduksi(<?= htmlspecialchars(json_encode($row)) ?>)"><i class="fas fa-edit"></i></button>
                     <a href="?delete=<?= $row['id'] ?>" class="btn btn-danger btn-sm"
-                        onclick="return confirm('Hapus data ini?')">Hapus</a>
+                        onclick="return confirm('Hapus data ini?')"><i class="fas fa-trash"></i></a>
+                    </div>
                 </td>
             </tr>
             <?php endwhile; ?>
@@ -265,7 +267,21 @@ if ($result && $result->num_rows > 0) {
 
 <!-- jQuery & Bootstrap -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    
 <script>
+$(document).ready(function() {
+    $('#produksiTable').DataTable({
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json'
+        },
+        order: [[0, 'asc']]
+    });
+});
+
 function addProduksi(){
     $("#id").val("");
     $("#id_sps").val("");

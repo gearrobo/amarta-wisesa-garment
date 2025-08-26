@@ -5,7 +5,6 @@ include 'config/db.php';
 // Ambil id persiapan dari URL
 $id_persiapan = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-
 if ($id_persiapan == 0) {
     die("ID Persiapan tidak valid.");
 }
@@ -74,26 +73,20 @@ if ($stmt_gudang) {
     error_log("Error preparing gudang query: " . mysqli_error($conn));
 }
 
-// ---------------- GET PRODUKSI ----------------
-// $sql = "SELECT p.*, s.sps_no, s.customer, ps.spp_no, ps.nama_barang 
-//         FROM produksi p
-//         LEFT JOIN sps s ON p.id_sps = s.id
-//         LEFT JOIN persiapan ps ON p.id_persiapan = ps.id
-//         ORDER BY p.id DESC";
-// $produksi = $conn->query($sql);
+// ---------------- GET FILES ----------------
+$sql_files = "SELECT * FROM files WHERE id_persiapan = ?";
+$stmt_files = mysqli_prepare($conn, $sql_files);
 
-
-$sql = "SELECT p.*, s.sps_no, s.customer, ps.spp_no, ps.nama_barang 
-        FROM produksi p
-        LEFT JOIN sps s ON p.id_sps = s.id
-        LEFT JOIN persiapan ps ON p.id_persiapan = ps.id
-        WHERE p.id_persiapan = ?
-        ORDER BY p.id DESC";
-
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id_persiapan);
-$stmt->execute();
-$produksi = $stmt->get_result();
+if ($stmt_files) {
+    mysqli_stmt_bind_param($stmt_files, "i", $id_persiapan);
+    mysqli_stmt_execute($stmt_files);
+    $result_files = mysqli_stmt_get_result($stmt_files);
+    $files = $result_files ? mysqli_fetch_all($result_files, MYSQLI_ASSOC) : [];
+    mysqli_stmt_close($stmt_files);
+} else {
+    $files = [];
+    error_log("Error preparing files query: " . mysqli_error($conn));
+}
 
 ?>
 
@@ -194,57 +187,22 @@ $produksi = $stmt->get_result();
     <!-- Files Section -->
     <div class="card">
         <div class="card-header bg-warning text-dark">
-            <h5 class="card-title mb-0">Langkah Kerja</h5>
+            <h5 class="card-title mb-0">Files</h5>
         </div>
         <div class="card-body">
-            <table id="produksiTable" class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>No SPS</th>
-                        <th>Customer</th>
-                        <th>SPP No / Barang</th>
-                        <th>Pekerjaan</th>
-                        <th>Target</th>
-                        <th>Hasil</th>
-                        <th>Pekerja</th>
-                        <th>Status</th>
-                        <th>QC</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php $no=1; while($row = $produksi->fetch_assoc()): ?>
-                    <tr>
-                        <td><?= $no++ ?></td>
-                        <td><?= $row['sps_no'] ?></td>
-                        <td><?= $row['customer'] ?></td>
-                        <td><?= $row['spp_no'].' | '.$row['nama_barang'] ?></td>
-                        <td><?= $row['kerjaan'] ?></td>
-                        <td><?= $row['target'] ?></td>
-                        <td><?= $row['hasil'] ?></td>
-                        <td><?= $row['pekerja'] ?></td>
-                        <td><?= $row['status'] ?></td>
-                        <td><?= $row['qc'] ?></td>
-                        <td>
-                            <div class="btn-group btn-group-sm" role="group">
-                            <?php if($row['status'] != 'selesai'): ?>
-                                <a href="?approve=<?= $row['id'] ?>" class="btn btn-success btn-sm"
-                                    onclick="return confirm('Apakah anda yakin ingin menyelesaikan proses ini?')"
-                                    title="Approve - Tandai Selesai">
-                                    <i class="fas fa-check-circle"></i>
-                                </a>
-                            <?php endif; ?>
-                            <button class="btn btn-warning btn-sm" 
-                                onclick="editProduksi(<?= htmlspecialchars(json_encode($row)) ?>)"><i class="fas fa-edit"></i></button>
-                            <a href="?delete=<?= $row['id'] ?>" class="btn btn-danger btn-sm"
-                                onclick="return confirm('Hapus data ini?')"><i class="fas fa-trash"></i></a>
-                            </div>
-                        </td>
-                    </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
+            <?php if (!empty($files)): ?>
+                <div class="list-group">
+                    <?php foreach ($files as $file): ?>
+                        <a href="uploads/<?= htmlspecialchars($file['filename']); ?>" target="_blank" class="list-group-item list-group-item-action">
+                            <i class="fas fa-file me-2"></i> <?= htmlspecialchars($file['filename']); ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="alert alert-info mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Tidak ada file untuk persiapan ini.
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 
