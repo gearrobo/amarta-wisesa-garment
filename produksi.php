@@ -62,6 +62,16 @@ if (isset($_GET['delete'])) {
     exit();
 }
 
+// --- Handle Approve/Selesai ---
+if (isset($_GET['approve'])) {
+    $id = intval($_GET['approve']);
+    $stmt = $conn->prepare("UPDATE produksi SET status='selesai' WHERE id=?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    header("Location: produksi.php");
+    exit();
+}
+
 // --- Ambil Data Produksi ---
 $sql = "SELECT p.*, s.sps_no, s.customer, ps.spp_no, ps.nama_barang 
         FROM produksi p
@@ -145,6 +155,13 @@ if ($result && $result->num_rows > 0) {
                 <td><?= $row['status'] ?></td>
                 <td><?= $row['qc'] ?></td>
                 <td>
+                    <?php if($row['status'] != 'selesai'): ?>
+                        <a href="?approve=<?= $row['id'] ?>" class="btn btn-success btn-sm"
+                            onclick="return confirm('Apakah anda yakin ingin menyelesaikan proses ini?')"
+                            title="Approve - Tandai Selesai">
+                            <i class="fas fa-check-circle"></i>
+                        </a>
+                    <?php endif; ?>
                     <button class="btn btn-warning btn-sm" 
                         onclick="editProduksi(<?= htmlspecialchars(json_encode($row)) ?>)">Edit</button>
                     <a href="?delete=<?= $row['id'] ?>" class="btn btn-danger btn-sm"
