@@ -171,8 +171,12 @@ if ($stmt_files) {
                             <td><?= number_format($item['stok_akhir'] ?? 0); ?> <?= htmlspecialchars($item['satuan'] ?? ''); ?></td>
                             <td>Rp <?= number_format($item['harga_per_meter'] ?? 0, 0, ',', '.'); ?></td>
                             <td>Rp <?= number_format($item['total_harga_bahan'] ?? 0, 0, ',', '.'); ?></td>
-                            <td></td>
-        </tr>
+                            <td>
+                                <button class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                            </td>
+                        </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
