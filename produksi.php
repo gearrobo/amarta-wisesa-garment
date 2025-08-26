@@ -50,7 +50,25 @@ $sql = "SELECT p.*, s.sps_no, s.customer, ps.spp_no, ps.nama_barang
 $produksi = $conn->query($sql);
 
 // --- Ambil SPS untuk dropdown awal ---
-$sps = $conn->query("SELECT id, sps_no, customer, item FROM sps ORDER BY sps_no ASC");
+// $sps = $conn->query("SELECT id, sps_no, customer, item FROM sps WHERE sp_srx IS NOT NULL ORDER BY sps_no ASC");
+
+$check_persiapan_sql = "SELECT * FROM persiapan WHERE sp_srx IS NOT NULL";
+$result = $conn->query($check_persiapan_sql);
+
+if ($result && $result->num_rows > 0) {
+    // echo "✅ Ada " . $result->num_rows . " data persiapan yang memiliki SPK";
+    
+    // Tampilkan data
+    while ($row = $result->fetch_assoc()) {
+        $id_persiapan_baru = $row['id'];
+        $stmt = $conn->prepare("SELECT id, sps_no, customer, item FROM sps WHERE id = ? ORDER BY sps_no ASC");
+        $stmt->bind_param("i", $id_persiapan_baru);
+        $stmt->execute();
+        $sps = $stmt->get_result();
+    }
+} else {
+    echo "❌ Tidak ada data persiapan yang memiliki SPK";
+}
 ?>
 
 <div class="main-content">
@@ -134,12 +152,6 @@ $sps = $conn->query("SELECT id, sps_no, customer, item FROM sps ORDER BY sps_no 
             </div>
 
             <!-- Dropdown Persiapan -->
-            <div class="mb-3">
-                <label>SPP No / Barang</label>
-                <select name="id_persiapan" id="id_persiapan" class="form-control" required>
-                    <option value="">-- Pilih Persiapan --</option>
-                </select>
-            </div>
 
             <div class="mb-3">
                 <label>Pekerjaan</label>
