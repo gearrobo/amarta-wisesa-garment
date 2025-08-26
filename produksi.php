@@ -49,6 +49,10 @@ $sql = "SELECT p.*, s.sps_no, s.customer, ps.spp_no, ps.nama_barang
         ORDER BY p.id DESC";
 $produksi = $conn->query($sql);
 
+// Query untuk mengambil data karyawan
+$query_karyawan = "SELECT nama_lengkap, type_karyawan FROM karyawan WHERE type_karyawan IN ('harian', 'borongan') ORDER BY nama_lengkap ASC";
+$resultKaryawan = $conn->query($query_karyawan);
+
 // --- Ambil SPS untuk dropdown awal ---
 // $sps = $conn->query("SELECT id, sps_no, customer, item FROM sps WHERE sp_srx IS NOT NULL ORDER BY sps_no ASC");
 
@@ -155,7 +159,21 @@ if ($result && $result->num_rows > 0) {
 
             <div class="mb-3">
                 <label>Pekerjaan</label>
-                <input type="text" name="kerjaan" id="kerjaan" class="form-control" required>
+                <select name="pekerja" id="kerjaan" class="form-select">
+                    <option value="">-- Pilih Pekerja --</option>
+                    <?php
+                    if ($resultKaryawan && $resultKaryawan->num_rows > 0) {
+                        while ($row = $resultKaryawan->fetch_assoc()) {
+                            $value = $row['nama_lengkap'] . " | " . $row['type_karyawan'];
+                            echo "<option value='" . htmlspecialchars($value) . "'>";
+                            echo htmlspecialchars($row['nama_lengkap']) . " - " . htmlspecialchars($row['type_karyawan']);
+                            echo "</option>";
+                        }
+                    } else {
+                        echo "<option value=''>Tidak ada data karyawan</option>";
+                    }
+                    ?>
+                </select>
             </div>
             <div class="mb-3">
                 <label>Target</label>
