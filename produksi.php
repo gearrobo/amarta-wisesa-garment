@@ -54,7 +54,17 @@ $sps = $conn->query("SELECT id, sps_no, customer, item FROM sps ORDER BY sps_no 
 ?>
 
 <div class="main-content">
-    <h2>Data Produksi</h2>
+    <div>
+        <h1 class="h3 mb-4">Produksi</h1>
+        
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
+                <li class="breadcrumb-item active">Produksi</li>
+            </ol>
+        </nav>
+    </div>
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#produksiModal" onclick="addProduksi()">Tambah Produksi</button>
 
     <table class="table table-bordered">

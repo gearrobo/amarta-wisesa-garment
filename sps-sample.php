@@ -255,7 +255,7 @@ $kirim_count = $kirim_result->fetch_assoc()['kirim_count'];
                             <th>Artikel</th>
                             <th>Qty</th>
                             <th>Size</th>
-                            <th>Kirim</th>
+                            <th>Tanggal Kirim</th>
                             <th>Approval</th>
                             <th>SP SRX</th>
                             <th>Aksi</th>
