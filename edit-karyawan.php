@@ -226,8 +226,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <select class="form-select" id="id_jabatan" name="id_jabatan" required>
                                         <option value="">Pilih Jabatan</option>
                                         <?php foreach ($jabatanList as $jabatan): ?>
-                                            <option value="<?= $jabatan['id_jabatan']; ?>" 
-                                                <?= $karyawan['id_jabatan'] == $jabatan['id_jabatan'] ? 'selected' : ''; ?>>
+                                            <option value="<?= $jabatan['id']; ?>" 
+                                                <?= $karyawan['id'] == $jabatan['id'] ? 'selected' : ''; ?>>
                                                 <?= htmlspecialchars($jabatan['nama_jabatan']); ?>
                                             </option>
                                         <?php endforeach; ?>
@@ -240,8 +240,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <select class="form-select" id="id_departemen" name="id_departemen" required>
                                         <option value="">Pilih Departemen</option>
                                         <?php foreach ($departemenList as $departemen): ?>
-                                            <option value="<?= $departemen['id_departemen']; ?>" 
-                                                <?= $karyawan['id_departemen'] == $departemen['id_departemen'] ? 'selected' : ''; ?>>
+                                            <option value="<?= $departemen['id']; ?>" 
+                                                <?= $karyawan['id'] == $departemen['id'] ? 'selected' : ''; ?>>
                                                 <?= htmlspecialchars($departemen['nama_departemen']); ?>
                                             </option>
                                         <?php endforeach; ?>
