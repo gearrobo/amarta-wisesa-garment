@@ -15,10 +15,6 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Sidebar Toggle Button for Mobile -->
-    <button class="sidebar-toggle" onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </button>
 
     <!-- Sidebar Navigation -->
    <?php include 'sidebar.php'; ?>

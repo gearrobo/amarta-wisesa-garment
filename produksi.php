@@ -177,11 +177,10 @@ if ($result && $result->num_rows > 0) {
                         <option value="<?= $row['id'] ?>">
                             <?= $row['sps_no'] ?> | <?= $row['customer'] ?> | <?= $row['item'] ?>
                         </option>
+                    <input type="hidden" name="id_persiapan" id="id_persiapan" value="<?= $row['id'] ?>">
                     <?php endwhile; ?>
                 </select>
             </div>
-
-            <!-- Dropdown Persiapan -->
 
             <div class="mb-3">
                 <label>Pekerjaan</label>
