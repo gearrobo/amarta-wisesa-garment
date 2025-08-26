@@ -55,15 +55,15 @@ $result = mysqli_query($conn, $sql);
 $departemenList = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 // Get employees count by department
-$sql = "SELECT d.id_departemen, d.nama_departemen, COUNT(k.id_karyawan) as jumlah_karyawan 
+$sql = "SELECT d.id, d.nama_departemen, COUNT(k.id) as jumlah_karyawan 
         FROM departemen d 
-        LEFT JOIN karyawan k ON d.id_departemen = k.id_departemen 
-        GROUP BY d.id_departemen 
+        LEFT JOIN karyawan k ON d.id = k.id_departemen
+        GROUP BY d.id 
         ORDER BY d.nama_departemen";
 $result = mysqli_query($conn, $sql);
 $karyawanByDept = [];
 while ($row = mysqli_fetch_assoc($result)) {
-    $karyawanByDept[$row['id_departemen']] = $row['jumlah_karyawan'];
+    $karyawanByDept[$row['id']] = $row['jumlah_karyawan'];
 }
 ?>
 
@@ -165,19 +165,19 @@ while ($row = mysqli_fetch_assoc($result)) {
                                             <td><?= htmlspecialchars($departemen['deskripsi']); ?></td>
                                             <td>
                                                 <span class="badge bg-info">
-                                                    <?= isset($karyawanByDept[$departemen['id_departemen']]) ? $karyawanByDept[$departemen['id_departemen']] : 0; ?> karyawan
+                                                    <?= isset($karyawanByDept[$departemen['id']]) ? $karyawanByDept[$departemen['id']] : 0; ?> karyawan
                                                 </span>
                                             </td>
                                             <td><?= date('d/m/Y', strtotime($departemen['created_at'])); ?></td>
                                             <td>
                                                 <div class="btn-group btn-group-sm" role="group">
-                                                    <a href="detail-departemen.php?id=<?= $departemen['id_departemen']; ?>" class="btn btn-info" title="Lihat Detail Departemen">
+                                                    <a href="detail-departemen.php?id=<?= $departemen['id']; ?>" class="btn btn-info" title="Lihat Detail Departemen">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
-                                                    <a href="edit-departemen.php?id=<?= $departemen['id_departemen']; ?>" class="btn btn-warning" title="Edit Departemen">
+                                                    <a href="edit-departemen.php?id=<?= $departemen['id']; ?>" class="btn btn-warning" title="Edit Departemen">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <button type="button" class="btn btn-danger" onclick="hapusDepartemen(<?= $departemen['id_departemen']; ?>)" title="Hapus Departemen">
+                                                    <button type="button" class="btn btn-danger" onclick="hapusDepartemen(<?= $departemen['id']; ?>)" title="Hapus Departemen">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </div>
