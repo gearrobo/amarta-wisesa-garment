@@ -28,6 +28,12 @@
                 </a>
             </li>
             <li>
+                <a href="payroll.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'payroll.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Payroll
+                </a>
+            </li>
+            <li>
                 <a href="inventory.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'inventory.php' ? 'active' : ''; ?>">
                     <i class="fas fa-boxes"></i>
                     Inventory
@@ -37,12 +43,6 @@
                 <a href="master-data.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'master-data.php' ? 'active' : ''; ?>">
                     <i class="fas fa-database"></i>
                     Master Data
-                </a>
-            </li>
-            <li>
-                <a href="payroll.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'payroll.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-money-bill-wave"></i>
-                    Payroll
                 </a>
             </li>
             <li>
