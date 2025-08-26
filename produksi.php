@@ -49,6 +49,11 @@ $sql = "SELECT p.*, s.sps_no, s.customer, ps.spp_no, ps.nama_barang
         ORDER BY p.id DESC";
 $produksi = $conn->query($sql);
 
+// Query dengan JOIN ke tabel jabatan untuk memastikan yang jabatan QC
+$query_karyawan_qc = "SELECT nama_lengkap FROM karyawan WHERE id_jabatan = 3 ";
+$resultKaryawan_qc = $conn->query($query_karyawan_qc);
+
+
 // Query untuk mengambil data karyawan
 $query_karyawan = "SELECT nama_lengkap, type_karyawan FROM karyawan WHERE type_karyawan IN ('harian', 'borongan') ORDER BY nama_lengkap ASC";
 $resultKaryawan = $conn->query($query_karyawan);
@@ -159,6 +164,18 @@ if ($result && $result->num_rows > 0) {
 
             <div class="mb-3">
                 <label>Pekerjaan</label>
+                <input type="text" name="kerjaan" id="kerjaan" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Target</label>
+                <input type="number" name="target" id="target" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label>Hasil</label>
+                <input type="number" name="hasil" id="hasil" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label>Pekerja</label>
                 <select name="pekerja" id="kerjaan" class="form-select">
                     <option value="">-- Pilih Pekerja --</option>
                     <?php
@@ -176,18 +193,6 @@ if ($result && $result->num_rows > 0) {
                 </select>
             </div>
             <div class="mb-3">
-                <label>Target</label>
-                <input type="number" name="target" id="target" class="form-control">
-            </div>
-            <div class="mb-3">
-                <label>Hasil</label>
-                <input type="number" name="hasil" id="hasil" class="form-control">
-            </div>
-            <div class="mb-3">
-                <label>Pekerja</label>
-                <input type="text" name="pekerja" id="pekerja" class="form-control">
-            </div>
-            <div class="mb-3">
                 <label>Status</label>
                 <select name="status" id="status" class="form-control">
                     <option value="pending">Pending</option>
@@ -197,7 +202,20 @@ if ($result && $result->num_rows > 0) {
             </div>
             <div class="mb-3">
                 <label>QC</label>
-                <input type="text" name="qc" id="qc" class="form-control">
+                <select name="qc" id="qc" class="form-select" required>
+                    <option value="">-- Pilih QC --</option>
+                    <?php
+                    if ($resultKaryawan_qc && $resultKaryawan_qc->num_rows > 0) {
+                        while ($row = $resultKaryawan_qc->fetch_assoc()) {
+                            echo "<option value='" . htmlspecialchars($row['nama_lengkap']) . "'>";
+                            echo htmlspecialchars($row['nama_lengkap']);
+                            echo "</option>";
+                        }
+                    } else {
+                        echo "<option value=''>Tidak ada QC tersedia</option>";
+                    }
+                    ?>
+                </select>
             </div>
         </div>
         <div class="modal-footer">

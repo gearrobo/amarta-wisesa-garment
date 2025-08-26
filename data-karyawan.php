@@ -116,8 +116,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // Get all employees
 $sql = "SELECT k.*, j.nama_jabatan, d.nama_departemen 
         FROM karyawan k 
-        LEFT JOIN jabatan j ON k.id_jabatan = j.id_jabatan 
-        LEFT JOIN departemen d ON k.id_departemen = d.id_departemen 
+        LEFT JOIN jabatan j ON k.id_jabatan = j.id
+        LEFT JOIN departemen d ON k.id_departemen = d.id
         ORDER BY k.nama_lengkap";
 $result = mysqli_query($conn, $sql);
 $karyawanList = mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -333,7 +333,7 @@ $departemenList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                 <select name="id_jabatan" class="form-select" required>
                                     <option value="">Pilih Jabatan</option>
                                     <?php foreach ($jabatanList as $jabatan): ?>
-                                    <option value="<?= $jabatan['id_jabatan']; ?>"><?= $jabatan['nama_jabatan']; ?></option>
+                                    <option value="<?= $jabatan['id']; ?>"><?= $jabatan['nama_jabatan']; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -344,7 +344,7 @@ $departemenList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                 <select name="id_departemen" class="form-select" required>
                                     <option value="">Pilih Departemen</option>
                                     <?php foreach ($departemenList as $departemen): ?>
-                                    <option value="<?= $departemen['id_departemen']; ?>"><?= $departemen['nama_departemen']; ?></option>
+                                    <option value="<?= $departemen['id']; ?>"><?= $departemen['nama_departemen']; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
