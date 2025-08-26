@@ -210,10 +210,10 @@ $departemenList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                     <td><?= date('d/m/Y', strtotime($karyawan['tanggal_masuk'])); ?></td>
                                     <td>
                                         <div class="btn-group btn-group-sm" role="group">
-                                            <a href="detail-karyawan.php?id=<?= $karyawan['id_karyawan']; ?>" class="btn btn-sm btn-info">
+                                            <a href="detail-karyawan.php?id=<?= $karyawan['id']; ?>" class="btn btn-sm btn-info">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="edit-karyawan.php?id=<?= $karyawan['id_karyawan']; ?>" class="btn btn-sm btn-warning">
+                                            <a href="edit-karyawan.php?id=<?= $karyawan['id']; ?>" class="btn btn-sm btn-warning">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <button type="button" class="btn btn-sm btn-danger" onclick="hapusKaryawan(<?= $karyawan['id_karyawan']; ?>)">
