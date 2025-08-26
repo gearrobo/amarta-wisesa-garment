@@ -184,6 +184,9 @@ $produksi = $stmt->get_result();
                 <a href="produksi.php?id=<?= $id_persiapan; ?>" class="btn btn-primary">
                     <i class="fas fa-calculator me-2"></i>Tambah Langkah Kerja
                 </a>
+                <a href="" class="btn btn-primary">
+                    <i class="fas fa-calculator me-2"></i>Hitung Jumlah Pekerja
+                </a>
             </div>
             <table id="produksiTable" class="table table-bordered">
                 <thead>
