@@ -18,7 +18,16 @@ if (isset($_POST['save'])) {
         $stmt = $conn->prepare("INSERT INTO produksi 
             (id_sps, id_persiapan, kerjaan, target, hasil, pekerja, status, qc) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("iisiiiss", $id_sps, $id_persiapan, $kerjaan, $target, $hasil, $pekerja, $status, $qc);
+        $stmt->bind_param("iisiisss", 
+    $id_sps, 
+    $id_persiapan, 
+    $kerjaan, 
+    $target, 
+    $hasil, 
+    $pekerja, 
+    $status, 
+    $qc
+);
         $stmt->execute();
     } else {
         // Update
@@ -26,8 +35,20 @@ if (isset($_POST['save'])) {
         $stmt = $conn->prepare("UPDATE produksi 
             SET id_sps=?, id_persiapan=?, kerjaan=?, target=?, hasil=?, pekerja=?, status=?, qc=? 
             WHERE id=?");
-        $stmt->bind_param("iisiiissi", $id_sps, $id_persiapan, $kerjaan, $target, $hasil, $pekerja, $status, $qc, $id);
-        $stmt->execute();
+        $stmt->bind_param("iisiisssi", 
+    $id_sps, 
+    $id_persiapan, 
+    $kerjaan, 
+    $target, 
+    $hasil, 
+    $pekerja, 
+    $status, 
+    $qc, 
+    $id
+);
+        if (!$stmt->execute()) {
+    die("Gagal simpan produksi: " . $stmt->error);
+}
     }
     header("Location: produksi.php");
     exit();
@@ -176,7 +197,7 @@ if ($result && $result->num_rows > 0) {
             </div>
             <div class="mb-3">
                 <label>Pekerja</label>
-                <select name="pekerja" id="kerjaan" class="form-select">
+                <select name="pekerja" id="pekerja" class="form-select">
                     <option value="">-- Pilih Pekerja --</option>
                     <?php
                     if ($resultKaryawan && $resultKaryawan->num_rows > 0) {
