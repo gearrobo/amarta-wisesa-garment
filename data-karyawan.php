@@ -216,7 +216,7 @@ $departemenList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                             <a href="edit-karyawan.php?id=<?= $karyawan['id']; ?>" class="btn btn-sm btn-warning">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <button type="button" class="btn btn-sm btn-danger" onclick="hapusKaryawan(<?= $karyawan['id_karyawan']; ?>)">
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="hapusKaryawan(<?= $karyawan['id']; ?>)">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
