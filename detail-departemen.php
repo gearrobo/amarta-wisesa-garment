@@ -12,8 +12,13 @@ include 'includes/header.php';
 $id_departemen = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 // Get department details
-$sql = "SELECT * FROM departemen WHERE id_departemen = ?";
+$sql = "SELECT * FROM departemen WHERE id = ?";
 $stmt = mysqli_prepare($conn, $sql);
+if ($stmt === false) {
+    $_SESSION['error'] = "Error dalam query departemen: " . mysqli_error($conn);
+    header("Location: data-departemen.php");
+    exit();
+}
 mysqli_stmt_bind_param($stmt, "i", $id_departemen);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
@@ -29,18 +34,26 @@ if (!$departemen) {
 // Get employees in this department
 $sql = "SELECT k.*, j.nama_jabatan 
         FROM karyawan k 
-        LEFT JOIN jabatan j ON k.id_jabatan = j.id_jabatan 
+        LEFT JOIN jabatan j ON k.id_jabatan = j.id 
         WHERE k.id_departemen = ? 
         ORDER BY k.nama_lengkap";
 $stmt = mysqli_prepare($conn, $sql);
+if ($stmt === false) {
+    $_SESSION['error'] = "Error dalam query karyawan: " . mysqli_error($conn);
+    header("Location: data-departemen.php");
+    exit();
+}
 mysqli_stmt_bind_param($stmt, "i", $id_departemen);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
-$karyawanList = mysqli_fetch_all($result, MYSQLI_ASSOC);
+$karyawanList = [];
+if ($result !== false) {
+    $karyawanList = mysqli_fetch_all($result, MYSQLI_ASSOC);
+}
 mysqli_stmt_close($stmt);
 
 // Get total employees count
-$totalKaryawan = count($karyawanList);
+$totalKaryawan = is_array($karyawanList) ? count($karyawanList) : 0;
 ?>
 
 <div class="main-content">
