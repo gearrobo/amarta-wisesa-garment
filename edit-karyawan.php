@@ -16,9 +16,9 @@ $success = '';
 // Get employee details
 $sql = "SELECT k.*, j.nama_jabatan, d.nama_departemen 
         FROM karyawan k 
-        LEFT JOIN jabatan j ON k.id_jabatan = j.id_jabatan 
-        LEFT JOIN departemen d ON k.id_departemen = d.id_departemen 
-        WHERE k.id_karyawan = ?";
+        LEFT JOIN jabatan j ON k.id_jabatan = j.id
+        LEFT JOIN departemen d ON k.id_departemen = d.id
+        WHERE k.id = ?";
         
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $id_karyawan);
@@ -92,9 +92,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Refresh data
             $sql = "SELECT k.*, j.nama_jabatan, d.nama_departemen 
                     FROM karyawan k 
-                    LEFT JOIN jabatan j ON k.id_jabatan = j.id_jabatan 
-                    LEFT JOIN departemen d ON k.id_departemen = d.id_departemen 
-                    WHERE k.id_karyawan = ?";
+                    LEFT JOIN jabatan j ON k.id_jabatan = j.id
+                    LEFT JOIN departemen d ON k.id_departemen = d.id
+                    WHERE k.id = ?";
             $stmt = mysqli_prepare($conn, $sql);
             mysqli_stmt_bind_param($stmt, "i", $id_karyawan);
             mysqli_stmt_execute($stmt);

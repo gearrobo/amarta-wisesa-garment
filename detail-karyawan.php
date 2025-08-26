@@ -3,6 +3,8 @@
 include 'includes/header.php';
 include 'config/db.php';
 
+
+
 // Check if ID is provided
 if (!isset($_GET['id'])) {
     header("Location: data-karyawan.php");
@@ -14,9 +16,9 @@ $id_karyawan = $_GET['id'];
 // Get employee details
 $sql = "SELECT k.*, j.nama_jabatan, d.nama_departemen 
         FROM karyawan k 
-        LEFT JOIN jabatan j ON k.id_jabatan = j.id_jabatan 
-        LEFT JOIN departemen d ON k.id_departemen = d.id_departemen 
-        WHERE k.id_karyawan = ?";
+        LEFT JOIN jabatan j ON k.id_jabatan = j.id
+        LEFT JOIN departemen d ON k.id_departemen = d.id
+        WHERE k.id = ?";
         
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $id_karyawan);
@@ -35,7 +37,7 @@ $karyawan_tetap = null;
 $karyawan_non_tetap = null;
 
 if ($karyawan['type_karyawan'] == 'tetap') {
-    $sql = "SELECT * FROM karyawan_tetap WHERE id_karyawan = ?";
+    $sql = "SELECT * FROM karyawan_tetap WHERE id = ?";
     $stmt = mysqli_prepare($conn, $sql);
     if ($stmt) {
         mysqli_stmt_bind_param($stmt, "i", $id_karyawan);
@@ -45,7 +47,7 @@ if ($karyawan['type_karyawan'] == 'tetap') {
         mysqli_stmt_close($stmt);
     }
 } else {
-    $sql = "SELECT * FROM karyawan_harian_borongan WHERE id_karyawan = ?";
+    $sql = "SELECT * FROM karyawan_harian_borongan WHERE id = ?";
     $stmt = mysqli_prepare($conn, $sql);
     if ($stmt) {
         mysqli_stmt_bind_param($stmt, "i", $id_karyawan);
@@ -309,10 +311,10 @@ if ($karyawan['type_karyawan'] == 'tetap') {
                             <h5 class="card-title mb-0">Aksi</h5>
                         </div>
                         <div class="card-body">
-                            <a href="edit-karyawan.php?id=<?= $karyawan['id_karyawan']; ?>" class="btn btn-warning w-100 mb-2">
+                            <a href="edit-karyawan.php?id=<?= $karyawan['id']; ?>" class="btn btn-warning w-100 mb-2">
                                 <i class="fas fa-edit"></i> Edit Data
                             </a>
-                            <button type="button" class="btn btn-danger w-100" onclick="hapusKaryawan(<?= $karyawan['id_karyawan']; ?>)">
+                            <button type="button" class="btn btn-danger w-100" onclick="hapusKaryawan(<?= $karyawan['id']; ?>)">
                                 <i class="fas fa-trash"></i> Hapus Data
                             </button>
                         </div>
