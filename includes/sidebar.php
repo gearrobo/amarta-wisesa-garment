@@ -40,6 +40,12 @@
                 </a>
             </li>
             <li>
+                <a href="payroll.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'payroll.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Payroll
+                </a>
+            </li>
+            <li>
                 <a href="pengaturan.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'pengaturan.php' ? 'active' : ''; ?>">
                     <i class="fas fa-cog"></i>
                     Pengaturan
