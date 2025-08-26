@@ -298,9 +298,15 @@ $belum_harga_count = $belum_harga_result ? $belum_harga_result->fetch_assoc()['b
                                     <button class="btn btn-danger" onclick="deletePersiapan(<?= $row['id'] ?>)" title="Hapus">
                                         <i class="fas fa-trash"></i>
                                     </button>
-                                    <a href="generate_spp.php?id=<?= $row['id'] ?>" class="btn btn-secondary" title="Print" target="_blank">
-                                        <i class="fas fa-print"></i>
-                                    </a>
+                                    <?php if (strtolower($status) === 'selesai'): ?>
+                                        <a href="generate_spp.php?id=<?= $row['id'] ?>" class="btn btn-secondary" title="Print" target="_blank">
+                                            <i class="fas fa-print"></i>
+                                        </a>
+                                    <?php else: ?>
+                                        <button class="btn btn-secondary" title="SPP hanya bisa dicetak saat status Selesai" disabled>
+                                            <i class="fas fa-print"></i>
+                                        </button>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>

@@ -22,6 +22,12 @@ if (!$persiapan) {
     die("Data persiapan tidak ditemukan!");
 }
 
+// Validasi status - hanya boleh cetak jika status "Selesai"
+$status = strtolower($persiapan['status'] ?? '');
+if ($status !== 'selesai') {
+    die("SPP tidak dapat dicetak. Status harus 'Selesai'. Status saat ini: " . htmlspecialchars($persiapan['status'] ?? 'Tidak diketahui'));
+}
+
 // Ambil data SPS terkait berdasarkan id_sps
 $sql_sps = "SELECT * FROM sps WHERE id = ?";
 $stmt_sps = mysqli_prepare($conn, $sql_sps);
