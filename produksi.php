@@ -57,7 +57,7 @@ if (isset($_POST['save'])) {
 if (isset($_GET['delete'])) {
     $id = intval($_GET['delete']);
     $conn->query("DELETE FROM produksi WHERE id=$id");
-    header("Location: produksi.php");
+    header("Location: produksi.php?id_sps=".$id_sps_row);
     exit();
 }
 
