@@ -2,6 +2,8 @@
 include 'includes/header.php';
 include 'config/db.php';
 
+
+$id_sps_row = isset($_GET['id_sps']) ? intval($_GET['id_sps']) : 0;
 // --- Handle Simpan Produksi ---
 if (isset($_POST['save'])) {
     $id_sps      = intval($_POST['id_sps']);
@@ -47,7 +49,7 @@ if (isset($_POST['save'])) {
     die("Gagal simpan produksi: " . $stmt->error);
 }
     }
-    header("Location: produksi.php");
+    header("Location: produksi.php?id_sps=".$id_sps_row);
     exit();
 }
 
@@ -65,7 +67,7 @@ if (isset($_GET['approve'])) {
     $stmt = $conn->prepare("UPDATE produksi SET status='selesai' WHERE id=?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
-    header("Location: produksi.php");
+    header("Location: produksi.php?id_sps=".$id_sps_row);
     exit();
 }
 
@@ -104,10 +106,9 @@ $resultKaryawan = $conn->query($query_karyawan);
 $check_persiapan_sql = "SELECT * FROM persiapan WHERE sp_srx IS NOT NULL";
 $result = $conn->query($check_persiapan_sql);
 
-$id_sps_row = isset($_GET['id_sps']) ? intval($_GET['id_sps']) : 0;
 
 if ($result && $result->num_rows > 0) {
-    echo "✅ Ada " . $result->num_rows . " data persiapan yang memiliki SPK";
+    // echo "✅ Ada " . $result->num_rows . " data persiapan yang memiliki SPK";
     
     // Tampilkan data
     while ($row = $result->fetch_assoc()) {
