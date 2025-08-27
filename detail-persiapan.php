@@ -5,7 +5,6 @@ include 'config/db.php';
 // Ambil id persiapan dari URL
 $id_persiapan = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-
 if ($id_persiapan == 0) {
     die("ID Persiapan tidak valid.");
 }
@@ -30,12 +29,9 @@ mysqli_stmt_close($stmt);
 
 $id_sps_produksi = $data_persiapan['id_sps'];
 
-
 if (!$data_persiapan) {
     die("Data persiapan tidak ditemukan.");
 }
-
-// ---------------- GET TIMELINE ----------------
 
 // ---------------- GET DATA GUDANG ----------------
 $sql_gudang = "SELECT 
@@ -65,32 +61,52 @@ if ($stmt_gudang) {
 }
 
 // ---------------- GET PRODUKSI ----------------
-$sql = "SELECT p.*, s.sps_no, s.customer, ps.spp_no, ps.nama_barang 
+// Query yang sesuai dengan struktur tabel produksi (tanpa id_persiapan)
+$sql_produksi = "SELECT p.*, s.sps_no, s.customer 
         FROM produksi p
         LEFT JOIN sps s ON p.id_sps = s.id
-        LEFT JOIN persiapan ps ON p.id_persiapan = ps.id
-        WHERE p.id_persiapan = ?
+        WHERE p.id_sps = ?
         ORDER BY p.id DESC";
 
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id_sps_produksi);
-$stmt->execute();
-$produksi = $stmt->get_result();
+$stmt_produksi = $conn->prepare($sql_produksi);
 
+if ($stmt_produksi) {
+    $stmt_produksi->bind_param("i", $id_sps_produksi);
+    $stmt_produksi->execute();
+    $produksi = $stmt_produksi->get_result();
+} else {
+    die("Error dalam query produksi: " . $conn->error);
+}
+
+// Handle actions for produksi
+if (isset($_GET['approve'])) {
+    $id = intval($_GET['approve']);
+    $stmt = $conn->prepare("UPDATE produksi SET status='selesai' WHERE id=?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    header("Location: detail-persiapan.php?id=" . $id_persiapan);
+    exit();
+}
+
+if (isset($_GET['delete_produksi'])) {
+    $id = intval($_GET['delete_produksi']);
+    $conn->query("DELETE FROM produksi WHERE id=$id");
+    header("Location: detail-persiapan.php?id=" . $id_persiapan);
+    exit();
+}
 ?>
-
 
 <div class="main-content">
     <div class="">
         <h2>Detail Persiapan</h2>
         <!-- Breadcrumb -->
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="persiapan.php">Persiapan</a></li>
-                    <li class="breadcrumb-item active">Data Persiapan</li>
-                </ol>
-            </nav>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="persiapan.php">Persiapan</a></li>
+                <li class="breadcrumb-item active">Data Persiapan</li>
+            </ol>
+        </nav>
     </div>
 
     <!-- Informasi Persiapan -->
@@ -151,91 +167,113 @@ $produksi = $stmt->get_result();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($gudang_items as $index => $item): ?>
-                        <tr>
-                            <td><?= $index + 1; ?></td>
-                            <td><?= htmlspecialchars($item['nama_gudang'] ?? '-'); ?></td>
-                            <td><?= htmlspecialchars($item['bahan'] ?? '-'); ?></td>
-                            <td><?= number_format($item['qty'] ?? 0); ?> <?= htmlspecialchars($item['satuan'] ?? ''); ?></td>
-                            <td><?= number_format($item['stok_akhir'] ?? 0); ?> <?= htmlspecialchars($item['satuan'] ?? ''); ?></td>
-                            <td>Rp <?= number_format($item['harga_per_meter'] ?? 0, 0, ',', '.'); ?></td>
-                            <td>Rp <?= number_format($item['total_harga_bahan'] ?? 0, 0, ',', '.'); ?></td>
-                            <td>
-                                <button class="btn btn-sm btn-secondary">
-                                    <i class="fas fa-print"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
+                        <?php if (!empty($gudang_items)): ?>
+                            <?php foreach ($gudang_items as $index => $item): ?>
+                            <tr>
+                                <td><?= $index + 1; ?></td>
+                                <td><?= htmlspecialchars($item['nama_gudang'] ?? '-'); ?></td>
+                                <td><?= htmlspecialchars($item['bahan'] ?? '-'); ?></td>
+                                <td><?= number_format($item['qty'] ?? 0); ?> <?= htmlspecialchars($item['satuan'] ?? ''); ?></td>
+                                <td><?= number_format($item['stok_akhir'] ?? 0); ?> <?= htmlspecialchars($item['satuan'] ?? ''); ?></td>
+                                <td>Rp <?= number_format($item['harga_per_meter'] ?? 0, 0, ',', '.'); ?></td>
+                                <td>Rp <?= number_format($item['total_harga_bahan'] ?? 0, 0, ',', '.'); ?></td>
+                                <td>
+                                    <button class="btn btn-sm btn-secondary">
+                                        <i class="fas fa-print"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="8" class="text-center">Tidak ada data gudang</td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Files Section -->
+    <!-- Langkah Kerja Section -->
     <div class="card">
         <div class="card-header bg-warning text-dark">
             <h5 class="card-title mb-0">Langkah Kerja</h5>
         </div>
         <div class="card-body">
-             <!-- Tombol Perhitungan HPP -->
             <div class="mb-3">
-                <a href="produksi.php?id=<?= $id_persiapan; ?>" class="btn btn-primary">
-                    <i class="fas fa-calculator me-2"></i>Tambah Langkah Kerja
+                <a href="produksi.php?id_sps=<?= $id_sps_produksi; ?>" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Tambah Langkah Kerja
                 </a>
-                <a href="" class="btn btn-primary">
+                <button class="btn btn-primary">
                     <i class="fas fa-calculator me-2"></i>Hitung Jumlah Pekerja
-                </a>
+                </button>
             </div>
-            <table id="produksiTable" class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>No SPS</th>
-                        <th>Customer</th>
-                        <th>SPP No / Barang</th>
-                        <th>Pekerjaan</th>
-                        <th>Target</th>
-                        <th>Hasil</th>
-                        <th>Pekerja</th>
-                        <th>Status</th>
-                        <th>QC</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php $no=1; while($row = $produksi->fetch_assoc()): ?>
-                    <tr>
-                        <td><?= $no++ ?></td>
-                        <td><?= $row['sps_no'] ?></td>
-                        <td><?= $row['customer'] ?></td>
-                        <td><?= $row['spp_no'].' | '.$row['nama_barang'] ?></td>
-                        <td><?= $row['kerjaan'] ?></td>
-                        <td><?= $row['target'] ?></td>
-                        <td><?= $row['hasil'] ?></td>
-                        <td><?= $row['pekerja'] ?></td>
-                        <td><?= $row['status'] ?></td>
-                        <td><?= $row['qc'] ?></td>
-                        <td>
-                            <div class="btn-group btn-group-sm" role="group">
-                            <?php if($row['status'] != 'selesai'): ?>
-                                <a href="?approve=<?= $row['id'] ?>" class="btn btn-success btn-sm"
-                                    onclick="return confirm('Apakah anda yakin ingin menyelesaikan proses ini?')"
-                                    title="Approve - Tandai Selesai">
-                                    <i class="fas fa-check-circle"></i>
-                                </a>
-                            <?php endif; ?>
-                            <button class="btn btn-warning btn-sm" 
-                                onclick="editProduksi(<?= htmlspecialchars(json_encode($row)) ?>)"><i class="fas fa-edit"></i></button>
-                            <a href="?delete=<?= $row['id'] ?>" class="btn btn-danger btn-sm"
-                                onclick="return confirm('Hapus data ini?')"><i class="fas fa-trash"></i></a>
-                            </div>
-                        </td>
-                    </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>No SPS</th>
+                            <th>Customer</th>
+                            <th>SPP No / Barang</th>
+                            <th>Pekerjaan</th>
+                            <th>Target</th>
+                            <th>Hasil</th>
+                            <th>Pekerja</th>
+                            <th>Status</th>
+                            <th>QC</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if ($produksi && $produksi->num_rows > 0): ?>
+                            <?php $no = 1; while($row = $produksi->fetch_assoc()): ?>
+                            <tr>
+                                <td><?= $no++ ?></td>
+                                <td><?= htmlspecialchars($row['sps_no']) ?></td>
+                                <td><?= htmlspecialchars($row['customer']) ?></td>
+                                <td><?= htmlspecialchars($data_persiapan['spp_no'] . ' | ' . $data_persiapan['nama_barang']) ?></td>
+                                <td><?= htmlspecialchars($row['kerjaan']) ?></td>
+                                <td><?= htmlspecialchars($row['target']) ?></td>
+                                <td><?= htmlspecialchars($row['hasil']) ?></td>
+                                <td><?= htmlspecialchars($row['pekerja']) ?></td>
+                                <td>
+                                    <span class="badge 
+                                        <?= $row['status'] == 'selesai' ? 'bg-success' : 
+                                           ($row['status'] == 'proses' ? 'bg-warning' : 'bg-secondary') ?>">
+                                        <?= ucfirst($row['status']) ?>
+                                    </span>
+                                </td>
+                                <td><?= htmlspecialchars($row['qc']) ?></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <?php if($row['status'] != 'selesai'): ?>
+                                            <a href="?approve=<?= $row['id'] ?>&id=<?= $id_persiapan ?>" class="btn btn-success btn-sm"
+                                                onclick="return confirm('Apakah anda yakin ingin menyelesaikan proses ini?')"
+                                                title="Approve - Tandai Selesai">
+                                                <i class="fas fa-check-circle"></i>
+                                            </a>
+                                        <?php endif; ?>
+                                        <a href="produksi.php?edit=<?= $row['id'] ?>&id_sps=<?= $id_sps_produksi ?>" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="?delete_produksi=<?= $row['id'] ?>&id=<?= $id_persiapan ?>" class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Hapus data ini?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="11" class="text-center">Tidak ada data produksi</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -245,26 +283,11 @@ $produksi = $stmt->get_result();
             <h5 class="card-title mb-0">Timeline Produksi</h5>
         </div>
         <div class="card-body">
-            <?php if (!empty($timeline)): ?>
-                <div class="timeline">
-                    <?php foreach ($timeline as $event): ?>
-                        <div class="timeline-item">
-                            <div class="timeline-date">
-                                <i class="fas fa-calendar me-1"></i> <?= date('d M Y', strtotime($event['tanggal'])); ?>
-                            </div>
-                            <div class="timeline-content">
-                                <?= htmlspecialchars($event['deskripsi']); ?>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php else: ?>
-                <div class="alert alert-info mb-0">
-                    <i class="fas fa-info-circle me-2"></i>Belum ada timeline untuk persiapan ini.
-                </div>
-            <?php endif; ?>
+            <div class="alert alert-info mb-0">
+                <i class="fas fa-info-circle me-2"></i>Belum ada timeline untuk persiapan ini.
+            </div>
         </div>
     </div>
 </div>
 
-<?php include 'includes/footer.php';
+<?php include 'includes/footer.php'; ?>

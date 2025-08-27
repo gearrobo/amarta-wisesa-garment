@@ -5,7 +5,6 @@ include 'config/db.php';
 // --- Handle Simpan Produksi ---
 if (isset($_POST['save'])) {
     $id_sps      = intval($_POST['id_sps']);
-    $id_persiapan = intval($_POST['id_persiapan']);
     $kerjaan     = $_POST['kerjaan'];
     $target      = intval($_POST['target']);
     $hasil       = intval($_POST['hasil']);
@@ -16,11 +15,10 @@ if (isset($_POST['save'])) {
     if ($_POST['id'] == "") {
         // Insert baru
         $stmt = $conn->prepare("INSERT INTO produksi 
-            (id_sps, id_persiapan, kerjaan, target, hasil, pekerja, status, qc) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("iisiisss", 
+            (id_sps, kerjaan, target, hasil, pekerja, status, qc) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("isiisss", 
     $id_sps, 
-    $id_persiapan, 
     $kerjaan, 
     $target, 
     $hasil, 
@@ -33,11 +31,10 @@ if (isset($_POST['save'])) {
         // Update
         $id = intval($_POST['id']);
         $stmt = $conn->prepare("UPDATE produksi 
-            SET id_sps=?, id_persiapan=?, kerjaan=?, target=?, hasil=?, pekerja=?, status=?, qc=? 
+            SET id_sps=?, kerjaan=?, target=?, hasil=?, pekerja=?, status=?, qc=? 
             WHERE id=?");
-        $stmt->bind_param("iisiisssi", 
+        $stmt->bind_param("isiisssi", 
     $id_sps, 
-    $id_persiapan, 
     $kerjaan, 
     $target, 
     $hasil, 
@@ -73,16 +70,17 @@ if (isset($_GET['approve'])) {
 }
 
 // --- Ambil Data Produksi ---
-$sql = "SELECT p.id, p.id_sps, p.id_persiapan, p.kerjaan, p.target, p.hasil, p.pekerja, p.status, p.qc, s.sps_no, s.customer, ps.spp_no, ps.nama_barang 
+$sql = "SELECT p.id, p.id_sps, p.kerjaan, p.target, p.hasil, p.pekerja, p.status, p.qc, 
+               s.sps_no, s.customer, ps.spp_no, ps.nama_barang 
         FROM produksi p
         LEFT JOIN sps s ON p.id_sps = s.id
-        LEFT JOIN persiapan ps ON p.id_persiapan = ps.id
-        ORDER BY p.id DESC";
+        LEFT JOIN persiapan ps ON ps.id_sps = p.id_sps"; 
+
 $produksi = $conn->query($sql);
 
 // Validasi jumlah kolom untuk DataTables
 if ($produksi) {
-    $expected_columns = 11; // Jumlah kolom di thead
+    $expected_columns = 12; // Jumlah kolom di thead
     $first_row = $produksi->fetch_assoc();
     if ($first_row && count($first_row) !== $expected_columns) {
         echo "<div class='alert alert-warning'>Peringatan: Jumlah kolom dari query (" . count($first_row) . ") tidak sesuai dengan yang diharapkan oleh tabel (" . $expected_columns . "). Silakan periksa query SQL.</div>";
@@ -130,7 +128,8 @@ if ($result && $result->num_rows > 0) {
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
-                <li class="breadcrumb-item active">Produksi</li>
+                <li class="breadcrumb-item"><a href="persiapan.php">Persiapan</a></li>
+                <li class="breadcrumb-item active">Data Persiapan</li>
             </ol>
         </nav>
     </div>
