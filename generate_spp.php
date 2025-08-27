@@ -58,7 +58,7 @@ while ($row = mysqli_fetch_assoc($result_detail)) {
 }
 
 // Cek apakah SPP sudah pernah dicetak (berdasarkan spp_no yang sudah terisi)
-$check_sql = "SELECT spp_no FROM persiapan WHERE id = ?";
+$check_sql = "SELECT spp_no, sp_srx FROM persiapan WHERE id = ?";
 $check_stmt = mysqli_prepare($conn, $check_sql);
 if (!$check_stmt) {
     die("Prepare failed for check query: " . mysqli_error($conn));
@@ -71,6 +71,7 @@ $persiapan_data = mysqli_fetch_assoc($check_result);
 // Jika sudah ada nomor SPP (spp_no sudah terisi), gunakan nomor yang sudah ada
 if (!empty($persiapan_data['spp_no'])) {
     $spp_no = $persiapan_data['spp_no'];
+    $sp_srx = $persiapan_data['sp_srx'];
 } else {
     // Generate nomor SPP baru
     $year = date('Y');
@@ -91,15 +92,27 @@ if (!empty($persiapan_data['spp_no'])) {
     
     $next_num = ($last_spp['last_num'] ?? 0) + 1;
     $spp_no = 'SPP' . str_pad($next_num, 4, '0', STR_PAD_LEFT);
+    $sp_srx = 'SRX-' . str_pad($next_num, 4, '0', STR_PAD_LEFT); // Format untuk sp_srx
 
-    // Update nomor SPP ke database
-    $update_sql = "UPDATE persiapan SET spp_no = ? WHERE id = ?";
+    // Update database dengan nomor SPP dan SP/SRX yang baru
+    $update_sql = "UPDATE persiapan SET spp_no = ?, sp_srx = ? WHERE id = ?";
     $update_stmt = mysqli_prepare($conn, $update_sql);
     if (!$update_stmt) {
         die("Prepare failed for update query: " . mysqli_error($conn));
     }
-    mysqli_stmt_bind_param($update_stmt, "si", $spp_no, $id);
-    mysqli_stmt_execute($update_stmt);
+
+    mysqli_stmt_bind_param($update_stmt, "ssi", $spp_no, $sp_srx, $id);
+
+    if (mysqli_stmt_execute($update_stmt)) {
+        // Update berhasil
+        $persiapan['spp_no'] = $spp_no;
+        $persiapan['sp_srx'] = $sp_srx;
+    } else {
+        echo "Update gagal: " . mysqli_stmt_error($update_stmt);
+        // Tetap lanjutkan dengan nilai yang di-generate
+    }
+
+    mysqli_stmt_close($update_stmt);
 }
 
 // Ambil data yang sudah diupdate
@@ -117,13 +130,14 @@ $final_result = mysqli_stmt_get_result($final_stmt);
 $final_data = mysqli_fetch_assoc($final_result);
 
 if (!$final_data) {
-    die("Data tidak ditemukan setelah update!");
+    // Jika query gagal, gunakan data yang sudah kita dapatkan sebelumnya
+    $final_data = array_merge($persiapan, $sps);
+} else {
+    // Gunakan data yang sudah diupdate
+    $spp_no = $final_data['spp_no'];
+    $sp_srx = $final_data['sp_srx'];
+    $sps = $final_data;
 }
-
-// Gunakan data yang sudah diupdate
-$spp_no = $final_data['spp_no'];
-$sps = $final_data;
-
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -161,7 +175,12 @@ $sps = $final_data;
         <tr>
             <td width="150">No. SPP</td>
             <td width="10">:</td>
-            <td><?= htmlspecialchars($spp_no) ?></td>
+            <td><?= htmlspecialchars($spp_no ?? '') ?></td>
+        </tr>
+        <tr>
+            <td>No. SP/SRX</td>
+            <td>:</td>
+            <td><?= htmlspecialchars($sp_srx ?? '') ?></td>
         </tr>
         <tr>
             <td>Tanggal</td>
@@ -171,32 +190,32 @@ $sps = $final_data;
         <tr>
             <td>No. SPS</td>
             <td>:</td>
-            <td><?= htmlspecialchars($sps['sps_no']) ?></td>
+            <td><?= htmlspecialchars($sps['sps_no'] ?? '') ?></td>
         </tr>
         <tr>
             <td>Customer</td>
             <td>:</td>
-            <td><?= htmlspecialchars($sps['customer']) ?></td>
+            <td><?= htmlspecialchars($sps['customer'] ?? '') ?></td>
         </tr>
         <tr>
             <td>Item</td>
             <td>:</td>
-            <td><?= htmlspecialchars($sps['item']) ?></td>
+            <td><?= htmlspecialchars($sps['item'] ?? '') ?></td>
         </tr>
         <tr>
             <td>Artikel</td>
             <td>:</td>
-            <td><?= htmlspecialchars($sps['artikel']) ?></td>
+            <td><?= htmlspecialchars($sps['artikel'] ?? '') ?></td>
         </tr>
         <tr>
             <td>Size</td>
             <td>:</td>
-            <td><?= htmlspecialchars($sps['size']) ?></td>
+            <td><?= htmlspecialchars($sps['size'] ?? '') ?></td>
         </tr>
         <tr>
             <td>Tanggal Kirim</td>
             <td>:</td>
-            <td><?= date('d/m/Y', strtotime($sps['kirim'])) ?></td>
+            <td><?= !empty($sps['kirim']) ? date('d/m/Y', strtotime($sps['kirim'])) : '' ?></td>
         </tr>
     </table>
 

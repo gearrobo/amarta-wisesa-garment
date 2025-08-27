@@ -104,14 +104,16 @@ $resultKaryawan = $conn->query($query_karyawan);
 $check_persiapan_sql = "SELECT * FROM persiapan WHERE sp_srx IS NOT NULL";
 $result = $conn->query($check_persiapan_sql);
 
+$id_sps_row = isset($_GET['id_sps']) ? intval($_GET['id_sps']) : 0;
+
 if ($result && $result->num_rows > 0) {
-    // echo "✅ Ada " . $result->num_rows . " data persiapan yang memiliki SPK";
+    echo "✅ Ada " . $result->num_rows . " data persiapan yang memiliki SPK";
     
     // Tampilkan data
     while ($row = $result->fetch_assoc()) {
         $id_persiapan_baru = $row['id_sps'];
         $stmt = $conn->prepare("SELECT id, sps_no, customer, item FROM sps WHERE id = ? ORDER BY sps_no ASC");
-        $stmt->bind_param("i", $id_persiapan_baru);
+        $stmt->bind_param("i", $id_sps_row);
         $stmt->execute();
         $sps = $stmt->get_result();
     }

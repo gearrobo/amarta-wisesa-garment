@@ -28,7 +28,6 @@ $data_persiapan = mysqli_fetch_assoc($result);
 mysqli_stmt_close($stmt);
 
 $id_sps_produksi = $data_persiapan['id_sps'];
-
 if (!$data_persiapan) {
     die("Data persiapan tidak ditemukan.");
 }
