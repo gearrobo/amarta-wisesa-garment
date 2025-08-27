@@ -76,7 +76,8 @@ $sql = "SELECT p.id, p.id_sps, p.kerjaan, p.target, p.hasil, p.pekerja, p.status
                s.sps_no, s.customer, ps.spp_no, ps.nama_barang 
         FROM produksi p
         LEFT JOIN sps s ON p.id_sps = s.id
-        LEFT JOIN persiapan ps ON ps.id_sps = p.id_sps"; 
+        LEFT JOIN persiapan ps ON ps.id_sps = p.id_sps
+        WHERE s.id = $id_sps_row"; 
 
 $produksi = $conn->query($sql);
 
