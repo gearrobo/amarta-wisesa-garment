@@ -204,9 +204,9 @@ if (isset($_GET['delete_produksi'])) {
                 <a href="produksi.php?id_sps=<?= $id_sps_produksi; ?>" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i>Tambah Langkah Kerja
                 </a>
-                <button class="btn btn-primary">
+                <a href="jumlah_pekerja.php?id_sps=<?= $id_sps_produksi; ?>" class="btn btn-primary">
                     <i class="fas fa-calculator me-2"></i>Hitung Jumlah Pekerja
-                </button>
+                </a>
             </div>
             <div class="table-responsive">
                 <table class="table table-bordered">

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 27, 2025 at 10:16 AM
+-- Generation Time: Aug 27, 2025 at 01:59 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -384,13 +384,13 @@ INSERT INTO `jabatan` (`id`, `nama_jabatan`, `deskripsi`, `created_at`, `updated
 
 CREATE TABLE `jumlah_pekerja` (
   `id` int(11) UNSIGNED NOT NULL,
-  `Bahan_baku` varchar(500) NOT NULL,
-  `Jumlah Order` int(11) NOT NULL,
-  `Jenis Pekerjaan` int(11) NOT NULL,
-  `Target Waktu` int(11) NOT NULL,
-  `Jumlah Waktu Kerja` int(15) NOT NULL,
-  `Harga PerUnit` decimal(25,6) NOT NULL,
-  `ManPower` int(11) NOT NULL,
+  `bahan_baku` varchar(500) NOT NULL,
+  `jumlah_order` int(11) NOT NULL,
+  `jenis_pekerjaan` varchar(50) NOT NULL,
+  `target_waktu` int(11) NOT NULL,
+  `jumlah_waktu_kerja` int(15) NOT NULL,
+  `harga_perunit` decimal(25,6) NOT NULL,
+  `man_hours` int(11) NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
