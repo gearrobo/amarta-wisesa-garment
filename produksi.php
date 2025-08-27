@@ -73,12 +73,23 @@ if (isset($_GET['approve'])) {
 }
 
 // --- Ambil Data Produksi ---
-$sql = "SELECT p.*, s.sps_no, s.customer, ps.spp_no, ps.nama_barang 
+$sql = "SELECT p.id, p.id_sps, p.id_persiapan, p.kerjaan, p.target, p.hasil, p.pekerja, p.status, p.qc, s.sps_no, s.customer, ps.spp_no, ps.nama_barang 
         FROM produksi p
         LEFT JOIN sps s ON p.id_sps = s.id
         LEFT JOIN persiapan ps ON p.id_persiapan = ps.id
         ORDER BY p.id DESC";
 $produksi = $conn->query($sql);
+
+// Validasi jumlah kolom untuk DataTables
+if ($produksi) {
+    $expected_columns = 11; // Jumlah kolom di thead
+    $first_row = $produksi->fetch_assoc();
+    if ($first_row && count($first_row) !== $expected_columns) {
+        echo "<div class='alert alert-warning'>Peringatan: Jumlah kolom dari query (" . count($first_row) . ") tidak sesuai dengan yang diharapkan oleh tabel (" . $expected_columns . "). Silakan periksa query SQL.</div>";
+    }
+    // Kembalikan pointer ke awal
+    $produksi->data_seek(0);
+}
 
 // Query dengan JOIN ke tabel jabatan untuk memastikan yang jabatan QC
 $query_karyawan_qc = "SELECT nama_lengkap FROM karyawan WHERE id_jabatan = 3 ";
@@ -196,7 +207,6 @@ if ($result && $result->num_rows > 0) {
                         <option value="<?= $row['id'] ?>">
                             <?= $row['sps_no'] ?> | <?= $row['customer'] ?> | <?= $row['item'] ?>
                         </option>
-                    <input type="hidden" name="id_persiapan" id="id_persiapan" value="<?= $row['id'] ?>">
                     <?php endwhile; ?>
                 </select>
             </div>
@@ -266,9 +276,8 @@ if ($result && $result->num_rows > 0) {
 </div>
 
 <!-- jQuery & Bootstrap -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     
