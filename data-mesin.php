@@ -127,13 +127,13 @@ $mesinList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                     <td><?= date('d/m/Y', strtotime($mesin['tanggal_masuk'])); ?></td>
                                     <td>
                                         <div class="btn-group btn-group-sm" role="group">
-                                            <button class="btn btn-warning" onclick="editMesin(<?= $mesin['id_mesin']; ?>)" title="Edit">
+                                            <button class="btn btn-warning" onclick="editMesin(<?= $mesin['id']; ?>)" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button class="btn btn-danger" onclick="hapusMesin(<?= $mesin['id_mesin']; ?>)" title="Hapus">
+                                            <button class="btn btn-danger" onclick="hapusMesin(<?= $mesin['id']; ?>)" title="Hapus">
                                                 <i class="fas fa-trash"></i>
                                             </button>
-                                            <button class="btn btn-info" onclick="detailMesin(<?= $mesin['id_mesin']; ?>)" title="Detail">
+                                            <button class="btn btn-info" onclick="detailMesin(<?= $mesin['id']; ?>)" title="Detail">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                         </div>
