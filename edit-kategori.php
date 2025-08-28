@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">ID Kategori</label>
-                                    <input type="text" class="form-control" value="<?= $kategori['id_kategori']; ?>" disabled>
+                                    <input type="text" class="form-control" value="<?= $kategori['id']; ?>" disabled>
                                 </div>
                             </div>
                             <div class="col-md-6">
