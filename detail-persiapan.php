@@ -1,9 +1,17 @@
 <?php
-include 'includes/header.php';
 include 'config/db.php';
+include 'includes/header.php';
+echo '<style>
+    /* sedikit penyesuaian visual */
+    .worker-card { margin-bottom: 12px; }
+    .progress { height: 28px; border-radius: 14px; overflow: hidden; }
+    .progress .progress-bar { line-height: 28px; font-weight: 600; }
+    .meta { font-size: 0.9rem; color: #555; }
+  </style>';
 
 // Ambil id persiapan dari URL
 $id_persiapan = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
 
 if ($id_persiapan == 0) {
     die("ID Persiapan tidak valid.");
@@ -30,6 +38,24 @@ mysqli_stmt_close($stmt);
 $id_sps_produksi = $data_persiapan['id_sps'];
 if (!$data_persiapan) {
     die("Data persiapan tidak ditemukan.");
+}
+
+// --- Ambil data produksi ---
+// Ambil semua pekerja, target, hasil (bisa disesuaikan WHERE status='proses')
+$sql_worker = "SELECT pekerja, target, hasil FROM produksi WHERE id_sps = $id_sps_produksi";
+$result_worker = $conn->query($sql_worker);
+
+$workers = [];
+if ($result_worker && $result_worker->num_rows > 0) {
+    while ($row_worker = $result_worker->fetch_assoc()) {
+        $workers[] = $row_worker;
+    }
+}
+// --- Helper fungsi ---
+function pct($c, $t) {
+    if ($t <= 0) return 0;
+    $p = ($c / $t) * 100;
+    return $p > 100 ? 100 : round($p, 1);
 }
 
 // ---------------- GET DATA GUDANG ----------------
@@ -276,17 +302,102 @@ if (isset($_GET['delete_produksi'])) {
         </div>
     </div>
 
+    <!-- Summary -->
+    <?php
+$totalCompleted = array_sum(array_column($workers, 'hasil'));
+$totalTarget    = array_sum(array_column($workers, 'target'));
+$totalPct       = pct($totalCompleted, $totalTarget);
+?>
+
+
     <!-- Timeline Section -->
     <div class="card">
         <div class="card-header bg-success text-white">
             <h5 class="card-title mb-0">Timeline Produksi</h5>
         </div>
         <div class="card-body">
-            <div class="alert alert-info mb-0">
-                <i class="fas fa-info-circle me-2"></i>Belum ada timeline untuk persiapan ini.
+            <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+                <strong>Total Progress</strong>
+                <div class="meta">Selesai: <?= $totalCompleted ?> / Target: <?= $totalTarget ?></div>
+            </div>
+            <div><span class="badge bg-primary fs-6"><?= $totalPct ?>%</span></div>
+            </div>
+
+            <div class="progress" aria-label="Total progress">
+            <div id="totalProgressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100"
+                data-target="<?= $totalPct ?>">
+                <?= $totalPct ?>%
+            </div>
             </div>
         </div>
+        <!-- Per-worker -->
+        <h3 class="mb-4">Progres Pekerja Garment</h3>
+
+    <div class="row">
+      <?php foreach ($workers as $w): 
+        $p = pct($w['hasil'], $w['target']);
+        if ($p >= 90) $color = 'bg-success';
+        elseif ($p >= 60) $color = 'bg-info';
+        elseif ($p >= 30) $color = 'bg-warning';
+        else $color = 'bg-danger';
+      ?>
+        <div class="col-md-6 worker-card">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between mb-2">
+                <div><strong><?= htmlspecialchars($w['pekerja']) ?></strong></div>
+                <div class="meta"><?= $w['hasil'] ?> / <?= $w['target'] ?> tugas</div>
+              </div>
+
+              <div class="progress" aria-label="<?= htmlspecialchars($w['pekerja']) ?> progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated <?= $color ?>"
+                     role="progressbar" style="width:0%;" aria-valuemin="0" aria-valuemax="100"
+                     data-target="<?= $p ?>">
+                  <?= $p ?>%
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+
+
+
+
     </div>
 </div>
+<script>
+    // Simple animation: naikkan width dari 0 ke data-target dalam 800ms
+    document.addEventListener('DOMContentLoaded', () => {
+      const bars = document.querySelectorAll('.progress-bar[data-target]');
+      bars.forEach(bar => {
+        const target = parseFloat(bar.dataset.target) || 0;
+        // animasi progres smooth
+        const duration = 800; // ms
+        const fps = 60;
+        const steps = Math.round(duration / (1000 / fps));
+        let step = 0;
 
+        const start = performance.now();
+        function animate(now) {
+          const t = Math.min(1, (now - start) / duration);
+          // easing (easeOutCubic)
+          const ease = 1 - Math.pow(1 - t, 3);
+          const value = Math.round(ease * target * 10) / 10;
+          bar.style.width = value + '%';
+          bar.textContent = value + '%';
+          if (t < 1) requestAnimationFrame(animate);
+          else {
+            // pastikan final
+            bar.style.width = target + '%';
+            bar.textContent = target + '%';
+          }
+        }
+        requestAnimationFrame(animate);
+      });
+    });
+  </script>
 <?php include 'includes/footer.php'; ?>
