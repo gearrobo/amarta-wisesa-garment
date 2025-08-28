@@ -128,7 +128,7 @@ $kategoriList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                             <a href="edit-kategori.php?id=<?= $kategori['id']; ?>" class="btn btn-sm btn-warning">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <button type="button" class="btn btn-sm btn-danger" onclick="hapusKategori(<?= $kategori['id_kategori']; ?>)">
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="hapusKategori(<?= $kategori['id']; ?>)">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>

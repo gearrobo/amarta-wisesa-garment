@@ -14,7 +14,7 @@ if (isset($_GET['id'])) {
     
     try {
         // Delete kategori
-        $sql = "DELETE FROM kategori_barang WHERE id_kategori = ?";
+        $sql = "DELETE FROM kategori_barang WHERE id = ?";
         
         $stmt = mysqli_prepare($conn, $sql);
         if (!$stmt) {
