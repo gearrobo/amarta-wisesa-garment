@@ -9,7 +9,7 @@ $data = $result->fetch_assoc();
 
 if ($data) {
     // Hapus data dari database
-    $stmt = $conn->prepare("DELETE FROM mesin WHERE id_mesin = ?");
+    $stmt = $conn->prepare("DELETE FROM mesin WHERE id = ?");
     $stmt->bind_param("i", $id);
     
     if ($stmt->execute()) {
