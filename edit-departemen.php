@@ -19,7 +19,7 @@ $success = '';
 
 // Get department data
 if ($id_departemen > 0) {
-    $sql = "SELECT * FROM departemen WHERE id_departemen = ?";
+    $sql = "SELECT * FROM departemen WHERE id = ?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "i", $id_departemen);
     mysqli_stmt_execute($stmt);
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             try {
                 // Update department data
-                $sql = "UPDATE departemen SET nama_departemen = ?, deskripsi = ?, updated_at = NOW() WHERE id_departemen = ?";
+                $sql = "UPDATE departemen SET nama_departemen = ?, deskripsi = ?, updated_at = NOW() WHERE id = ?";
                 
                 $stmt = mysqli_prepare($conn, $sql);
                 if (!$stmt) {
