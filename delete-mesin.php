@@ -4,7 +4,7 @@ include "config/db.php";
 $id = intval($_GET['id']);
 
 // Ambil data mesin untuk konfirmasi
-$result = $conn->query("SELECT * FROM mesin WHERE id_mesin = $id");
+$result = $conn->query("SELECT * FROM mesin WHERE id = $id");
 $data = $result->fetch_assoc();
 
 if ($data) {

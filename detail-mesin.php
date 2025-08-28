@@ -12,7 +12,7 @@ if (!isset($_GET['id'])) {
 $id_mesin = $_GET['id'];
 
 // Get machine details
-$sql = "SELECT * FROM mesin WHERE id_mesin = ?";
+$sql = "SELECT * FROM mesin WHERE id = ?";
         
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $id_mesin);
@@ -112,10 +112,10 @@ if (!$mesin) {
                             <h5 class="card-title mb-0">Aksi</h5>
                         </div>
                         <div class="card-body">
-                            <a href="edit-mesin.php?id=<?= $mesin['id_mesin']; ?>" class="btn btn-warning w-100 mb-2">
+                            <a href="edit-mesin.php?id=<?= $mesin['id']; ?>" class="btn btn-warning w-100 mb-2">
                                 <i class="fas fa-edit"></i> Edit Data
                             </a>
-                            <button type="button" class="btn btn-danger w-100" onclick="hapusMesin(<?= $mesin['id_mesin']; ?>)">
+                            <button type="button" class="btn btn-danger w-100" onclick="hapusMesin(<?= $mesin['id']; ?>)">
                                 <i class="fas fa-trash"></i> Hapus Data
                             </button>
                         </div>
