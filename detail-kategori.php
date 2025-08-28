@@ -18,7 +18,7 @@ if (!isset($_GET['id'])) {
 $id_kategori = $_GET['id'];
 
 // Get kategori details
-$sql = "SELECT * FROM kategori_barang WHERE id_kategori = ?";
+$sql = "SELECT * FROM kategori_barang WHERE id = ?";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $id_kategori);
 mysqli_stmt_execute($stmt);
@@ -66,7 +66,7 @@ if (!$kategori) {
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">ID Kategori</label>
-                                <p class="form-control-plaintext"><?= $kategori['id_kategori']; ?></p>
+                                <p class="form-control-plaintext"><?= $kategori['id']; ?></p>
                             </div>
                         </div>
                         <div class="col-md-6">
