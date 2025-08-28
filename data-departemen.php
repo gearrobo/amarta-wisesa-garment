@@ -100,35 +100,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
             <!-- Department Tabs -->
             <div class="card mb-4">
-                <div class="card-header">
-                    <ul class="nav nav-tabs card-header-tabs" id="departmentTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">
-                                <i class="fas fa-list"></i> Semua Departemen
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="hr-tab" data-bs-toggle="tab" data-bs-target="#hr" type="button" role="tab">
-                                <i class="fas fa-users"></i> HR
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="keuangan-tab" data-bs-toggle="tab" data-bs-target="#keuangan" type="button" role="tab">
-                                <i class="fas fa-money-bill"></i> Keuangan
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="produksi-tab" data-bs-toggle="tab" data-bs-target="#produksi" type="button" role="tab">
-                                <i class="fas fa-industry"></i> Produksi
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="gudang-tab" data-bs-toggle="tab" data-bs-target="#gudang" type="button" role="tab">
-                                <i class="fas fa-warehouse"></i> Gudang
-                            </button>
-                        </li>
-                    </ul>
-                </div>
+                
                 <div class="card-body">
                     <div class="tab-content" id="departmentTabsContent">
                         
