@@ -111,9 +111,6 @@ while ($row = mysqli_fetch_assoc($result)) {
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahDepartemenModal">
                                     <i class="fas fa-plus"></i> Tambah Departemen
                                 </button>
-                                <button type="button" class="btn btn-success">
-                                    <i class="fas fa-file-excel"></i> Export Excel
-                                </button>
                             </div>
 
                             <!-- Department Table -->
