@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 nik = ?, nama_lengkap = ?, jenis_kelamin = ?, tempat_lahir = ?, tanggal_lahir = ?, 
                 alamat = ?, no_telepon = ?, email = ?, type_karyawan = ?, tanggal_masuk = ?, 
                 id_jabatan = ?, id_departemen = ?
-                WHERE id_karyawan = ?";
+                WHERE id = ?";
 
         $stmt = mysqli_prepare($conn, $sql);
         mysqli_stmt_bind_param($stmt, "ssssssssssiii", 
