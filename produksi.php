@@ -92,6 +92,15 @@ if ($produksi) {
     $produksi->data_seek(0);
 }
 
+$persiapan_id = null;
+if ($id_sps_row > 0) {
+    $sql = "SELECT id FROM persiapan WHERE id_sps = $id_sps_row LIMIT 1";
+    $result_pr = $conn->query($sql);
+    if ($row = $result_pr->fetch_assoc()) {
+        $persiapan_id = $row['id'];
+    }
+}
+
 // Query dengan JOIN ke tabel jabatan untuk memastikan yang jabatan QC
 $query_karyawan_qc = "SELECT nama_lengkap FROM karyawan WHERE id_jabatan = 3 ";
 $resultKaryawan_qc = $conn->query($query_karyawan_qc);
@@ -133,11 +142,14 @@ if ($result && $result->num_rows > 0) {
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
                 <li class="breadcrumb-item"><a href="persiapan.php">Persiapan</a></li>
-                <li class="breadcrumb-item active">Data Persiapan</li>
+                <?php if ($persiapan_id): ?>
+                    <li class="breadcrumb-item"><a href="detail-persiapan.php?id=<?= $persiapan_id ?>">Data Persiapan</a></li>
+                <?php endif; ?>
+                <li class="breadcrumb-item active">Langkah Kerja</li>
             </ol>
         </nav>
     </div>
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#produksiModal" onclick="addProduksi()">Tambah Produksi</button>
+    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#produksiModal" onclick="addProduksi()">Tambah Langkah Kerja</button>
 
     <table id="produksiTable" class="table table-bordered">
         <thead>

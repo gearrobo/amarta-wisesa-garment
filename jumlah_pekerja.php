@@ -68,6 +68,7 @@ if (isset($_GET['delete'])) {
 
 // ------------------- Ambil Data -------------------
 $id_sps = intval($_GET['id_sps'] ?? 0);
+
 $sql = "SELECT jp.*, s.sps_no, s.customer 
         FROM jumlah_pekerja jp 
         LEFT JOIN sps s ON jp.id_sps = s.id";
@@ -75,9 +76,34 @@ if ($id_sps > 0) {
     $sql .= " WHERE jp.id_sps=$id_sps";
 }
 $result = $conn->query($sql);
+
+
+// cari id persiapan berdasarkan id_sps
+$persiapan_id = null;
+if ($id_sps > 0) {
+    $sql = "SELECT id FROM persiapan WHERE id_sps = $id_sps LIMIT 1";
+    $result_pr = $conn->query($sql);
+    if ($row = $result_pr->fetch_assoc()) {
+        $persiapan_id = $row['id'];
+    }
+}
+
 ?>
 <div class="main-content">
-    <h3>Jumlah Pekerja</h3>
+     <div>
+        <h1 class="h3 mb-4">Detail Persiapan</h1>
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="persiapan.php">Persiapan</a></li>
+                <?php if ($persiapan_id): ?>
+                    <li class="breadcrumb-item"><a href="detail-persiapan.php?id=<?= $persiapan_id ?>">Data Persiapan</a></li>
+                <?php endif; ?>
+                <li class="breadcrumb-item active">Hitung Jumlah Pekerja</li>
+            </ol>
+        </nav>
+    </div>
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Tambah Data</button>
 
     <table class="table table-bordered">
