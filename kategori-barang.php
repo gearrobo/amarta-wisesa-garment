@@ -122,10 +122,10 @@ $kategoriList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                     <td><?= date('d/m/Y', strtotime($kategori['created_at'])); ?></td>
                                     <td>
                                         <div class="btn-group btn-group-sm" role="group">
-                                            <a href="detail-kategori.php?id=<?= $kategori['id_kategori']; ?>" class="btn btn-sm btn-info">
+                                            <a href="detail-kategori.php?id=<?= $kategori['id']; ?>" class="btn btn-sm btn-info">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="edit-kategori.php?id=<?= $kategori['id_kategori']; ?>" class="btn btn-sm btn-warning">
+                                            <a href="edit-kategori.php?id=<?= $kategori['id']; ?>" class="btn btn-sm btn-warning">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <button type="button" class="btn btn-sm btn-danger" onclick="hapusKategori(<?= $kategori['id_kategori']; ?>)">
