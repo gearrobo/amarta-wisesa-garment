@@ -14,7 +14,7 @@ $error = '';
 $success = '';
 
 // Get machine details
-$sql = "SELECT * FROM mesin WHERE id_mesin = ?";
+$sql = "SELECT * FROM mesin WHERE id = ?";
         
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $id_mesin);
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Update machine data
     $sql = "UPDATE mesin SET 
             seri_number = ?, nama_mesin = ?, lokasi = ?, tanggal_masuk = ?, keterangan = ?
-            WHERE id_mesin = ?";
+            WHERE id = ?";
 
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "sssssi", 
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $success = "Data mesin berhasil diperbarui!";
         
         // Refresh data
-        $sql = "SELECT * FROM mesin WHERE id_mesin = ?";
+        $sql = "SELECT * FROM mesin WHERE id = ?";
         $stmt = mysqli_prepare($conn, $sql);
         mysqli_stmt_bind_param($stmt, "i", $id_mesin);
         mysqli_stmt_execute($stmt);
