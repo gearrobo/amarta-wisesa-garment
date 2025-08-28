@@ -18,7 +18,7 @@ if (!isset($_GET['id'])) {
 $id_kategori = $_GET['id'];
 
 // Get kategori details
-$sql = "SELECT * FROM kategori_barang WHERE id_kategori = ?";
+$sql = "SELECT * FROM kategori_barang WHERE id = ?";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $id_kategori);
 mysqli_stmt_execute($stmt);
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         try {
             // Update kategori data
-            $sql = "UPDATE kategori_barang SET nama_kategori = ?, keterangan = ? WHERE id_kategori = ?";
+            $sql = "UPDATE kategori_barang SET nama_kategori = ?, keterangan = ? WHERE id = ?";
             
             $stmt = mysqli_prepare($conn, $sql);
             if (!$stmt) {
