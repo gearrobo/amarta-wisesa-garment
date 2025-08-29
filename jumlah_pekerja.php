@@ -115,9 +115,9 @@ if ($id_sps > 0) {
                 <th>Jumlah Order</th>
                 <th>Jenis Pekerjaan</th>
                 <th>Target Waktu (s)</th>
-                <th>Jumlah Waktu Kerja</th>
+                <th>Jumlah Waktu Kerja (s)</th>
                 <th>Harga/Unit</th>
-                <th>Man Hours</th>
+                <th>ManHours (s)</th>
                 <th>Jumlah Pekerja</th>
                 <th>Aksi</th>
             </tr>
