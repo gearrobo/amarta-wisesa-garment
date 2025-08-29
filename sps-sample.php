@@ -61,7 +61,7 @@ if (isset($_POST['save'])) {
                     }
                 }
                 
-                $filename = time() . "_" . basename($_FILES[$field]['name']);
+                $filename = time() . "_" . uniqid() . "_" . basename($_FILES[$field]['name']);
                 $targetFile = $targetDir . $filename;
                 
                 if (move_uploaded_file($_FILES[$field]['tmp_name'], $targetFile)) {
@@ -140,6 +140,50 @@ if (isset($_POST['save'])) {
 if (isset($_GET['success']) && $_GET['success'] == 1) {
     $message = 'Data berhasil disimpan!';
     $messageType = 'success';
+}
+
+// Fungsi untuk memperbaiki nama file sample_product yang tidak lengkap
+function fixSampleProductFilenames($conn) {
+    $dir = "uploads/";
+    
+    // Ambil semua record yang sample_product hanya berisi angka (timestamp)
+    $sql = "SELECT id, sample_product FROM sps WHERE sample_product REGEXP '^[0-9]+$'";
+    $result = $conn->query($sql);
+    
+    $fixed_count = 0;
+    
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $id = $row['id'];
+            $sample_product = $row['sample_product'];
+
+            // Cari file di folder uploads yang diawali dengan sample_product
+            $files = glob($dir . $sample_product . "*");
+
+            if (count($files) > 0) {
+                // Ambil nama file lengkap (tanpa path)
+                $filename = basename($files[0]);
+
+                // Update database dengan nama file lengkap
+                $update_sql = "UPDATE sps SET sample_product = ? WHERE id = ?";
+                $stmt = $conn->prepare($update_sql);
+                $stmt->bind_param("si", $filename, $id);
+                if ($stmt->execute()) {
+                    $fixed_count++;
+                }
+                $stmt->close();
+            }
+        }
+    }
+    
+    return $fixed_count;
+}
+
+// Jalankan perbaikan otomatis saat halaman dimuat
+$fixed_files = fixSampleProductFilenames($conn);
+if ($fixed_files > 0) {
+    // $message = "Berhasil memperbaiki $fixed_files file sample product!";
+    $messageType = "success";
 }
 
 // Ambil data SPS
