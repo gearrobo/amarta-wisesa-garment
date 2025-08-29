@@ -14,22 +14,49 @@ if (isset($_POST['save'])) {
     $status      = $_POST['status'];
     $qc          = $_POST['qc'];
 
-    if ($_POST['id'] == "") {
-        // Insert baru
-        $stmt = $conn->prepare("INSERT INTO produksi 
-            (id_sps, kerjaan, target, hasil, pekerja, status, qc) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("isiisss", 
-    $id_sps, 
-    $kerjaan, 
-    $target, 
-    $hasil, 
-    $pekerja, 
-    $status, 
-    $qc
-);
-        $stmt->execute();
-    } else {
+if ($_POST['id'] == "") {
+    // Insert baru ke produksi
+    $stmt = $conn->prepare("INSERT INTO produksi 
+        (id_sps, kerjaan, target, hasil, pekerja, status, qc) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param(
+        "isiisss", 
+        $id_sps, 
+        $kerjaan, 
+        $target, 
+        $hasil, 
+        $pekerja, 
+        $status, 
+        $qc
+    );
+    if (!$stmt->execute()) {
+        die("Gagal simpan produksi: " . $stmt->error);
+    }
+    $stmt->close();
+
+    // --- Insert relasi ke karyawan_harian_borongan ---
+    $id_karyawan = intval($_POST['id_karyawan'] ?? 0);
+    if ($id_karyawan > 0 && $id_sps > 0) {
+        // cek apakah sudah ada relasi supaya tidak dobel
+        $cek = $conn->prepare("SELECT id FROM karyawan_harian_borongan WHERE id_karyawan=? AND id_sps=?");
+        $cek->bind_param("ii", $id_karyawan, $id_sps);
+        $cek->execute();
+        $resCek = $cek->get_result();
+        if ($resCek->num_rows == 0) {
+            $sql = "INSERT INTO karyawan_harian_borongan (id_karyawan, id_sps, created_at)
+                    VALUES (?, ?, NOW())
+                    ON DUPLICATE KEY UPDATE created_at = NOW()";
+            $stmt2 = $conn->prepare($sql);
+            $stmt2->bind_param("ii", $id_karyawan, $id_sps);
+            if (!$stmt2->execute()) {
+                die("Gagal simpan pekerja: " . $stmt2->error);
+            }
+            $stmt2->close();
+        }
+        $cek->close();
+    }
+}
+ else {
         // Update
         $id = intval($_POST['id']);
         $stmt = $conn->prepare("UPDATE produksi 
@@ -107,7 +134,11 @@ $resultKaryawan_qc = $conn->query($query_karyawan_qc);
 
 
 // Query untuk mengambil data karyawan
-$query_karyawan = "SELECT nama_lengkap, type_karyawan FROM karyawan WHERE type_karyawan IN ('harian', 'borongan') ORDER BY nama_lengkap ASC";
+$query_karyawan = "SELECT id, nama_lengkap, type_karyawan 
+                   FROM karyawan 
+                   WHERE type_karyawan IN ('harian', 'borongan') 
+                   ORDER BY nama_lengkap ASC";
+
 $resultKaryawan = $conn->query($query_karyawan);
 
 // --- Ambil SPS untuk dropdown awal ---
@@ -240,14 +271,17 @@ if ($result && $result->num_rows > 0) {
             </div>
             <div class="mb-3">
                 <label>Pekerja</label>
-                <select name="pekerja" id="pekerja" class="form-select">
+                <select name="pekerja" id="pekerja" class="form-select" onchange="setKaryawanId(this)">
                     <option value="">-- Pilih Pekerja --</option>
                     <?php
                     if ($resultKaryawan && $resultKaryawan->num_rows > 0) {
                         while ($row = $resultKaryawan->fetch_assoc()) {
-                            $value = $row['nama_lengkap'] . " | " . $row['type_karyawan'];
-                            echo "<option value='" . htmlspecialchars($value) . "'>";
-                            echo htmlspecialchars($row['nama_lengkap']) . " - " . htmlspecialchars($row['type_karyawan']);
+                            $id    = $row['id'];
+                            $nama  = $row['nama_lengkap'];
+                            $type  = $row['type_karyawan'];
+
+                            echo "<option value='" . htmlspecialchars($nama . ' | ' . $type) . "' data-id='" . $id . "'>";
+                            echo htmlspecialchars($nama) . " - " . htmlspecialchars($type);
                             echo "</option>";
                         }
                     } else {
@@ -256,6 +290,11 @@ if ($result && $result->num_rows > 0) {
                     ?>
                 </select>
             </div>
+
+            <!-- Hidden input -->
+            <input type="hidden" name="id_karyawan" id="id_karyawan">
+
+
             <div class="mb-3">
                 <label>Status</label>
                 <select name="status" id="status" class="form-control">
@@ -340,6 +379,12 @@ $("#id_sps").change(function(){
         }
     });
 });
+
+function setKaryawanId(select) {
+    let id = select.options[select.selectedIndex].getAttribute("data-id");
+    document.getElementById('id_karyawan').value = id;
+}
+
 </script>
 
 <?php

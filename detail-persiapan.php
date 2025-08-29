@@ -99,15 +99,19 @@ $stmt_produksi = $conn->prepare($sql_produksi);
 
 
 // Ambil data dengan join ke tabel karyawan & sps
-$sql = "
-    SELECT khb.*, k.nama AS nama_karyawan, s.sps_no 
+$sql_khb = "
+    SELECT 
+        khb.*, 
+        k.nama_lengkap AS nama_karyawan, 
+        k.type_karyawan,
+        s.sps_no 
     FROM karyawan_harian_borongan khb
     LEFT JOIN karyawan k ON khb.id_karyawan = k.id
     LEFT JOIN sps s ON khb.id_sps = s.id
     WHERE khb.id_sps = $id_sps_produksi
-    ORDER BY khb.created_at DESC 
+    ORDER BY khb.created_at DESC
 ";
-$result = $conn->query($sql);
+$resultkhb = $conn->query($sql_khb);
 
 if ($stmt_produksi) {
     $stmt_produksi->bind_param("i", $id_sps_produksi);
@@ -409,25 +413,25 @@ $totalPct       = pct($totalCompleted, $totalTarget);
                             <th>Upah Borongan</th>
                             <th>Status</th>
                             <th>Skor</th>
-                            <th>Dibuat</th>
-                            <th>Diupdate</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if ($result && $result->num_rows > 0): ?>
-                            <?php while($row = $result->fetch_assoc()): ?>
+                        <?php if ($resultkhb && $resultkhb->num_rows > 0): ?>
+                            <?php while($rowKHB = $resultkhb->fetch_assoc()): $no=1;?>
                                 <tr>
-                                    <td><?= $row['id'] ?></td>
-                                    <td><?= htmlspecialchars($row['nama_karyawan']) ?></td>
-                                    <td><?= htmlspecialchars($row['sps_no'] ?? '-') ?></td>
-                                    <td><?= $row['metode_pembayaran'] ?></td>
-                                    <td><?= number_format($row['upah_per_hari'], 2) ?></td>
-                                    <td><?= number_format($row['upah_per_jam'], 2) ?></td>
-                                    <td><?= number_format($row['upah_borongan'], 2) ?></td>
-                                    <td><?= htmlspecialchars($row['status']) ?></td>
-                                    <td><?= htmlspecialchars($row['skor_pekerja']) ?></td>
-                                    <td><?= $row['created_at'] ?></td>
-                                    <td><?= $row['updated_at'] ?></td>
+                                    <td><?= $no++; ?></td>
+                                    <td><?= htmlspecialchars($rowKHB['nama_karyawan']) ?></td>
+                                    <td><?= htmlspecialchars($rowKHB['sps_no'] ?? '-') ?></td>
+                                    <td><?= $rowKHB['metode_pembayaran'] ?></td>
+                                    <td><?= number_format($rowKHB['upah_per_hari'], 2) ?></td>
+                                    <td><?= number_format($rowKHB['upah_per_jam'], 2) ?></td>
+                                    <td><?= number_format($rowKHB['upah_borongan'], 2) ?></td>
+                                    <td><?= htmlspecialchars($rowKHB['status']) ?></td>
+                                    <td><?= htmlspecialchars($rowKHB['skor_pekerja']) ?></td>
+                                    <td>
+                                        <button class="btn btn-succes"><a href=""><i class="fas fa-edit"></i></a></button>
+                                    </td>
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
