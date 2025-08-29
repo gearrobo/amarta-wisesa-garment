@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 27, 2025 at 05:18 PM
+-- Generation Time: Aug 29, 2025 at 04:07 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -181,7 +181,8 @@ INSERT INTO `hpp` (`id`, `id_persiapan`, `id_inventory`, `no_urut`, `bahan`, `qt
 (10, 2, 13, '1', 'Kain Katun', 1000, 980, 20, '1.00', 980, 100, 880, '100000.00', '98000000.00', '98000000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '98000000000.00', '98000000.00', '30.00', '127400000.00', '2025-08-25 04:22:27', '2025-08-25 04:22:27'),
 (11, 2, 14, '2', 'Benang', 1000, 20, 980, '0.50', 490, 50, 440, '100000.00', '49000000.00', '49000000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '49000000000.00', '49000000.00', '30.00', '63700000.00', '2025-08-25 04:29:01', '2025-08-25 04:29:01'),
 (17, 3, 17, '1', 'Kain Faring', 1000, 20, 980, '1.00', 980, 50, 930, '85000.00', '83300000.00', '83300000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '83300000000.00', '83300000.00', '30.00', '108290000.00', '2025-08-25 23:55:06', '2025-08-25 23:55:06'),
-(20, 8, 15, 'HPP68A9CB49B578C', 'Jarum', 50, 0, 50, '1.00', 50, 50, 0, '100000.00', '5000000.00', '250000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '250000000.00', '5000000.00', '30.00', '6500000.00', '2025-08-27 06:33:57', '2025-08-27 06:33:57');
+(20, 8, 15, 'HPP68A9CB49B578C', 'Jarum', 50, 0, 50, '1.00', 50, 50, 0, '100000.00', '5000000.00', '250000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '250000000.00', '5000000.00', '30.00', '6500000.00', '2025-08-27 06:33:57', '2025-08-27 06:33:57'),
+(21, 8, 13, 'HPP68A9CB49B578C', 'Kain Katun', 1000, 20, 980, '1.00', 980, 150, 830, '100000.00', '98000000.00', '98000000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '98000000000.00', '98000000.00', '30.00', '127400000.00', '2025-08-29 01:29:47', '2025-08-29 01:29:47');
 
 -- --------------------------------------------------------
 
@@ -213,7 +214,9 @@ INSERT INTO `inventory` (`id`, `kode_barang`, `nama_barang`, `warehouse`, `unit`
 (7, 'SN-09XXPi-70', 'Jarum', 'Kasin', 'pcs', 50, '100000.00', '', '2025-08-24 19:42:37', '2025-08-25 10:10:26', NULL),
 (8, 'SN-09XXPi-90', 'Kain Katun', 'Kasin', 'meter', 5, '100000.00', '', '2025-08-25 10:12:43', '2025-08-25 10:13:20', NULL),
 (9, 'SN-09XXPi-90', 'Kain Katun', 'Kasin', 'meter', 100, '10000.00', '', '2025-08-25 11:20:51', NULL, NULL),
-(12, 'SN-09XXPi-60', 'Kain Faring', 'Kasin', 'meter', 50, '85000.00', '', '2025-08-25 16:40:12', NULL, NULL);
+(12, 'SN-09XXPi-60', 'Kain Faring', 'Kasin', 'meter', 50, '85000.00', '', '2025-08-25 16:40:12', NULL, NULL),
+(14, 'SN-09XXPi-90', 'Kain Katun', 'Kasin', 'meter', 150, '100000.00', '', '2025-08-29 08:28:13', NULL, NULL),
+(15, 'SN-09XXPi-60', 'Kain Faring', 'Kasin', 'meter', 150, '85000.00', '', '2025-08-29 08:28:38', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -238,10 +241,10 @@ CREATE TABLE `inventory_gudang` (
 --
 
 INSERT INTO `inventory_gudang` (`id`, `id_inventory`, `id_gudang`, `nama_barang`, `jumlah`, `stok_akhir`, `satuan`, `tanggal_masuk`, `tanggal_update`) VALUES
-(13, 5, 3, 'Kain Katun', 0, 0, 'meter', '2025-08-24', '2025-08-25 04:22:27'),
+(13, 5, 3, 'Kain Katun', 0, 0, 'meter', '2025-08-24', '2025-08-29 01:29:47'),
 (14, 6, 3, 'Benang', 0, 0, 'roll', '2025-08-24', '2025-08-25 04:29:01'),
 (15, 7, 3, 'Jarum', 0, 0, 'pcs', '2025-08-24', '2025-08-27 06:33:57'),
-(17, 12, 3, 'Kain Faring', 0, 0, 'meter', '2025-08-25', '2025-08-25 23:55:06');
+(17, 12, 3, 'Kain Faring', 150, 150, 'meter', '2025-08-25', '2025-08-29 01:28:38');
 
 -- --------------------------------------------------------
 
@@ -289,7 +292,10 @@ INSERT INTO `inventory_transaksi_gudang` (`id`, `inventory_gudang_id`, `jenis`, 
 (19, 15, 'keluar', 0, 40, NULL, 'Pengurangan stok untuk HPP ID: 16 - Jarum', '2025-08-26 06:36:06', NULL, '2025-08-25 23:36:06', '2025-08-25 23:36:06'),
 (20, 15, 'masuk', 40, 0, NULL, 'Pengembalian stok dari penghapusan HPP ID: 16 - Jarum', '2025-08-26 06:52:43', NULL, '2025-08-25 23:52:43', '2025-08-25 23:52:43'),
 (21, 17, 'keluar', 0, 50, NULL, 'Pengurangan stok untuk HPP ID: 17 - Kain Faring', '2025-08-26 06:55:06', NULL, '2025-08-25 23:55:06', '2025-08-25 23:55:06'),
-(22, 15, 'keluar', 0, 50, NULL, 'Pengurangan stok untuk HPP ID: 20 - Jarum', '2025-08-27 13:33:57', NULL, '2025-08-27 06:33:57', '2025-08-27 06:33:57');
+(22, 15, 'keluar', 0, 50, NULL, 'Pengurangan stok untuk HPP ID: 20 - Jarum', '2025-08-27 13:33:57', NULL, '2025-08-27 06:33:57', '2025-08-27 06:33:57'),
+(23, 13, 'masuk', 150, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-29 08:28:13', NULL, '2025-08-29 01:28:13', '2025-08-29 01:28:13'),
+(24, 17, 'masuk', 150, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-29 08:28:38', NULL, '2025-08-29 01:28:38', '2025-08-29 01:28:38'),
+(25, 13, 'keluar', 0, 150, NULL, 'Pengurangan stok untuk HPP ID: 21 - Kain Katun', '2025-08-29 08:29:47', NULL, '2025-08-29 01:29:47', '2025-08-29 01:29:47');
 
 --
 -- Triggers `inventory_transaksi_gudang`
@@ -393,9 +399,17 @@ CREATE TABLE `jumlah_pekerja` (
   `harga_perunit` int(11) NOT NULL,
   `man_hours` int(11) NOT NULL,
   `jumlah_pekerja` int(11) NOT NULL,
-  `updated_at` datetime NOT NULL,
-  `created_at` datetime NOT NULL
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `jumlah_pekerja`
+--
+
+INSERT INTO `jumlah_pekerja` (`id`, `id_sps`, `bahan_baku`, `jumlah_order`, `jenis_pekerjaan`, `target_waktu`, `jumlah_waktu_kerja`, `harga_perunit`, `man_hours`, `jumlah_pekerja`, `updated_at`, `created_at`) VALUES
+(6, 12, 'Kain,Kancing,Resleting dkk', 1000, 'Kantong', 90, 90000, 1500, 25200, 4, '2025-08-27 22:21:11', '2025-08-27 22:21:11'),
+(11, 12, 'Kain,Kancing,Kantong dkk', 1000, 'Kerah', 120, 120000, 2500, 25200, 5, '2025-08-29 08:11:18', '2025-08-29 08:11:18');
 
 -- --------------------------------------------------------
 
@@ -431,7 +445,7 @@ CREATE TABLE `karyawan` (
 INSERT INTO `karyawan` (`id`, `nik`, `nama_lengkap`, `jenis_kelamin`, `tempat_lahir`, `tanggal_lahir`, `alamat`, `no_telepon`, `email`, `type_karyawan`, `status_karyawan`, `tanggal_masuk`, `tanggal_keluar`, `id_jabatan`, `id_departemen`, `foto`, `created_at`, `updated_at`) VALUES
 (1, 'K001', 'Budi Santoso', 'L', 'Jakarta', '1985-05-15', 'Jl. Merdeka No. 123', '081234567890', 'budi@amarta.com', 'tetap', 'aktif', '2020-01-15', NULL, 2, 3, NULL, '2025-08-18 15:13:05', '2025-08-22 15:03:54'),
 (2, 'K002', 'Siti Nurhaliza', 'P', 'Bandung', '1990-08-20', 'Jl. Sudirman No. 45', '082345678901', 'siti@amarta.com', 'tetap', 'aktif', '2019-03-10', NULL, 5, 4, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
-(3, 'KH001', 'Ahmad Dahlan', 'L', 'Yogyakarta', '1995-12-10', 'Jl. Malioboro No. 78', '083456789012', 'ahmad@amarta.com', 'harian', 'aktif', '2023-06-01', NULL, 1, 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
+(3, 'KH001', 'Ahmad Dahlan', 'L', 'Yogyakarta', '1995-12-10', 'Jl. Malioboro No. 78', '083456789012', 'ahmad@amarta.com', 'harian', 'aktif', '2023-06-01', NULL, 3, 3, NULL, '2025-08-18 15:13:05', '2025-08-28 12:33:29'),
 (4, 'KH002', 'Rina Marlina', 'P', 'Medan', '1998-03-25', 'Jl. Thamrin No. 90', '084567890123', 'rina@amarta.com', 'harian', 'aktif', '2023-07-15', NULL, 1, 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 (5, 'KB001', 'Joko Widodo', 'L', 'Solo', '1992-07-30', 'Jl. Slamet Riyadi No. 56', '085678901234', 'joko@amarta.com', 'borongan', 'aktif', '2023-08-01', NULL, 1, 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 (8, '12345678', 'Resky Putra P', 'L', 'Kota Depok', '1999-08-08', 'Dimun', '083456789012', 'androexe5@gmail.com', 'tetap', 'aktif', '2025-08-18', NULL, 7, 1, NULL, '2025-08-18 16:59:04', '2025-08-19 06:42:44'),
@@ -497,7 +511,7 @@ INSERT INTO `karyawan_tetap` (`id_karyawan`, `npwp`, `bpjs_ketenagakerjaan`, `bp
 --
 
 CREATE TABLE `kategori_barang` (
-  `id_kategori` int(11) NOT NULL,
+  `id` int(11) UNSIGNED NOT NULL,
   `nama_kategori` varchar(255) NOT NULL,
   `keterangan` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -508,11 +522,11 @@ CREATE TABLE `kategori_barang` (
 -- Dumping data for table `kategori_barang`
 --
 
-INSERT INTO `kategori_barang` (`id_kategori`, `nama_kategori`, `keterangan`, `created_at`, `updated_at`) VALUES
+INSERT INTO `kategori_barang` (`id`, `nama_kategori`, `keterangan`, `created_at`, `updated_at`) VALUES
 (2, 'Benang', 'Kategori untuk berbagai jenis benang', '2025-08-22 07:47:00', '2025-08-22 07:47:00'),
 (7, 'Kain Katun', '', '2025-08-22 08:31:53', '2025-08-22 08:31:53'),
 (8, 'Jarum', '', '2025-08-22 08:49:03', '2025-08-24 12:17:46'),
-(0, 'Kain Faring', '', '2025-08-25 08:49:01', '2025-08-25 08:49:01');
+(9, 'Kain Faring', '', '2025-08-25 08:49:01', '2025-08-25 08:49:01');
 
 -- --------------------------------------------------------
 
@@ -521,7 +535,7 @@ INSERT INTO `kategori_barang` (`id_kategori`, `nama_kategori`, `keterangan`, `cr
 --
 
 CREATE TABLE `mesin` (
-  `id_mesin` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `seri_number` varchar(50) NOT NULL,
   `nama_mesin` varchar(100) NOT NULL,
   `lokasi` varchar(100) NOT NULL,
@@ -535,12 +549,13 @@ CREATE TABLE `mesin` (
 -- Dumping data for table `mesin`
 --
 
-INSERT INTO `mesin` (`id_mesin`, `seri_number`, `nama_mesin`, `lokasi`, `tanggal_masuk`, `keterangan`, `created_at`, `updated_at`) VALUES
+INSERT INTO `mesin` (`id`, `seri_number`, `nama_mesin`, `lokasi`, `tanggal_masuk`, `keterangan`, `created_at`, `updated_at`) VALUES
 (1, 'SN-001', 'Mesin Jahit Singer', 'Line A - Station 1', '2024-01-15', 'Mesin jahit untuk produksi kaos', '2025-08-19 03:25:49', '2025-08-19 03:25:49'),
 (3, 'SN-003', 'Mesin Bordir Komputer', 'Line B - Station 1', '2024-02-01', 'Mesin bordir digital 10 kepala', '2025-08-19 03:25:49', '2025-08-19 03:25:49'),
 (4, 'SN-004', 'Mesin Cutting Laser', 'Area Cutting', '2024-02-10', 'Mesin cutting presisi untuk kain', '2025-08-19 03:25:49', '2025-08-19 03:25:49'),
 (5, 'SN-005', 'Mesin Press Kaos', 'Area Finishing', '2024-02-15', 'Mesin press untuk sablon digital', '2025-08-19 03:25:49', '2025-08-19 03:25:49'),
-(11, 'SN-006', 'Mesin Jahit', 'Warehouse', '2025-08-19', 'mesin ya', '2025-08-19 03:32:14', '2025-08-19 03:42:03');
+(11, 'SN-006', 'Mesin Jahit', 'Warehouse', '2025-08-19', 'mesin ya', '2025-08-19 03:32:14', '2025-08-19 03:42:03'),
+(12, '12345678', 'Mesin Ok Ok', 'Nganjuk', '2025-08-28', '', '2025-08-28 04:01:32', '2025-08-28 04:01:32');
 
 -- --------------------------------------------------------
 
@@ -549,8 +564,8 @@ INSERT INTO `mesin` (`id_mesin`, `seri_number`, `nama_mesin`, `lokasi`, `tanggal
 --
 
 CREATE TABLE `pengguna` (
-  `id_pengguna` int(11) NOT NULL,
-  `id_karyawan` int(11) DEFAULT NULL,
+  `id_pengguna` int(11) UNSIGNED NOT NULL,
+  `id_karyawan` int(11) UNSIGNED DEFAULT NULL,
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` enum('admin','hr','karyawan') DEFAULT 'karyawan',
@@ -652,7 +667,9 @@ INSERT INTO `produksi` (`id`, `id_sps`, `kerjaan`, `target`, `hasil`, `pekerja`,
 (13, 4, 'Jahit Kantong', 1000, 1, 'Ahmad Dahlan | harian', 'proses', 'gatot nugroho', '2025-08-27 07:58:20'),
 (14, 4, 'Kancing', 1000, 1, 'Ahmad Dahlan | harian', 'proses', 'gatot nugroho', '2025-08-27 08:03:47'),
 (15, 4, 'Bordir', 1000, 1, 'Joko Widodo | borongan', 'proses', 'gatot nugroho', '2025-08-27 08:04:11'),
-(16, 12, 'Jahit Kantong', 1500, 1, 'Ahmad Dahlan | harian', 'proses', 'gatot nugroho', '2025-08-27 08:13:49');
+(16, 12, 'Jahit Kantong', 250, 155, 'Ahmad Dahlan | harian', 'proses', 'gatot nugroho', '2025-08-27 08:13:49'),
+(17, 12, 'Jahit Kantong', 250, 1, 'Rina Marlina | harian', 'proses', 'gatot nugroho', '2025-08-28 01:42:56'),
+(18, 12, 'Jahit Kantong', 500, 90, 'Joko Widodo | borongan', 'proses', 'gatot nugroho', '2025-08-28 01:44:49');
 
 -- --------------------------------------------------------
 
@@ -777,6 +794,25 @@ ALTER TABLE `karyawan`
   ADD KEY `fk_karyawan_departemen` (`id_departemen`);
 
 --
+-- Indexes for table `kategori_barang`
+--
+ALTER TABLE `kategori_barang`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `mesin`
+--
+ALTER TABLE `mesin`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `pengguna`
+--
+ALTER TABLE `pengguna`
+  ADD PRIMARY KEY (`id_pengguna`),
+  ADD KEY `fk_pengguna_karyawan` (`id_karyawan`);
+
+--
 -- Indexes for table `persiapan`
 --
 ALTER TABLE `persiapan`
@@ -822,13 +858,13 @@ ALTER TABLE `gudang`
 -- AUTO_INCREMENT for table `hpp`
 --
 ALTER TABLE `hpp`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `inventory_gudang`
@@ -840,7 +876,7 @@ ALTER TABLE `inventory_gudang`
 -- AUTO_INCREMENT for table `inventory_transaksi_gudang`
 --
 ALTER TABLE `inventory_transaksi_gudang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `jabatan`
@@ -852,13 +888,31 @@ ALTER TABLE `jabatan`
 -- AUTO_INCREMENT for table `jumlah_pekerja`
 --
 ALTER TABLE `jumlah_pekerja`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `karyawan`
 --
 ALTER TABLE `karyawan`
   MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT for table `kategori_barang`
+--
+ALTER TABLE `kategori_barang`
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT for table `mesin`
+--
+ALTER TABLE `mesin`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `pengguna`
+--
+ALTER TABLE `pengguna`
+  MODIFY `id_pengguna` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `persiapan`
@@ -876,7 +930,7 @@ ALTER TABLE `produk`
 -- AUTO_INCREMENT for table `produksi`
 --
 ALTER TABLE `produksi`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `sps`
@@ -914,6 +968,12 @@ ALTER TABLE `jumlah_pekerja`
 ALTER TABLE `karyawan`
   ADD CONSTRAINT `fk_karyawan_departemen` FOREIGN KEY (`id_departemen`) REFERENCES `departemen` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_karyawan_jabatan` FOREIGN KEY (`id_jabatan`) REFERENCES `jabatan` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Constraints for table `pengguna`
+--
+ALTER TABLE `pengguna`
+  ADD CONSTRAINT `fk_pengguna_karyawan` FOREIGN KEY (`id_karyawan`) REFERENCES `karyawan` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `persiapan`
