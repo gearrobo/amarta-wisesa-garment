@@ -37,8 +37,8 @@ if (isset($_GET['id'])) {
             } else {
                 // Data persiapan (contoh dummy)
                 $kode_barang = '123';
-                $nama_barang = 'Kain Biru';
-                $jumlah = 500;
+                $nama_barang = $row['item'];
+                $jumlah = $row['qty'];
                 $satuan = 'meter';
                 $harga = 10;
                 $total = $jumlah * $harga;
