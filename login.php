@@ -1,5 +1,6 @@
 <?php
 session_start();
+include 'config/db.php';
 
 // Jika sudah login, redirect ke index.php
 if (isset($_SESSION['user_id'])) {
@@ -7,23 +8,36 @@ if (isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Username dan password yang sudah ditentukan
-$valid_username = "admin";
-$valid_password = "admin123";
-
 $error = '';
 
 // Proses login
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
 
-    if ($username === $valid_username && $password === $valid_password) {
+    // Ambil user dari DB
+    $sql = "SELECT * FROM pengguna WHERE username = ? LIMIT 1";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $user = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+
+    if ($user && password_verify($password, $user['password'])) {
         // Set session
-        $_SESSION['user_id'] = 1;
-        $_SESSION['username'] = $username;
-        $_SESSION['role'] = 'admin';
-        
+        $_SESSION['user_id']  = $user['id_pengguna'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['role']     = $user['role'];
+        $_SESSION['id_karyawan'] = $user['id_karyawan'];
+
+        // Update last login
+        $update_sql = "UPDATE pengguna SET last_login = NOW() WHERE id_pengguna = ?";
+        $stmt_upd = mysqli_prepare($conn, $update_sql);
+        mysqli_stmt_bind_param($stmt_upd, "i", $user['id_pengguna']);
+        mysqli_stmt_execute($stmt_upd);
+        mysqli_stmt_close($stmt_upd);
+
         header('Location: index.php');
         exit();
     } else {
