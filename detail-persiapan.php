@@ -42,7 +42,7 @@ if (!$data_persiapan) {
 
 // --- Ambil data produksi ---
 // Ambil semua pekerja, target, hasil (bisa disesuaikan WHERE status='proses')
-$sql_worker = "SELECT pekerja, target, hasil FROM produksi WHERE id_sps = $id_sps_produksi";
+$sql_worker = "SELECT pekerja, target, hasil ,kerjaan FROM produksi WHERE id_sps = $id_sps_produksi";
 $result_worker = $conn->query($sql_worker);
 
 $workers = [];
@@ -355,7 +355,7 @@ $totalPct       = pct($totalCompleted, $totalTarget);
           <div class="card">
             <div class="card-body">
               <div class="d-flex justify-content-between mb-2">
-                <div><strong><?= htmlspecialchars($w['pekerja']) ?></strong></div>
+                <div><strong><?= htmlspecialchars($w['pekerja']) ?> | <?= $w['kerjaan'];?></strong></div>
                 <div class="meta"><?= $w['hasil'] ?> / <?= $w['target'] ?> tugas</div>
               </div>
 
