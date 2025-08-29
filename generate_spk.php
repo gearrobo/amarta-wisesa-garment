@@ -39,7 +39,7 @@ if (isset($_GET['id'])) {
                 $kode_barang = '123';
                 $nama_barang = $row['item'];
                 $jumlah = $row['qty'];
-                $satuan = 'meter';
+                $satuan = 'pcs';
                 $harga = 10;
                 $total = $jumlah * $harga;
                 $status = 'pending';
