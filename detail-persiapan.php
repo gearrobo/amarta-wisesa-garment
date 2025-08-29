@@ -97,6 +97,18 @@ $sql_produksi = "SELECT p.*, s.sps_no, s.customer
 
 $stmt_produksi = $conn->prepare($sql_produksi);
 
+
+// Ambil data dengan join ke tabel karyawan & sps
+$sql = "
+    SELECT khb.*, k.nama AS nama_karyawan, s.sps_no 
+    FROM karyawan_harian_borongan khb
+    LEFT JOIN karyawan k ON khb.id_karyawan = k.id
+    LEFT JOIN sps s ON khb.id_sps = s.id
+    WHERE khb.id_sps = $id_sps_produksi
+    ORDER BY khb.created_at DESC 
+";
+$result = $conn->query($sql);
+
 if ($stmt_produksi) {
     $stmt_produksi->bind_param("i", $id_sps_produksi);
     $stmt_produksi->execute();
@@ -371,11 +383,66 @@ $totalPct       = pct($totalCompleted, $totalTarget);
         </div>
       <?php endforeach; ?>
     </div>
-
-
-
-
     </div>
+
+    <!-- Upah Kerja Section -->
+    <div class="card">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="card-title mb-0">Upah Kerja</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <a href="upah-pekerja.php?id_sps=<?= $id_sps_produksi; ?>" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Tambah Upah Pekerja
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nama Karyawan</th>
+                            <th>No SPS</th>
+                            <th>Metode</th>
+                            <th>Upah / Hari</th>
+                            <th>Upah / Jam</th>
+                            <th>Upah Borongan</th>
+                            <th>Status</th>
+                            <th>Skor</th>
+                            <th>Dibuat</th>
+                            <th>Diupdate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if ($result && $result->num_rows > 0): ?>
+                            <?php while($row = $result->fetch_assoc()): ?>
+                                <tr>
+                                    <td><?= $row['id'] ?></td>
+                                    <td><?= htmlspecialchars($row['nama_karyawan']) ?></td>
+                                    <td><?= htmlspecialchars($row['sps_no'] ?? '-') ?></td>
+                                    <td><?= $row['metode_pembayaran'] ?></td>
+                                    <td><?= number_format($row['upah_per_hari'], 2) ?></td>
+                                    <td><?= number_format($row['upah_per_jam'], 2) ?></td>
+                                    <td><?= number_format($row['upah_borongan'], 2) ?></td>
+                                    <td><?= htmlspecialchars($row['status']) ?></td>
+                                    <td><?= htmlspecialchars($row['skor_pekerja']) ?></td>
+                                    <td><?= $row['created_at'] ?></td>
+                                    <td><?= $row['updated_at'] ?></td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr><td colspan="11" class="text-center">Belum ada data</td></tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
 </div>
 <script>
     // Simple animation: naikkan width dari 0 ke data-target dalam 800ms
