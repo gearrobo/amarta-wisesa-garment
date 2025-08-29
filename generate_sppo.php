@@ -107,11 +107,6 @@ if (!empty($hpp['po'])) {
             <td>:</td>
             <td><?= htmlspecialchars($hpp['customer'] ?? '') ?></td>
         </tr>
-        <tr>
-            <td>Gudang</td>
-            <td>:</td>
-            <td><?= htmlspecialchars($hpp['nama_gudang'] ?? '') ?></td>
-        </tr>
     </table>
 
     <div class="detail-table">
