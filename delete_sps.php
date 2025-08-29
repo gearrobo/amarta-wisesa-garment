@@ -21,11 +21,11 @@ if ($data) {
     $stmt->bind_param("i", $id);
     
     if ($stmt->execute()) {
-        header("Location: index.php?deleted=1");
+        header("Location: sps-sample.php?deleted=1");
     } else {
-        header("Location: index.php?error=1");
+        header("Location: sps-sample.php?error=1");
     }
 } else {
-    header("Location: index.php?error=1");
+    header("Location: sps-sample.php?error=1");
 }
 ?>
