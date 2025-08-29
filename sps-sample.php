@@ -403,27 +403,27 @@ $kirim_count = $kirim_result->fetch_assoc()['kirim_count'];
 
         <div class="col-md-6">
             <label>Sample Product (.png)</label>
-            <input type="file" name="sample_product" accept="image/png" class="form-control">
+            <input type="file" name="sample_product" accept="image/*" class="form-control">
         </div>
         <div class="col-md-6">
             <label>Design (.png)</label>
-            <input type="file" name="design" accept="image/png" class="form-control">
+            <input type="file" name="design" accept="image/*" class="form-control">
         </div>
         <div class="col-md-6">
             <label>ST Chart (.png)</label>
-            <input type="file" name="st_chart" accept="image/png" class="form-control">
+            <input type="file" name="st_chart" accept="image/*" class="form-control">
         </div>
         <div class="col-md-6">
             <label>Material SM (.png)</label>
-            <input type="file" name="material_sm" accept="image/png" class="form-control">
+            <input type="file" name="material_sm" accept="image/*" class="form-control">
         </div>
         <div class="col-md-6">
             <label>Pola Sample (.png)</label>
-            <input type="file" name="pola_sample" accept="image/png" class="form-control">
+            <input type="file" name="pola_sample" accept="image/*" class="form-control">
         </div>
         <div class="col-md-6">
             <label>Buat Sample (.png)</label>
-            <input type="file" name="buat_sample" accept="image/png" class="form-control">
+            <input type="file" name="buat_sample" accept="image/*" class="form-control">
         </div>
 
       </div>
