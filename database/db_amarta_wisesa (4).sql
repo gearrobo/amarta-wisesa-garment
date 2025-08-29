@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 29, 2025 at 11:22 AM
+-- Generation Time: Aug 29, 2025 at 11:29 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -424,7 +424,7 @@ INSERT INTO `karyawan` (`id`, `nik`, `nama_lengkap`, `jenis_kelamin`, `tempat_la
 
 CREATE TABLE `karyawan_harian_borongan` (
   `id` int(11) UNSIGNED NOT NULL,
-  `id_karyawan` int(11) NOT NULL,
+  `id_karyawan` int(11) UNSIGNED NOT NULL,
   `upah_per_hari` decimal(10,2) DEFAULT 0.00,
   `upah_per_jam` decimal(10,2) DEFAULT 0.00,
   `upah_borongan` decimal(12,2) DEFAULT 0.00,
@@ -738,7 +738,8 @@ ALTER TABLE `karyawan`
 -- Indexes for table `karyawan_harian_borongan`
 --
 ALTER TABLE `karyawan_harian_borongan`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_karyawan_harian_borongan_karyawan` (`id_karyawan`);
 
 --
 -- Indexes for table `karyawan_tetap`
@@ -847,7 +848,7 @@ ALTER TABLE `jumlah_pekerja`
 -- AUTO_INCREMENT for table `karyawan`
 --
 ALTER TABLE `karyawan`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `karyawan_harian_borongan`
@@ -933,6 +934,12 @@ ALTER TABLE `jumlah_pekerja`
 ALTER TABLE `karyawan`
   ADD CONSTRAINT `fk_karyawan_departemen` FOREIGN KEY (`id_departemen`) REFERENCES `departemen` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_karyawan_jabatan` FOREIGN KEY (`id_jabatan`) REFERENCES `jabatan` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Constraints for table `karyawan_harian_borongan`
+--
+ALTER TABLE `karyawan_harian_borongan`
+  ADD CONSTRAINT `fk_karyawan_harian_borongan_karyawan` FOREIGN KEY (`id_karyawan`) REFERENCES `karyawan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `pengguna`
