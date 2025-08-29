@@ -89,6 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $_POST['rekening_bank'],
                     $_POST['nama_bank']
                 );
+
                 
                 if (!mysqli_stmt_execute($stmt)) {
                     throw new Exception("Execute failed for karyawan_non_tetap: " . mysqli_stmt_error($stmt));
@@ -470,9 +471,11 @@ $(document).ready(function() {
                         <div class="mb-3">
                             <label class="form-label">Metode Pembayaran</label>
                             <select name="metode_pembayaran" class="form-select">
-                                <option value="cash">Cash</option>
-                                <option value="transfer">Transfer</option>
+                                <option value="harian">Harian</option>
+                                <option value="borongan">Borongan</option>
+                                <option value="mingguan">Mingguan</option>
                             </select>
+
                         </div>
                     </div>
                 </div>

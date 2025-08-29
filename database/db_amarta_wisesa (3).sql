@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 29, 2025 at 04:07 AM
+-- Generation Time: Aug 29, 2025 at 11:22 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -178,11 +178,9 @@ CREATE TABLE `hpp` (
 --
 
 INSERT INTO `hpp` (`id`, `id_persiapan`, `id_inventory`, `no_urut`, `bahan`, `qty`, `barang_jadi`, `stok_order`, `efisiensi_consp`, `efisiensi_rap`, `stok_material`, `po`, `harga_per_meter`, `rap_x_harga_per_m`, `total_harga_bahan`, `biaya_tenaga_kerja_per_qty`, `total_biaya_tenaga_kerja`, `listrik`, `air`, `overhead`, `total_biaya`, `hpp`, `profit`, `harga_jual`, `created_at`, `updated_at`) VALUES
-(10, 2, 13, '1', 'Kain Katun', 1000, 980, 20, '1.00', 980, 100, 880, '100000.00', '98000000.00', '98000000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '98000000000.00', '98000000.00', '30.00', '127400000.00', '2025-08-25 04:22:27', '2025-08-25 04:22:27'),
-(11, 2, 14, '2', 'Benang', 1000, 20, 980, '0.50', 490, 50, 440, '100000.00', '49000000.00', '49000000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '49000000000.00', '49000000.00', '30.00', '63700000.00', '2025-08-25 04:29:01', '2025-08-25 04:29:01'),
-(17, 3, 17, '1', 'Kain Faring', 1000, 20, 980, '1.00', 980, 50, 930, '85000.00', '83300000.00', '83300000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '83300000000.00', '83300000.00', '30.00', '108290000.00', '2025-08-25 23:55:06', '2025-08-25 23:55:06'),
-(20, 8, 15, 'HPP68A9CB49B578C', 'Jarum', 50, 0, 50, '1.00', 50, 50, 0, '100000.00', '5000000.00', '250000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '250000000.00', '5000000.00', '30.00', '6500000.00', '2025-08-27 06:33:57', '2025-08-27 06:33:57'),
-(21, 8, 13, 'HPP68A9CB49B578C', 'Kain Katun', 1000, 20, 980, '1.00', 980, 150, 830, '100000.00', '98000000.00', '98000000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '98000000000.00', '98000000.00', '30.00', '127400000.00', '2025-08-29 01:29:47', '2025-08-29 01:29:47');
+(22, 11, 18, '1', 'Kain Katun', 1000, 20, 980, '1.00', 980, 50, 930, '100000.00', '98000000.00', '98000000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '98000000000.00', '98000000.00', '30.00', '127400000.00', '2025-08-29 09:04:21', '2025-08-29 09:04:21'),
+(23, 11, 19, '2', 'Kain Faring', 1000, 20, 980, '0.50', 480, 50, 430, '100000.00', '48000000.00', '48000000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '48000000000.00', '48000000.00', '30.00', '62400000.00', '2025-08-29 09:08:34', '2025-08-29 09:08:34'),
+(24, 11, 20, '3', 'Kancing', 1000, 20, 980, '5.00', 4900, 3950, 950, '500.00', '2450000.00', '2450000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2450000000.00', '2450000.00', '30.00', '3185000.00', '2025-08-29 09:11:44', '2025-08-29 09:11:44');
 
 -- --------------------------------------------------------
 
@@ -209,14 +207,9 @@ CREATE TABLE `inventory` (
 --
 
 INSERT INTO `inventory` (`id`, `kode_barang`, `nama_barang`, `warehouse`, `unit`, `jumlah`, `harga_per_unit`, `keterangan`, `created_at`, `updated_at`, `id_kategori`) VALUES
-(5, 'SN-09XXPi-90', 'Kain Katun', 'Kasin', 'meter', 50, '100000.00', '', '2025-08-24 19:38:04', '2025-08-25 10:11:42', NULL),
-(6, 'SN-09XXPi-80', 'Benang', 'Kasin', 'roll', 50, '100000.00', '', '2025-08-24 19:41:57', '2025-08-25 10:11:30', NULL),
-(7, 'SN-09XXPi-70', 'Jarum', 'Kasin', 'pcs', 50, '100000.00', '', '2025-08-24 19:42:37', '2025-08-25 10:10:26', NULL),
-(8, 'SN-09XXPi-90', 'Kain Katun', 'Kasin', 'meter', 5, '100000.00', '', '2025-08-25 10:12:43', '2025-08-25 10:13:20', NULL),
-(9, 'SN-09XXPi-90', 'Kain Katun', 'Kasin', 'meter', 100, '10000.00', '', '2025-08-25 11:20:51', NULL, NULL),
-(12, 'SN-09XXPi-60', 'Kain Faring', 'Kasin', 'meter', 50, '85000.00', '', '2025-08-25 16:40:12', NULL, NULL),
-(14, 'SN-09XXPi-90', 'Kain Katun', 'Kasin', 'meter', 150, '100000.00', '', '2025-08-29 08:28:13', NULL, NULL),
-(15, 'SN-09XXPi-60', 'Kain Faring', 'Kasin', 'meter', 150, '85000.00', '', '2025-08-29 08:28:38', NULL, NULL);
+(16, 'SN-09XXPi-90', 'Kain Katun', 'Kasin', 'meter', 50, '100000.00', '', '2025-08-29 16:02:16', NULL, NULL),
+(17, 'SN-09XXPi-60', 'Kain Faring', 'Kasin', 'meter', 50, '100000.00', '', '2025-08-29 16:02:31', NULL, NULL),
+(18, 'SN-09XXPi-70', 'Kancing', 'Kasin', 'pcs', 4000, '500.00', '', '2025-08-29 16:03:26', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -241,10 +234,9 @@ CREATE TABLE `inventory_gudang` (
 --
 
 INSERT INTO `inventory_gudang` (`id`, `id_inventory`, `id_gudang`, `nama_barang`, `jumlah`, `stok_akhir`, `satuan`, `tanggal_masuk`, `tanggal_update`) VALUES
-(13, 5, 3, 'Kain Katun', 0, 0, 'meter', '2025-08-24', '2025-08-29 01:29:47'),
-(14, 6, 3, 'Benang', 0, 0, 'roll', '2025-08-24', '2025-08-25 04:29:01'),
-(15, 7, 3, 'Jarum', 0, 0, 'pcs', '2025-08-24', '2025-08-27 06:33:57'),
-(17, 12, 3, 'Kain Faring', 150, 150, 'meter', '2025-08-25', '2025-08-29 01:28:38');
+(18, 16, 3, 'Kain Katun', 0, 0, 'meter', '2025-08-29', '2025-08-29 09:04:21'),
+(19, 17, 3, 'Kain Faring', 0, 0, 'meter', '2025-08-29', '2025-08-29 09:08:34'),
+(20, 18, 3, 'Kancing', 0, 0, 'pcs', '2025-08-29', '2025-08-29 09:14:10');
 
 -- --------------------------------------------------------
 
@@ -271,31 +263,12 @@ CREATE TABLE `inventory_transaksi_gudang` (
 --
 
 INSERT INTO `inventory_transaksi_gudang` (`id`, `inventory_gudang_id`, `jenis`, `jumlah_masuk`, `jumlah_keluar`, `harga_per_unit`, `keterangan`, `tanggal_transaksi`, `user_id`, `created_at`, `updated_at`) VALUES
-(1, 13, 'masuk', 5000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-24 19:38:04', NULL, '2025-08-24 12:38:04', '2025-08-24 12:38:04'),
-(2, 14, 'masuk', 5000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-24 19:41:57', NULL, '2025-08-24 12:41:57', '2025-08-24 12:41:57'),
-(3, 15, 'masuk', 5000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-24 19:42:37', NULL, '2025-08-24 12:42:37', '2025-08-24 12:42:37'),
-(4, 13, 'masuk', 10, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-25 10:12:43', NULL, '2025-08-25 03:12:43', '2025-08-25 03:12:43'),
-(5, 13, 'keluar', 0, 1000, NULL, 'Pengurangan stok untuk HPP ID: 8 - Kain Katun', '2025-08-25 10:50:22', NULL, '2025-08-25 03:50:22', '2025-08-25 03:50:22'),
-(6, 13, 'keluar', 0, 55, NULL, 'Pengurangan stok untuk HPP ID: 9 - Kain Katun', '2025-08-25 11:12:32', NULL, '2025-08-25 04:12:32', '2025-08-25 04:12:32'),
-(7, 13, 'keluar', 0, 1000, NULL, 'Pengurangan stok untuk HPP ID: 9 - Kain Katun', '2025-08-25 11:12:32', NULL, '2025-08-25 04:12:32', '2025-08-25 04:12:32'),
-(8, 13, 'masuk', 100, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-25 11:20:51', NULL, '2025-08-25 04:20:51', '2025-08-25 04:20:51'),
-(9, 13, 'keluar', 0, 100, NULL, 'Pengurangan stok untuk HPP ID: 10 - Kain Katun', '2025-08-25 11:22:27', NULL, '2025-08-25 04:22:27', '2025-08-25 04:22:27'),
-(10, 14, 'keluar', 0, 50, NULL, 'Pengurangan stok untuk HPP ID: 11 - Benang', '2025-08-25 11:29:01', NULL, '2025-08-25 04:29:01', '2025-08-25 04:29:01'),
-(11, 16, 'masuk', 100, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-25 15:49:35', NULL, '2025-08-25 08:49:35', '2025-08-25 08:49:35'),
-(12, 16, 'masuk', 50, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-25 15:50:53', NULL, '2025-08-25 08:50:53', '2025-08-25 08:50:53'),
-(13, 17, 'masuk', 50, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-25 16:40:12', NULL, '2025-08-25 09:40:12', '2025-08-25 09:40:12'),
-(14, 17, 'masuk', 20, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-25 16:40:44', NULL, '2025-08-25 09:40:44', '2025-08-25 09:40:44'),
-(15, 15, 'keluar', 0, 50, NULL, 'Pengurangan stok untuk HPP ID: 12 - Jarum', '2025-08-26 06:26:40', NULL, '2025-08-25 23:26:40', '2025-08-25 23:26:40'),
-(16, 15, 'masuk', 50, 0, NULL, 'Pengembalian stok dari penghapusan HPP ID: 12 - Jarum', '2025-08-26 06:27:11', NULL, '2025-08-25 23:27:11', '2025-08-25 23:27:11'),
-(17, 15, 'keluar', 0, 50, NULL, 'Pengurangan stok untuk HPP ID: 15 - Jarum', '2025-08-26 06:27:56', NULL, '2025-08-25 23:27:56', '2025-08-25 23:27:56'),
-(18, 15, 'masuk', 50, 0, NULL, 'Pengembalian stok dari penghapusan HPP ID: 15 - Jarum', '2025-08-26 06:35:23', NULL, '2025-08-25 23:35:23', '2025-08-25 23:35:23'),
-(19, 15, 'keluar', 0, 40, NULL, 'Pengurangan stok untuk HPP ID: 16 - Jarum', '2025-08-26 06:36:06', NULL, '2025-08-25 23:36:06', '2025-08-25 23:36:06'),
-(20, 15, 'masuk', 40, 0, NULL, 'Pengembalian stok dari penghapusan HPP ID: 16 - Jarum', '2025-08-26 06:52:43', NULL, '2025-08-25 23:52:43', '2025-08-25 23:52:43'),
-(21, 17, 'keluar', 0, 50, NULL, 'Pengurangan stok untuk HPP ID: 17 - Kain Faring', '2025-08-26 06:55:06', NULL, '2025-08-25 23:55:06', '2025-08-25 23:55:06'),
-(22, 15, 'keluar', 0, 50, NULL, 'Pengurangan stok untuk HPP ID: 20 - Jarum', '2025-08-27 13:33:57', NULL, '2025-08-27 06:33:57', '2025-08-27 06:33:57'),
-(23, 13, 'masuk', 150, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-29 08:28:13', NULL, '2025-08-29 01:28:13', '2025-08-29 01:28:13'),
-(24, 17, 'masuk', 150, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-29 08:28:38', NULL, '2025-08-29 01:28:38', '2025-08-29 01:28:38'),
-(25, 13, 'keluar', 0, 150, NULL, 'Pengurangan stok untuk HPP ID: 21 - Kain Katun', '2025-08-29 08:29:47', NULL, '2025-08-29 01:29:47', '2025-08-29 01:29:47');
+(26, 18, 'masuk', 50, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-29 16:02:16', 1, '2025-08-29 09:02:16', '2025-08-29 09:02:16'),
+(27, 19, 'masuk', 50, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-29 16:02:31', 1, '2025-08-29 09:02:31', '2025-08-29 09:02:31'),
+(28, 20, 'masuk', 4000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-29 16:03:26', 1, '2025-08-29 09:03:26', '2025-08-29 09:03:26'),
+(29, 18, 'keluar', 0, 50, NULL, 'Pengurangan stok untuk HPP ID: 22 - Kain Katun', '2025-08-29 16:04:21', 1, '2025-08-29 09:04:21', '2025-08-29 09:04:21'),
+(30, 19, 'keluar', 0, 50, NULL, 'Pengurangan stok untuk HPP ID: 23 - Kain Faring', '2025-08-29 16:08:34', 1, '2025-08-29 09:08:34', '2025-08-29 09:08:34'),
+(31, 20, 'keluar', 0, 3950, NULL, 'Pengurangan stok untuk HPP ID: 24 - Kancing', '2025-08-29 16:11:44', 1, '2025-08-29 09:11:44', '2025-08-29 09:11:44');
 
 --
 -- Triggers `inventory_transaksi_gudang`
@@ -403,14 +376,6 @@ CREATE TABLE `jumlah_pekerja` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `jumlah_pekerja`
---
-
-INSERT INTO `jumlah_pekerja` (`id`, `id_sps`, `bahan_baku`, `jumlah_order`, `jenis_pekerjaan`, `target_waktu`, `jumlah_waktu_kerja`, `harga_perunit`, `man_hours`, `jumlah_pekerja`, `updated_at`, `created_at`) VALUES
-(6, 12, 'Kain,Kancing,Resleting dkk', 1000, 'Kantong', 90, 90000, 1500, 25200, 4, '2025-08-27 22:21:11', '2025-08-27 22:21:11'),
-(11, 12, 'Kain,Kancing,Kantong dkk', 1000, 'Kerah', 120, 120000, 2500, 25200, 5, '2025-08-29 08:11:18', '2025-08-29 08:11:18');
-
 -- --------------------------------------------------------
 
 --
@@ -445,7 +410,7 @@ CREATE TABLE `karyawan` (
 INSERT INTO `karyawan` (`id`, `nik`, `nama_lengkap`, `jenis_kelamin`, `tempat_lahir`, `tanggal_lahir`, `alamat`, `no_telepon`, `email`, `type_karyawan`, `status_karyawan`, `tanggal_masuk`, `tanggal_keluar`, `id_jabatan`, `id_departemen`, `foto`, `created_at`, `updated_at`) VALUES
 (1, 'K001', 'Budi Santoso', 'L', 'Jakarta', '1985-05-15', 'Jl. Merdeka No. 123', '081234567890', 'budi@amarta.com', 'tetap', 'aktif', '2020-01-15', NULL, 2, 3, NULL, '2025-08-18 15:13:05', '2025-08-22 15:03:54'),
 (2, 'K002', 'Siti Nurhaliza', 'P', 'Bandung', '1990-08-20', 'Jl. Sudirman No. 45', '082345678901', 'siti@amarta.com', 'tetap', 'aktif', '2019-03-10', NULL, 5, 4, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
-(3, 'KH001', 'Ahmad Dahlan', 'L', 'Yogyakarta', '1995-12-10', 'Jl. Malioboro No. 78', '083456789012', 'ahmad@amarta.com', 'harian', 'aktif', '2023-06-01', NULL, 3, 3, NULL, '2025-08-18 15:13:05', '2025-08-28 12:33:29'),
+(3, 'KH001', 'Ahmad Juki', 'L', 'Yogyakarta', '1995-12-10', 'Jl. Malioboro No. 78', '083456789012', 'ahmad@amarta.com', 'tetap', 'aktif', '2023-06-01', NULL, 3, 3, NULL, '2025-08-18 15:13:05', '2025-08-29 07:18:53'),
 (4, 'KH002', 'Rina Marlina', 'P', 'Medan', '1998-03-25', 'Jl. Thamrin No. 90', '084567890123', 'rina@amarta.com', 'harian', 'aktif', '2023-07-15', NULL, 1, 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 (5, 'KB001', 'Joko Widodo', 'L', 'Solo', '1992-07-30', 'Jl. Slamet Riyadi No. 56', '085678901234', 'joko@amarta.com', 'borongan', 'aktif', '2023-08-01', NULL, 1, 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 (8, '12345678', 'Resky Putra P', 'L', 'Kota Depok', '1999-08-08', 'Dimun', '083456789012', 'androexe5@gmail.com', 'tetap', 'aktif', '2025-08-18', NULL, 7, 1, NULL, '2025-08-18 16:59:04', '2025-08-19 06:42:44'),
@@ -458,6 +423,7 @@ INSERT INTO `karyawan` (`id`, `nik`, `nama_lengkap`, `jenis_kelamin`, `tempat_la
 --
 
 CREATE TABLE `karyawan_harian_borongan` (
+  `id` int(11) UNSIGNED NOT NULL,
   `id_karyawan` int(11) NOT NULL,
   `upah_per_hari` decimal(10,2) DEFAULT 0.00,
   `upah_per_jam` decimal(10,2) DEFAULT 0.00,
@@ -471,10 +437,10 @@ CREATE TABLE `karyawan_harian_borongan` (
 -- Dumping data for table `karyawan_harian_borongan`
 --
 
-INSERT INTO `karyawan_harian_borongan` (`id_karyawan`, `upah_per_hari`, `upah_per_jam`, `upah_borongan`, `metode_pembayaran`, `rekening_bank`, `nama_bank`) VALUES
-(3, '150000.00', '0.00', '0.00', 'harian', NULL, NULL),
-(4, '150000.00', '0.00', '0.00', 'harian', NULL, NULL),
-(5, '0.00', '0.00', '2500000.00', 'borongan', NULL, NULL);
+INSERT INTO `karyawan_harian_borongan` (`id`, `id_karyawan`, `upah_per_hari`, `upah_per_jam`, `upah_borongan`, `metode_pembayaran`, `rekening_bank`, `nama_bank`) VALUES
+(1, 3, '150000.00', '0.00', '0.00', 'harian', NULL, NULL),
+(2, 4, '150000.00', '0.00', '0.00', 'harian', NULL, NULL),
+(3, 5, '0.00', '0.00', '2500000.00', 'borongan', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -483,6 +449,7 @@ INSERT INTO `karyawan_harian_borongan` (`id_karyawan`, `upah_per_hari`, `upah_pe
 --
 
 CREATE TABLE `karyawan_tetap` (
+  `id` int(11) UNSIGNED NOT NULL,
   `id_karyawan` int(11) NOT NULL,
   `npwp` varchar(20) DEFAULT NULL,
   `bpjs_ketenagakerjaan` varchar(30) DEFAULT NULL,
@@ -499,10 +466,10 @@ CREATE TABLE `karyawan_tetap` (
 -- Dumping data for table `karyawan_tetap`
 --
 
-INSERT INTO `karyawan_tetap` (`id_karyawan`, `npwp`, `bpjs_ketenagakerjaan`, `bpjs_kesehatan`, `gaji_pokok`, `tunjangan_jabatan`, `tunjangan_transport`, `tunjangan_makan`, `rekening_bank`, `nama_bank`) VALUES
-(1, '123456789012345', 'BPJS-TK001', 'BPJS-KS001', '5000000.00', '1500000.00', '500000.00', '300000.00', NULL, NULL),
-(2, '987654321098765', 'BPJS-TK002', 'BPJS-KS002', '7000000.00', '2000000.00', '750000.00', '500000.00', NULL, NULL),
-(14, '', '', '', '0.00', '0.00', '0.00', '0.00', '0', '');
+INSERT INTO `karyawan_tetap` (`id`, `id_karyawan`, `npwp`, `bpjs_ketenagakerjaan`, `bpjs_kesehatan`, `gaji_pokok`, `tunjangan_jabatan`, `tunjangan_transport`, `tunjangan_makan`, `rekening_bank`, `nama_bank`) VALUES
+(1, 1, '123456789012345', 'BPJS-TK001', 'BPJS-KS001', '5000000.00', '1500000.00', '500000.00', '300000.00', NULL, NULL),
+(2, 2, '987654321098765', 'BPJS-TK002', 'BPJS-KS002', '7000000.00', '2000000.00', '750000.00', '500000.00', NULL, NULL),
+(3, 14, '', '', '', '0.00', '0.00', '0.00', '0.00', '0', '');
 
 -- --------------------------------------------------------
 
@@ -526,7 +493,8 @@ INSERT INTO `kategori_barang` (`id`, `nama_kategori`, `keterangan`, `created_at`
 (2, 'Benang', 'Kategori untuk berbagai jenis benang', '2025-08-22 07:47:00', '2025-08-22 07:47:00'),
 (7, 'Kain Katun', '', '2025-08-22 08:31:53', '2025-08-22 08:31:53'),
 (8, 'Jarum', '', '2025-08-22 08:49:03', '2025-08-24 12:17:46'),
-(9, 'Kain Faring', '', '2025-08-25 08:49:01', '2025-08-25 08:49:01');
+(9, 'Kain Faring', '', '2025-08-25 08:49:01', '2025-08-25 08:49:01'),
+(14, 'Kancing', '', '2025-08-29 09:03:06', '2025-08-29 09:03:06');
 
 -- --------------------------------------------------------
 
@@ -580,8 +548,9 @@ CREATE TABLE `pengguna` (
 --
 
 INSERT INTO `pengguna` (`id_pengguna`, `id_karyawan`, `username`, `password`, `role`, `status_aktif`, `last_login`, `created_at`, `updated_at`) VALUES
-(1, 1, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
-(2, 2, 'hr', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'hr', 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05');
+(1, 1, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 1, '2025-08-29 14:30:07', '2025-08-18 15:13:05', '2025-08-29 07:30:07'),
+(2, 2, 'hr', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'hr', 1, '2025-08-29 13:59:40', '2025-08-18 15:13:05', '2025-08-29 06:59:40');
+
 -- --------------------------------------------------------
 
 --
@@ -613,14 +582,7 @@ CREATE TABLE `persiapan` (
 --
 
 INSERT INTO `persiapan` (`id`, `id_sps`, `spp_no`, `kode_barang`, `nama_barang`, `jumlah`, `satuan`, `harga`, `total`, `tanggal_persiapan`, `pola`, `marker`, `upload_spk`, `status`, `sp_srx`, `created_at`, `updated_at`) VALUES
-(1, 3, '', '123', 'Kain Biru', 500, 'meter', '10.00', '5000.00', '2025-08-27', NULL, NULL, NULL, 'pending', NULL, '2025-08-20 14:45:29', '2025-08-27 14:47:37'),
-(2, 4, 'SPP0002', '123', 'T-Shirt', 900, 'pcs', '120000.00', '5000.00', '2025-08-30', '1755752875_FNS- KTD SH S M 01(KATADATA MEN)-PROD.hpg', '1755752875_FNS- KTD SH S M 01(KATADATA MEN)-PROD.hpg', '1755754247_Surat Perintah Kerja (SPK).pdf', 'selesai', 'SPP-0002', '2025-08-21 09:42:15', '2025-08-27 14:44:18'),
-(3, 5, 'SPP0001', '123', 'Kain Biru', 500, 'meter', '10.00', '5000.00', '2025-08-31', NULL, NULL, NULL, 'pending', NULL, '2025-08-25 16:15:03', '2025-08-27 14:47:50'),
-(4, 6, '', '123', 'Kain Biru', 500, 'meter', '10.00', '5000.00', '2025-09-02', NULL, NULL, NULL, 'pending', NULL, '2025-08-26 11:26:01', '2025-08-27 14:48:02'),
-(5, 7, '', '123', 'Kain Biru', 500, 'meter', '10.00', '5000.00', '2025-09-02', NULL, NULL, NULL, 'pending', NULL, '2025-08-26 11:27:55', '2025-08-27 14:47:59'),
-(6, 8, '', '123', 'Kain Biru', 500, 'meter', '10.00', '5000.00', '2025-09-02', NULL, NULL, NULL, 'batal', NULL, '2025-08-26 11:33:06', '2025-08-27 14:47:57'),
-(7, 11, '', '123', 'Kain Biru', 500, 'meter', '10.00', '5000.00', '2025-09-06', NULL, NULL, NULL, 'proses', NULL, '2025-08-26 12:00:28', '2025-08-27 14:47:55'),
-(8, 12, 'SPP0003', 'BRG-20250826-0012', 'Kemeja', 1000, 'pcs', '2500000000.00', '20.00', '2025-09-06', NULL, NULL, NULL, 'selesai', 'SPP-)1x)8', '2025-08-26 12:05:57', '2025-08-27 14:45:54');
+(11, 23, 'SPP0001', '123', 'T-Shirt', 1000, 'pcs', '10.00', '10000.00', '2025-09-06', NULL, NULL, NULL, 'selesai', 'SRX-0001', '2025-08-29 16:00:41', '2025-08-29 16:03:33');
 
 -- --------------------------------------------------------
 
@@ -658,18 +620,6 @@ CREATE TABLE `produksi` (
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `produksi`
---
-
-INSERT INTO `produksi` (`id`, `id_sps`, `kerjaan`, `target`, `hasil`, `pekerja`, `status`, `qc`, `timestamp`) VALUES
-(13, 4, 'Jahit Kantong', 1000, 1, 'Ahmad Dahlan | harian', 'proses', 'gatot nugroho', '2025-08-27 07:58:20'),
-(14, 4, 'Kancing', 1000, 1, 'Ahmad Dahlan | harian', 'proses', 'gatot nugroho', '2025-08-27 08:03:47'),
-(15, 4, 'Bordir', 1000, 1, 'Joko Widodo | borongan', 'proses', 'gatot nugroho', '2025-08-27 08:04:11'),
-(16, 12, 'Jahit Kantong', 250, 155, 'Ahmad Dahlan | harian', 'proses', 'gatot nugroho', '2025-08-27 08:13:49'),
-(17, 12, 'Jahit Kantong', 250, 1, 'Rina Marlina | harian', 'proses', 'gatot nugroho', '2025-08-28 01:42:56'),
-(18, 12, 'Jahit Kantong', 500, 90, 'Joko Widodo | borongan', 'proses', 'gatot nugroho', '2025-08-28 01:44:49');
-
 -- --------------------------------------------------------
 
 --
@@ -701,15 +651,7 @@ CREATE TABLE `sps` (
 --
 
 INSERT INTO `sps` (`id`, `tanggal`, `sps_no`, `customer`, `item`, `artikel`, `qty`, `size`, `sample_product`, `design`, `st_chart`, `material_sm`, `pola_sample`, `buat_sample`, `kirim`, `approval`, `sp_srx`) VALUES
-(2, '2025-08-19', 'SPS-01', 'Resky-jakarta', 'T-Shirt', 'T-Shirt', 2, 'L', '1755572545_68a3e9415efd7_stempel soendev.png', '1755571849_stempel soendev.png', '1755571849_stempel soendev.png', '1755571849_stempel soendev.png', '1755571849_stempel soendev.png', '1755571849_stempel soendev.png', '2025-08-26', 'Approved', 'SPK-20250820-0002'),
-(3, '2025-08-20', 'SPS-02', 'Joko-Jakarta', 'Kemeja', 'Kemeja', 1, 'M', NULL, NULL, NULL, NULL, NULL, NULL, '2025-08-27', 'Approved', ''),
-(4, '2025-08-21', 'SPS-04', 'Aji', 'T-Shirt', 'T-Shirt', 1, 'M', NULL, NULL, NULL, NULL, NULL, NULL, '2025-08-30', 'Approved', 'SPK-20250821-0004'),
-(5, '2025-08-25', 'SPS-05', 'Resky', 'Kemeja', 'Kemeja', 1000, 'M', NULL, NULL, NULL, NULL, NULL, NULL, '2025-08-31', 'Approved', 'SPK-20250825-0005'),
-(6, '2025-08-26', 'SPS-03', 'Putra', 'Jas', 'Jas', 1, 'S', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-02', 'Approved', 'SPK-20250827-0006'),
-(7, '2025-08-26', 'SPS-06', 'Putri', 'Kemeja', 'Kemeja', 1, 'M', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-02', 'Approved', 'SPK-20250826-0007'),
-(8, '2025-08-26', 'SPS-07', 'Joko', 'Kemeja', 'Kemeja', 1, 'M', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-02', 'Approved', 'SPK-20250826-0008'),
-(11, '2025-08-27', 'SPS-1029', 'Tono - Depok', 'T-Shirt', 'T-Shirt Jersey', 1, 'L', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-06', 'Approved', 'SPK-20250826-0011'),
-(12, '2025-08-28', 'SPS-1030', 'Resky', 'Kemeja', 'Kemeja', 2, 'M', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-06', 'Approved', 'SPK-20250826-0012');
+(23, '2025-08-29', 'SPS-01', 'Resky-Jakarta', 'T-Shirt', 'T-Shirt Jersey', 1000, 'L', '1756458034_68b16c32b8e1a_Screen Shot 2025-08-29 at 15.34.04.png', NULL, NULL, NULL, NULL, NULL, '2025-09-06', 'Approved', 'SPK-20250829-0023');
 
 --
 -- Indexes for dumped tables
@@ -793,6 +735,18 @@ ALTER TABLE `karyawan`
   ADD KEY `fk_karyawan_departemen` (`id_departemen`);
 
 --
+-- Indexes for table `karyawan_harian_borongan`
+--
+ALTER TABLE `karyawan_harian_borongan`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `karyawan_tetap`
+--
+ALTER TABLE `karyawan_tetap`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `kategori_barang`
 --
 ALTER TABLE `kategori_barang`
@@ -857,25 +811,25 @@ ALTER TABLE `gudang`
 -- AUTO_INCREMENT for table `hpp`
 --
 ALTER TABLE `hpp`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `inventory_gudang`
 --
 ALTER TABLE `inventory_gudang`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `inventory_transaksi_gudang`
 --
 ALTER TABLE `inventory_transaksi_gudang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `jabatan`
@@ -887,19 +841,31 @@ ALTER TABLE `jabatan`
 -- AUTO_INCREMENT for table `jumlah_pekerja`
 --
 ALTER TABLE `jumlah_pekerja`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `karyawan`
 --
 ALTER TABLE `karyawan`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT for table `karyawan_harian_borongan`
+--
+ALTER TABLE `karyawan_harian_borongan`
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `karyawan_tetap`
+--
+ALTER TABLE `karyawan_tetap`
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `kategori_barang`
 --
 ALTER TABLE `kategori_barang`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `mesin`
@@ -917,7 +883,7 @@ ALTER TABLE `pengguna`
 -- AUTO_INCREMENT for table `persiapan`
 --
 ALTER TABLE `persiapan`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `produk`
@@ -929,13 +895,13 @@ ALTER TABLE `produk`
 -- AUTO_INCREMENT for table `produksi`
 --
 ALTER TABLE `produksi`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `sps`
 --
 ALTER TABLE `sps`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Constraints for dumped tables
