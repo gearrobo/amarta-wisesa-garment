@@ -60,10 +60,12 @@ function pct($c, $t) {
 
 // ---------------- GET DATA GUDANG ----------------
 $sql_gudang = "SELECT 
+        hpp.id,  -- ambil id dari tabel hpp
         hpp.bahan,
         hpp.qty,
         hpp.harga_per_meter,
         hpp.total_harga_bahan,
+        hpp.po,
         ig.stok_akhir,
         ig.satuan,
         g.nama AS nama_gudang
@@ -203,9 +205,15 @@ if (isset($_GET['delete_produksi'])) {
                                 <td>Rp <?= number_format($item['harga_per_meter'] ?? 0, 0, ',', '.'); ?></td>
                                 <td>Rp <?= number_format($item['total_harga_bahan'] ?? 0, 0, ',', '.'); ?></td>
                                 <td>
-                                    <button class="btn btn-sm btn-secondary">
-                                        <i class="fas fa-print"></i>
-                                    </button>
+                                    <?php if ($item['po'] > 0): ?>
+                                        <a href="generate_sppo.php?id=<?= $item['id']; ?>" class="btn btn-secondary" title="Print" target="_blank">
+                                            <i class="fas fa-print"></i>
+                                        </a>
+                                    <?php else: ?>
+                                        <button class="btn btn-secondary" title="SPP) hanya bisa dicetak saat ada PO Bahan Baku" disabled>
+                                            <i class="fas fa-print"></i>
+                                        </button>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                             <?php endforeach; ?>

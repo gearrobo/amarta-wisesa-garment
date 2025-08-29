@@ -964,7 +964,7 @@ $inventory_result = $conn->query($inventory_query);
                         <div class="row">
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Efisiensi Consp</label>
-                                <input type="number" step="0.01" name="efisiensi_consp" class="form-control" value="1.00" min="0.1" max="2.0">
+                                <input type="number" step="0.01" name="efisiensi_consp" class="form-control" value="1.00" min="0.1" max="100">
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Efisiensi RAP</label>

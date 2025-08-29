@@ -114,7 +114,7 @@ if ($id_sps > 0) {
                 <th>Bahan Baku</th>
                 <th>Jumlah Order</th>
                 <th>Jenis Pekerjaan</th>
-                <th>Target Waktu</th>
+                <th>Target Waktu (s)</th>
                 <th>Jumlah Waktu Kerja</th>
                 <th>Harga/Unit</th>
                 <th>Man Hours</th>
@@ -166,7 +166,7 @@ if ($id_sps > 0) {
                             <div class="mb-2"><label>Bahan Baku</label><input type="text" name="bahan_baku" class="form-control" value="<?= $row['bahan_baku'] ?>"></div>
                             <div class="mb-2"><label>Jumlah Order</label><input type="number" name="jumlah_order" class="form-control" value="<?= $row['jumlah_order'] ?>"></div>
                             <div class="mb-2"><label>Jenis Pekerjaan</label><input type="text" name="jenis_pekerjaan" class="form-control" value="<?= $row['jenis_pekerjaan'] ?>"></div>
-                            <div class="mb-2"><label>Target Waktu</label><input type="number" name="target_waktu" class="form-control" value="<?= $row['target_waktu'] ?>"></div>
+                            <div class="mb-2"><label>Target Waktu (s)</label><input type="number" name="target_waktu" class="form-control" value="<?= $row['target_waktu'] ?>"></div>
                             <div class="mb-2"><label>Harga per Unit</label><input type="number" name="harga_perunit" class="form-control" value="<?= $row['harga_perunit'] ?>"></div>
                         </div>
                         <div class="modal-footer">
@@ -201,7 +201,7 @@ if ($id_sps > 0) {
                 <div class="mb-2"><label>Bahan Baku</label><input type="text" name="bahan_baku" class="form-control"></div>
                 <div class="mb-2"><label>Jumlah Order</label><input type="number" name="jumlah_order" class="form-control"></div>
                 <div class="mb-2"><label>Jenis Pekerjaan</label><input type="text" name="jenis_pekerjaan" class="form-control"></div>
-                <div class="mb-2"><label>Target Waktu</label><input type="number" name="target_waktu" class="form-control"></div>
+                <div class="mb-2"><label>Target Waktu (s)</label><input type="number" name="target_waktu" class="form-control"></div>
                 <div class="mb-2"><label>Harga per Unit</label><input type="number" name="harga_perunit" class="form-control"></div>
             </div>
             <div class="modal-footer">
