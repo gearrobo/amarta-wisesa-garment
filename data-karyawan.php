@@ -71,31 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
                 mysqli_stmt_close($stmt);
                 
-            } else {
-                $sql = "INSERT INTO karyawan_harian_borongan (id_karyawan, upah_per_hari, upah_per_jam, upah_borongan, metode_pembayaran, rekening_bank, nama_bank) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?)";
-                
-                $stmt = mysqli_prepare($conn, $sql);
-                if (!$stmt) {
-                    throw new Exception("Prepare failed for karyawan_harian_borongan: " . mysqli_error($conn));
-                }
-                
-                mysqli_stmt_bind_param($stmt, "iiiiiss", 
-                    $id_karyawan,
-                    $_POST['upah_per_hari'],
-                    $_POST['upah_per_jam'],
-                    $_POST['upah_borongan'],
-                    $_POST['metode_pembayaran'],
-                    $_POST['rekening_bank'],
-                    $_POST['nama_bank']
-                );
-
-                
-                if (!mysqli_stmt_execute($stmt)) {
-                    throw new Exception("Execute failed for karyawan_non_tetap: " . mysqli_stmt_error($stmt));
-                }
-                mysqli_stmt_close($stmt);
-            }
+            } 
             
             // Commit transaction
             mysqli_commit($conn);
@@ -444,57 +420,7 @@ $(document).ready(function() {
                     <input type="text" name="nama_bank" class="form-control">
                 </div>
             `;
-        } else {
-            fieldsHtml = `
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Upah per Hari</label>
-                            <input type="number" name="upah_per_hari" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Upah per Jam</label>
-                            <input type="number" name="upah_per_jam" class="form-control">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Upah Borongan</label>
-                            <input type="number" name="upah_borongan" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Metode Pembayaran</label>
-                            <select name="metode_pembayaran" class="form-select">
-                                <option value="harian">Harian</option>
-                                <option value="borongan">Borongan</option>
-                                <option value="mingguan">Mingguan</option>
-                            </select>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Rekening Bank</label>
-                            <input type="text" name="rekening_bank" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Nama Bank</label>
-                            <input type="text" name="nama_bank" class="form-control">
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
+        } 
         
         $('#typeSpecificFields').html(fieldsHtml);
     });

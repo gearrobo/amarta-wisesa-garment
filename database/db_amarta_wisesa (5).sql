@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 29, 2025 at 11:29 AM
+-- Generation Time: Aug 29, 2025 at 01:52 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -414,7 +414,8 @@ INSERT INTO `karyawan` (`id`, `nik`, `nama_lengkap`, `jenis_kelamin`, `tempat_la
 (4, 'KH002', 'Rina Marlina', 'P', 'Medan', '1998-03-25', 'Jl. Thamrin No. 90', '084567890123', 'rina@amarta.com', 'harian', 'aktif', '2023-07-15', NULL, 1, 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 (5, 'KB001', 'Joko Widodo', 'L', 'Solo', '1992-07-30', 'Jl. Slamet Riyadi No. 56', '085678901234', 'joko@amarta.com', 'borongan', 'aktif', '2023-08-01', NULL, 1, 1, NULL, '2025-08-18 15:13:05', '2025-08-18 15:13:05'),
 (8, '12345678', 'Resky Putra P', 'L', 'Kota Depok', '1999-08-08', 'Dimun', '083456789012', 'androexe5@gmail.com', 'tetap', 'aktif', '2025-08-18', NULL, 7, 1, NULL, '2025-08-18 16:59:04', '2025-08-19 06:42:44'),
-(14, '12345678', 'gatot nugroho', 'L', 'Kota Depok', '1992-05-08', 'Jatimulya\r\nPuri Insani', '083456789012', 'androexe5@gmail.com', 'tetap', 'aktif', '2025-08-26', NULL, 3, 1, NULL, '2025-08-26 06:59:45', '2025-08-26 06:59:45');
+(14, '12345678', 'gatot nugroho', 'L', 'Kota Depok', '1992-05-08', 'Jatimulya\r\nPuri Insani', '083456789012', 'androexe5@gmail.com', 'tetap', 'aktif', '2025-08-26', NULL, 3, 1, NULL, '2025-08-26 06:59:45', '2025-08-26 06:59:45'),
+(19, 'KH001', 'Coba', 'L', 'Yogyakarta', '1991-05-08', 'Jatimulya\r\nPuri Insani', '083456789012', 'androexe5@gmail.com', 'harian', 'aktif', '2025-08-29', NULL, 7, 1, NULL, '2025-08-29 11:39:26', '2025-08-29 11:39:26');
 
 -- --------------------------------------------------------
 
@@ -425,22 +426,18 @@ INSERT INTO `karyawan` (`id`, `nik`, `nama_lengkap`, `jenis_kelamin`, `tempat_la
 CREATE TABLE `karyawan_harian_borongan` (
   `id` int(11) UNSIGNED NOT NULL,
   `id_karyawan` int(11) UNSIGNED NOT NULL,
+  `id_sps` int(11) UNSIGNED DEFAULT NULL,
   `upah_per_hari` decimal(10,2) DEFAULT 0.00,
   `upah_per_jam` decimal(10,2) DEFAULT 0.00,
   `upah_borongan` decimal(12,2) DEFAULT 0.00,
   `metode_pembayaran` enum('harian','borongan','mingguan') DEFAULT 'harian',
   `rekening_bank` varchar(50) DEFAULT NULL,
-  `nama_bank` varchar(50) DEFAULT NULL
+  `nama_bank` varchar(50) DEFAULT NULL,
+  `status` varchar(50) NOT NULL,
+  `skor_pekerja` varchar(50) NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `karyawan_harian_borongan`
---
-
-INSERT INTO `karyawan_harian_borongan` (`id`, `id_karyawan`, `upah_per_hari`, `upah_per_jam`, `upah_borongan`, `metode_pembayaran`, `rekening_bank`, `nama_bank`) VALUES
-(1, 3, '150000.00', '0.00', '0.00', 'harian', NULL, NULL),
-(2, 4, '150000.00', '0.00', '0.00', 'harian', NULL, NULL),
-(3, 5, '0.00', '0.00', '2500000.00', 'borongan', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -450,7 +447,7 @@ INSERT INTO `karyawan_harian_borongan` (`id`, `id_karyawan`, `upah_per_hari`, `u
 
 CREATE TABLE `karyawan_tetap` (
   `id` int(11) UNSIGNED NOT NULL,
-  `id_karyawan` int(11) NOT NULL,
+  `id_karyawan` int(11) UNSIGNED NOT NULL,
   `npwp` varchar(20) DEFAULT NULL,
   `bpjs_ketenagakerjaan` varchar(30) DEFAULT NULL,
   `bpjs_kesehatan` varchar(30) DEFAULT NULL,
@@ -739,13 +736,15 @@ ALTER TABLE `karyawan`
 --
 ALTER TABLE `karyawan_harian_borongan`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_karyawan_harian_borongan_karyawan` (`id_karyawan`);
+  ADD KEY `fk_karyawan_harian_borongan_karyawan` (`id_karyawan`),
+  ADD KEY `fk_karyawan_harian_borongan_sps` (`id_sps`);
 
 --
 -- Indexes for table `karyawan_tetap`
 --
 ALTER TABLE `karyawan_tetap`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_karyawan_tetap_karyawan` (`id_karyawan`);
 
 --
 -- Indexes for table `kategori_barang`
@@ -848,7 +847,7 @@ ALTER TABLE `jumlah_pekerja`
 -- AUTO_INCREMENT for table `karyawan`
 --
 ALTER TABLE `karyawan`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `karyawan_harian_borongan`
@@ -860,7 +859,7 @@ ALTER TABLE `karyawan_harian_borongan`
 -- AUTO_INCREMENT for table `karyawan_tetap`
 --
 ALTER TABLE `karyawan_tetap`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `kategori_barang`
@@ -939,7 +938,14 @@ ALTER TABLE `karyawan`
 -- Constraints for table `karyawan_harian_borongan`
 --
 ALTER TABLE `karyawan_harian_borongan`
-  ADD CONSTRAINT `fk_karyawan_harian_borongan_karyawan` FOREIGN KEY (`id_karyawan`) REFERENCES `karyawan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_karyawan_harian_borongan_karyawan` FOREIGN KEY (`id_karyawan`) REFERENCES `karyawan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_karyawan_harian_borongan_sps` FOREIGN KEY (`id_sps`) REFERENCES `sps` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Constraints for table `karyawan_tetap`
+--
+ALTER TABLE `karyawan_tetap`
+  ADD CONSTRAINT `fk_karyawan_tetap_karyawan` FOREIGN KEY (`id_karyawan`) REFERENCES `karyawan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `pengguna`
