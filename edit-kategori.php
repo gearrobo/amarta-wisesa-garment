@@ -1,6 +1,4 @@
 <?php
-// Start session
-session_start();
 
 // Include database configuration
 include 'config/db.php';
