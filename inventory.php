@@ -325,13 +325,13 @@ if ($barang_keluar == 0 && $barang_masuk_transaksi == 0) {
                             <td>Rp <?= number_format($row['jumlah'] * $row['harga_per_unit'], 0, ',', '.') ?></td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <button class="btn btn-warning" onclick="editInventory(<?= $row['id'] ?>)" title="Edit">
+                                    <button class="btn btn-warning" onclick="editInventory(<?= $row['id']; ?>)" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="btn btn-danger" onclick="deleteInventory(<?= $row['id'] ?>)" title="Hapus">
+                                    <button class="btn btn-danger" onclick="deleteInventory(<?= $row['id']; ?>)" title="Hapus">
                                         <i class="fas fa-trash"></i>
                                     </button>
-                                    <button class="btn btn-info" onclick="detailInventory(<?= $row['id'] ?>)" title="Detail">
+                                    <button class="btn btn-info" onclick="detailInventory(<?= $row['id']; ?>)" title="Detail">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
