@@ -127,7 +127,7 @@ $listKaryawan = $conn->query("SELECT id, nama_lengkap FROM karyawan WHERE id = $
                     <td><?= htmlspecialchars($row['status']) ?></td>
                     <td>
                         <!-- Tombol Edit -->
-                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal<?= $row['id'] ?>">Edit</button>
+                        <button class="btn btn-sm btn-warning" onclick="loadEditModal(<?= $row['id'] ?>)">Edit</button>
                         <!-- Tombol Hapus -->
                         <a href="upah-pekerja.php?id_sps=<?= $id_sps_produksi ?>&hapus=<?= $row['id'] ?>" 
                            onclick="return confirm('Yakin hapus data ini?')" 
@@ -183,5 +183,40 @@ $listKaryawan = $conn->query("SELECT id, nama_lengkap FROM karyawan WHERE id = $
         </tbody>
     </table>
 </div>
+
+<!-- Modal Global untuk Edit -->
+<div class="modal fade" id="editModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" id="modalContent">
+      <!-- Isi form edit akan diload via AJAX -->
+    </div>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$("#formEditUpah").on("submit", function(e){
+    e.preventDefault();
+    $.ajax({
+        url: "update_upah.php",
+        type: "POST",
+        data: $(this).serialize(),
+        success: function(res){
+            try {
+                let r = JSON.parse(res);
+                if(r.status === "ok"){
+                    alert("✅ Berhasil update upah!");
+                    $("#editModal").modal("hide");
+                    location.reload(); // refresh tabel
+                } else {
+                    alert("❌ Gagal update: " + r.message);
+                }
+            } catch(e){
+                alert("❌ Error tidak terduga: " + res);
+            }
+        }
+    });
+});
+</script>
+
 
 <?php include 'includes/footer.php'; ?>
