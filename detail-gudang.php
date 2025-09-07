@@ -1,6 +1,6 @@
 <?php
 // Start session
-session_start();
+// session_start();
 
 // Include header and database configuration
 include 'includes/header.php';

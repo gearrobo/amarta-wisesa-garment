@@ -53,8 +53,9 @@ if (isset($_POST['save'])) {
             // Jika kode_barang tidak diisi, gunakan auto-generated
             if (empty($kode_barang)) {
                 // Simpan dulu untuk mendapatkan ID, lalu generate kode
-                $stmt->bind_param("ssssids", 
-                    null, $nama_barang, $warehouse, $unit, $jumlah, $harga_per_unit, $keterangan
+                $temp_kode = null;
+                $stmt->bind_param("ssssids",
+                    $temp_kode, $nama_barang, $warehouse, $unit, $jumlah, $harga_per_unit, $keterangan
                 );
                 
                 if (!$stmt->execute()) {
@@ -140,11 +141,11 @@ if (isset($_POST['save'])) {
             } else {
                 // Insert new barang ke inventory_gudang - PERBAIKAN DISINI
                 $sql_insert_gudang = "INSERT INTO inventory_gudang 
-                                    (id_inventory, id_gudang, nama_barang, jumlah, stok_akhir, satuan, tanggal_masuk)
-                                    VALUES (?, ?, ?, ?, ?, ?, CURDATE())";
+                                    (id_gudang, nama_barang, jumlah, stok_akhir, satuan, tanggal_masuk)
+                                    VALUES (?, ?, ?, ?, ?, CURDATE())";
                 
                 $stmt_insert = $conn->prepare($sql_insert_gudang);
-                $stmt_insert->bind_param("iisiis", $inventory_id, $id_gudang, $nama_barang, $jumlah, $jumlah, $unit);
+                $stmt_insert->bind_param("isiis", $id_gudang, $nama_barang, $jumlah, $jumlah, $unit);
                 
                 if (!$stmt_insert->execute()) {
                     throw new Exception("Insert inventory_gudang failed: " . $stmt_insert->error);
