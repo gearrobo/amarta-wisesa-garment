@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 30, 2025 at 03:51 AM
+-- Generation Time: Sep 08, 2025 at 08:17 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -202,6 +202,13 @@ CREATE TABLE `inventory` (
   `id_kategori` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `inventory`
+--
+
+INSERT INTO `inventory` (`id`, `kode_barang`, `nama_barang`, `warehouse`, `unit`, `jumlah`, `harga_per_unit`, `keterangan`, `created_at`, `updated_at`, `id_kategori`) VALUES
+(25, 'SN-09XXPi-90', 'Benang', 'Kasin', 'meter', 500, '100000.00', '', '2025-09-07 20:10:27', NULL, NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -226,7 +233,8 @@ CREATE TABLE `inventory_gudang` (
 INSERT INTO `inventory_gudang` (`id`, `id_gudang`, `nama_barang`, `jumlah`, `stok_akhir`, `satuan`, `tanggal_masuk`, `tanggal_update`) VALUES
 (18, 3, 'Kain Katun', 0, 0, 'meter', '2025-08-29', '2025-08-29 09:04:21'),
 (19, 3, 'Kain Faring', 0, 0, 'meter', '2025-08-29', '2025-08-29 09:08:34'),
-(20, 3, 'Kancing', 2000, 2000, 'pcs', '2025-08-29', '2025-08-30 01:45:18');
+(20, 3, 'Kancing', 2000, 2000, 'pcs', '2025-08-29', '2025-08-30 01:45:18'),
+(25, 3, 'Benang', 500, 1000, 'meter', '2025-09-07', '2025-09-07 13:10:27');
 
 -- --------------------------------------------------------
 
@@ -259,7 +267,8 @@ INSERT INTO `inventory_transaksi_gudang` (`id`, `inventory_gudang_id`, `jenis`, 
 (29, 18, 'keluar', 0, 50, NULL, 'Pengurangan stok untuk HPP ID: 22 - Kain Katun', '2025-08-29 16:04:21', 1, '2025-08-29 09:04:21', '2025-08-29 09:04:21'),
 (30, 19, 'keluar', 0, 50, NULL, 'Pengurangan stok untuk HPP ID: 23 - Kain Faring', '2025-08-29 16:08:34', 1, '2025-08-29 09:08:34', '2025-08-29 09:08:34'),
 (31, 20, 'keluar', 0, 3950, NULL, 'Pengurangan stok untuk HPP ID: 24 - Kancing', '2025-08-29 16:11:44', 1, '2025-08-29 09:11:44', '2025-08-29 09:11:44'),
-(32, 20, 'masuk', 2000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-30 08:45:18', 1, '2025-08-30 01:45:18', '2025-08-30 01:45:18');
+(32, 20, 'masuk', 2000, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-08-30 08:45:18', 1, '2025-08-30 01:45:18', '2025-08-30 01:45:18'),
+(37, 25, 'masuk', 500, 0, NULL, 'Tambah stok dari inventory.php: ', '2025-09-07 20:10:27', NULL, '2025-09-07 13:10:27', '2025-09-07 13:10:27');
 
 --
 -- Triggers `inventory_transaksi_gudang`
@@ -267,13 +276,13 @@ INSERT INTO `inventory_transaksi_gudang` (`id`, `inventory_gudang_id`, `jenis`, 
 DELIMITER $$
 CREATE TRIGGER `update_stok_after_delete_transaksi` AFTER DELETE ON `inventory_transaksi_gudang` FOR EACH ROW BEGIN
   IF OLD.jenis = 'masuk' THEN
-    UPDATE `inventory_gudang` 
-    SET `stok_akhir` = `stok_akhir` - OLD.jumlah_masuk 
-    WHERE `id_inventory` = OLD.inventory_gudang_id;
+    UPDATE inventory_gudang
+    SET stok_akhir = stok_akhir - OLD.jumlah_masuk
+    WHERE id = OLD.inventory_gudang_id;
   ELSEIF OLD.jenis = 'keluar' THEN
-    UPDATE `inventory_gudang` 
-    SET `stok_akhir` = `stok_akhir` + OLD.jumlah_keluar 
-    WHERE `id_inventory` = OLD.inventory_gudang_id;
+    UPDATE inventory_gudang
+    SET stok_akhir = stok_akhir + OLD.jumlah_keluar
+    WHERE id = OLD.inventory_gudang_id;
   END IF;
 END
 $$
@@ -281,13 +290,13 @@ DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `update_stok_after_insert_transaksi` AFTER INSERT ON `inventory_transaksi_gudang` FOR EACH ROW BEGIN
   IF NEW.jenis = 'masuk' THEN
-    UPDATE `inventory_gudang` 
-    SET `stok_akhir` = `stok_akhir` + NEW.jumlah_masuk 
-    WHERE `id_inventory` = NEW.inventory_gudang_id;
+    UPDATE inventory_gudang
+    SET stok_akhir = stok_akhir + NEW.jumlah_masuk
+    WHERE id = NEW.inventory_gudang_id;
   ELSEIF NEW.jenis = 'keluar' THEN
-    UPDATE `inventory_gudang` 
-    SET `stok_akhir` = `stok_akhir` - NEW.jumlah_keluar 
-    WHERE `id_inventory` = NEW.inventory_gudang_id;
+    UPDATE inventory_gudang
+    SET stok_akhir = stok_akhir - NEW.jumlah_keluar
+    WHERE id = NEW.inventory_gudang_id;
   END IF;
 END
 $$
@@ -296,24 +305,24 @@ DELIMITER $$
 CREATE TRIGGER `update_stok_after_update_transaksi` AFTER UPDATE ON `inventory_transaksi_gudang` FOR EACH ROW BEGIN
   -- Revert old transaction
   IF OLD.jenis = 'masuk' THEN
-    UPDATE `inventory_gudang` 
-    SET `stok_akhir` = `stok_akhir` - OLD.jumlah_masuk 
-    WHERE `id_inventory` = OLD.inventory_gudang_id;
+    UPDATE inventory_gudang
+    SET stok_akhir = stok_akhir - OLD.jumlah_masuk
+    WHERE id = OLD.inventory_gudang_id;
   ELSEIF OLD.jenis = 'keluar' THEN
-    UPDATE `inventory_gudang` 
-    SET `stok_akhir` = `stok_akhir` + OLD.jumlah_keluar 
-    WHERE `id_inventory` = OLD.inventory_gudang_id;
+    UPDATE inventory_gudang
+    SET stok_akhir = stok_akhir + OLD.jumlah_keluar
+    WHERE id = OLD.inventory_gudang_id;
   END IF;
-  
+
   -- Apply new transaction
   IF NEW.jenis = 'masuk' THEN
-    UPDATE `inventory_gudang` 
-    SET `stok_akhir` = `stok_akhir` + NEW.jumlah_masuk 
-    WHERE `id_inventory` = NEW.inventory_gudang_id;
+    UPDATE inventory_gudang
+    SET stok_akhir = stok_akhir + NEW.jumlah_masuk
+    WHERE id = NEW.inventory_gudang_id;
   ELSEIF NEW.jenis = 'keluar' THEN
-    UPDATE `inventory_gudang` 
-    SET `stok_akhir` = `stok_akhir` - NEW.jumlah_keluar 
-    WHERE `id_inventory` = NEW.inventory_gudang_id;
+    UPDATE inventory_gudang
+    SET stok_akhir = stok_akhir - NEW.jumlah_keluar
+    WHERE id = NEW.inventory_gudang_id;
   END IF;
 END
 $$
@@ -823,19 +832,19 @@ ALTER TABLE `hpp`
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `inventory_gudang`
 --
 ALTER TABLE `inventory_gudang`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `inventory_transaksi_gudang`
 --
 ALTER TABLE `inventory_transaksi_gudang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `jabatan`
