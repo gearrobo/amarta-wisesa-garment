@@ -525,10 +525,9 @@ $result = $stmt->get_result();
 
 // Ambil data inventory untuk dropdown
 $inventory_query = "
-    SELECT ig.id, ig.nama_barang, g.nama as nama_gudang, ig.stok_akhir, i.harga_per_unit
+    SELECT ig.id, ig.nama_barang, g.nama as nama_gudang, ig.stok_akhir, '0' as harga_per_unit
     FROM inventory_gudang ig
     LEFT JOIN gudang g ON ig.id_gudang = g.id
-    LEFT JOIN inventory i ON ig.id_inventory = i.id
     WHERE ig.stok_akhir > 0
     ORDER BY g.nama, ig.nama_barang
 ";
