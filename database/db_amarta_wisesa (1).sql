@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 08, 2025 at 08:17 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 7.4.33
+-- Generation Time: Sep 09, 2025 at 06:33 AM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -178,9 +178,9 @@ CREATE TABLE `hpp` (
 --
 
 INSERT INTO `hpp` (`id`, `id_persiapan`, `id_inventory`, `no_urut`, `bahan`, `qty`, `barang_jadi`, `stok_order`, `efisiensi_consp`, `efisiensi_rap`, `stok_material`, `po`, `harga_per_meter`, `rap_x_harga_per_m`, `total_harga_bahan`, `biaya_tenaga_kerja_per_qty`, `total_biaya_tenaga_kerja`, `listrik`, `air`, `overhead`, `total_biaya`, `hpp`, `profit`, `harga_jual`, `created_at`, `updated_at`) VALUES
-(22, 11, 18, '1', 'Kain Katun', 1000, 20, 980, '1.00', 980, 50, 930, '100000.00', '98000000.00', '98000000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '98000000000.00', '98000000.00', '30.00', '127400000.00', '2025-08-29 09:04:21', '2025-08-29 09:04:21'),
-(23, 11, 19, '2', 'Kain Faring', 1000, 20, 980, '0.50', 480, 50, 430, '100000.00', '48000000.00', '48000000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '48000000000.00', '48000000.00', '30.00', '62400000.00', '2025-08-29 09:08:34', '2025-08-29 09:08:34'),
-(24, 11, 20, '3', 'Kancing', 1000, 20, 980, '5.00', 4900, 3950, 950, '500.00', '2450000.00', '2450000000.00', '0.00', '0.00', '0.00', '0.00', '0.00', '2450000000.00', '2450000.00', '30.00', '3185000.00', '2025-08-29 09:11:44', '2025-08-29 09:11:44');
+(22, 11, 18, '1', 'Kain Katun', 1000, 20, 980, 1.00, 980, 50, 930, 100000.00, 98000000.00, 98000000000.00, 0.00, 0.00, 0.00, 0.00, 0.00, 98000000000.00, 98000000.00, 30.00, 127400000.00, '2025-08-29 09:04:21', '2025-08-29 09:04:21'),
+(23, 11, 19, '2', 'Kain Faring', 1000, 20, 980, 0.50, 480, 50, 430, 100000.00, 48000000.00, 48000000000.00, 0.00, 0.00, 0.00, 0.00, 0.00, 48000000000.00, 48000000.00, 30.00, 62400000.00, '2025-08-29 09:08:34', '2025-08-29 09:08:34'),
+(24, 11, 20, '3', 'Kancing', 1000, 20, 980, 5.00, 4900, 3950, 950, 500.00, 2450000.00, 2450000000.00, 0.00, 0.00, 0.00, 0.00, 0.00, 2450000000.00, 2450000.00, 30.00, 3185000.00, '2025-08-29 09:11:44', '2025-08-29 09:11:44');
 
 -- --------------------------------------------------------
 
@@ -207,7 +207,7 @@ CREATE TABLE `inventory` (
 --
 
 INSERT INTO `inventory` (`id`, `kode_barang`, `nama_barang`, `warehouse`, `unit`, `jumlah`, `harga_per_unit`, `keterangan`, `created_at`, `updated_at`, `id_kategori`) VALUES
-(25, 'SN-09XXPi-90', 'Benang', 'Kasin', 'meter', 500, '100000.00', '', '2025-09-07 20:10:27', NULL, NULL);
+(25, 'SN-09XXPi-90', 'Benang', 'Kasin', 'meter', 500, 100000.00, '', '2025-09-07 20:10:27', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -381,7 +381,8 @@ CREATE TABLE `jumlah_pekerja` (
 --
 
 INSERT INTO `jumlah_pekerja` (`id`, `id_sps`, `bahan_baku`, `jumlah_order`, `jenis_pekerjaan`, `target_waktu`, `jumlah_waktu_kerja`, `harga_perunit`, `man_hours`, `jumlah_pekerja`, `updated_at`, `created_at`) VALUES
-(14, 23, 'Kain,Kancing,Kantong dkk', 930, 'Kantong', 90, 83700, 1500, 25200, 4, '2025-08-29 19:49:03', '2025-08-29 19:49:03');
+(14, 23, 'Kain,Kancing,Kantong dkk', 930, 'Kantong', 90, 83700, 1500, 25200, 4, '2025-08-29 19:49:03', '2025-08-29 19:49:03'),
+(15, 23, 'Kain,Kancing,Resleting dkk', 1000, 'Kantong', 90, 90000, 1500, 25200, 4, '2025-09-08 19:12:27', '2025-09-08 19:12:27');
 
 -- --------------------------------------------------------
 
@@ -448,7 +449,7 @@ CREATE TABLE `karyawan_harian_borongan` (
 --
 
 INSERT INTO `karyawan_harian_borongan` (`id`, `id_karyawan`, `id_sps`, `upah_per_hari`, `upah_per_jam`, `upah_borongan`, `metode_pembayaran`, `rekening_bank`, `nama_bank`, `status`, `skor_pekerja`, `updated_at`, `created_at`) VALUES
-(5, 19, 23, '0.00', '0.00', '0.00', 'harian', NULL, NULL, 'Belum Bayar', 'Baik', NULL, '2025-08-29 20:55:29');
+(5, 19, 23, 0.00, 0.00, 0.00, 'harian', NULL, NULL, 'Belum Bayar', 'Baik', NULL, '2025-08-29 20:55:29');
 
 -- --------------------------------------------------------
 
@@ -475,7 +476,7 @@ CREATE TABLE `karyawan_tetap` (
 --
 
 INSERT INTO `karyawan_tetap` (`id`, `id_karyawan`, `npwp`, `bpjs_ketenagakerjaan`, `bpjs_kesehatan`, `gaji_pokok`, `tunjangan_jabatan`, `tunjangan_transport`, `tunjangan_makan`, `rekening_bank`, `nama_bank`) VALUES
-(3, 14, '', '', '', '0.00', '0.00', '0.00', '0.00', '0', '');
+(3, 14, '', '', '', 0.00, 0.00, 0.00, 0.00, '0', '');
 
 -- --------------------------------------------------------
 
@@ -554,7 +555,7 @@ CREATE TABLE `pengguna` (
 --
 
 INSERT INTO `pengguna` (`id_pengguna`, `id_karyawan`, `username`, `password`, `role`, `status_aktif`, `last_login`, `created_at`, `updated_at`) VALUES
-(1, NULL, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 1, '2025-08-29 22:45:30', '2025-08-18 15:13:05', '2025-08-29 15:45:30'),
+(1, NULL, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 1, '2025-09-09 11:19:07', '2025-08-18 15:13:05', '2025-09-09 04:19:07'),
 (2, NULL, 'hr', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'hr', 1, '2025-08-29 13:59:40', '2025-08-18 15:13:05', '2025-08-29 06:59:40');
 
 -- --------------------------------------------------------
@@ -588,7 +589,7 @@ CREATE TABLE `persiapan` (
 --
 
 INSERT INTO `persiapan` (`id`, `id_sps`, `spp_no`, `kode_barang`, `nama_barang`, `jumlah`, `satuan`, `harga`, `total`, `tanggal_persiapan`, `pola`, `marker`, `upload_spk`, `status`, `sp_srx`, `created_at`, `updated_at`) VALUES
-(11, 23, 'SPP0001', '123', 'T-Shirt', 1000, 'pcs', '10.00', '10000.00', '2025-09-06', NULL, NULL, NULL, 'selesai', 'SRX-0001', '2025-08-29 16:00:41', '2025-08-29 16:03:33');
+(11, 23, 'SPP0001', '123', 'T-Shirt', 1000, 'pcs', 10.00, 10000.00, '2025-09-06', NULL, NULL, NULL, 'selesai', 'SRX-0001', '2025-08-29 16:00:41', '2025-08-29 16:03:33');
 
 -- --------------------------------------------------------
 
@@ -642,10 +643,13 @@ INSERT INTO `produksi` (`id`, `id_sps`, `kerjaan`, `target`, `hasil`, `pekerja`,
 CREATE TABLE `sps` (
   `id` int(10) UNSIGNED NOT NULL,
   `tanggal` date DEFAULT NULL,
+  `sp_no` varchar(50) NOT NULL,
   `sps_no` varchar(20) DEFAULT NULL,
   `customer` varchar(100) DEFAULT NULL,
   `item` varchar(100) DEFAULT NULL,
   `artikel` varchar(100) DEFAULT NULL,
+  `gender` enum('men','women','unisex') NOT NULL DEFAULT 'men',
+  `age` enum('baby','toddler','kids','teen','adult') NOT NULL DEFAULT 'adult',
   `qty` int(11) DEFAULT NULL,
   `size` varchar(20) DEFAULT NULL,
   `sample_product` varchar(255) DEFAULT NULL,
@@ -663,8 +667,8 @@ CREATE TABLE `sps` (
 -- Dumping data for table `sps`
 --
 
-INSERT INTO `sps` (`id`, `tanggal`, `sps_no`, `customer`, `item`, `artikel`, `qty`, `size`, `sample_product`, `design`, `st_chart`, `material_sm`, `pola_sample`, `buat_sample`, `kirim`, `approval`, `sp_srx`) VALUES
-(23, '2025-08-29', 'SPS-01', 'Resky-Jakarta', 'T-Shirt', 'T-Shirt Jersey', 1000, 'L', '1756458034_68b16c32b8e1a_Screen Shot 2025-08-29 at 15.34.04.png', NULL, NULL, NULL, NULL, NULL, '2025-09-06', 'Approved', 'SPK-20250829-0023');
+INSERT INTO `sps` (`id`, `tanggal`, `sp_no`, `sps_no`, `customer`, `item`, `artikel`, `gender`, `age`, `qty`, `size`, `sample_product`, `design`, `st_chart`, `material_sm`, `pola_sample`, `buat_sample`, `kirim`, `approval`, `sp_srx`) VALUES
+(23, '2025-08-29', '', 'SPS-01', 'Resky-Jakarta', 'T-Shirt', 'T-Shirt Jersey', 'men', 'adult', 1000, 'L', '1756458034_68b16c32b8e1a_Screen Shot 2025-08-29 at 15.34.04.png', NULL, NULL, NULL, NULL, NULL, '2025-09-06', 'Approved', 'SPK-20250829-0023');
 
 --
 -- Indexes for dumped tables
@@ -856,7 +860,7 @@ ALTER TABLE `jabatan`
 -- AUTO_INCREMENT for table `jumlah_pekerja`
 --
 ALTER TABLE `jumlah_pekerja`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `karyawan`
