@@ -11,13 +11,33 @@ if (!$sps) {
     die("Data tidak ditemukan!");
 }
 
+// Ambil distinct values untuk dropdown gender dan age dari database
+$gender_result = $conn->query("SHOW COLUMNS FROM sps WHERE Field = 'gender'");
+$gender_row = $gender_result->fetch_assoc();
+$gender_enum = $gender_row['Type'];
+preg_match("/^enum\((.*)\)$/", $gender_enum, $matches);
+$gender_options = array_map(function ($val) {
+    return trim($val, "'");
+}, explode(',', $matches[1]));
+
+$age_result = $conn->query("SHOW COLUMNS FROM sps WHERE Field = 'age'");
+$age_row = $age_result->fetch_assoc();
+$age_enum = $age_row['Type'];
+preg_match("/^enum\((.*)\)$/", $age_enum, $matches);
+$age_options = array_map(function ($val) {
+    return trim($val, "'");
+}, explode(',', $matches[1]));
+
 // Proses update data
 if (isset($_POST['update'])) {
     $tanggal = $_POST['tanggal'];
+    $sp_no = $_POST['sp_no'];
     $sps_no = $_POST['sps_no'];
     $customer = $_POST['customer'];
     $item = $_POST['item'];
     $artikel = $_POST['artikel'];
+    $gender = $_POST['gender'];
+    $age = $_POST['age'];
     $qty = intval($_POST['qty']);
     $size = $_POST['size'] ?? '';
     $kirim = $_POST['kirim'] ?? null;
@@ -89,19 +109,19 @@ if (isset($_POST['update'])) {
     if ($uploadSuccess) {
         // Build the complete SQL query
         $baseFields = [
-            "tanggal = ?", "sps_no = ?", "customer = ?", "item = ?", "artikel = ?", 
-            "qty = ?", "size = ?", "kirim = ?", "approval = ?", "sp_srx = ?"
+            "tanggal = ?", "sp_no = ?", "sps_no = ?", "customer = ?", "item = ?", "artikel = ?",
+            "gender = ?", "age = ?", "qty = ?", "size = ?", "kirim = ?", "approval = ?", "sp_srx = ?"
         ];
-        
+
         $allFields = array_merge($baseFields, $updateFields);
         $sql = "UPDATE sps SET " . implode(', ', $allFields) . " WHERE id = ?";
-        
+
         // Build parameters array
-        $baseParams = [$tanggal, $sps_no, $customer, $item, $artikel, $qty, $size, $kirim, $approval, $sp_srx];
+        $baseParams = [$tanggal, $sp_no, $sps_no, $customer, $item, $artikel, $gender, $age, $qty, $size, $kirim, $approval, $sp_srx];
         $allParams = array_merge($baseParams, $params, [$id]);
-        
+
         // Build types string
-        $types = str_repeat('s', count($baseParams)); // 10 string parameters
+        $types = 'ssssssssissss'; // 13 base parameters: 8s, i, 4s
         $types .= str_repeat('s', count($params));   // file parameters (all strings)
         $types .= 'i'; // id parameter
         
@@ -135,6 +155,10 @@ if (isset($_POST['update'])) {
             <input type="date" name="tanggal" class="form-control" value="<?= $sps['tanggal'] ?>" required>
         </div>
         <div class="col-md-4">
+            <label>No SP</label>
+            <input type="text" name="sp_no" class="form-control" value="<?= $sps['sp_no'] ?>" required>
+        </div>
+        <div class="col-md-4">
             <label>No SPS</label>
             <input type="text" name="sps_no" class="form-control" value="<?= $sps['sps_no'] ?>" required>
         </div>
@@ -149,6 +173,24 @@ if (isset($_POST['update'])) {
         <div class="col-md-4">
             <label>Artikel</label>
             <input type="text" name="artikel" class="form-control" value="<?= $sps['artikel'] ?>" required>
+        </div>
+        <div class="col-md-4">
+            <label>Gender</label>
+            <select name="gender" class="form-control" required>
+                <option value="">Pilih Gender</option>
+                <?php foreach ($gender_options as $option): ?>
+                    <option value="<?php echo $option; ?>" <?php echo ($sps['gender'] == $option) ? 'selected' : ''; ?>><?php echo ucfirst($option); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label>Age</label>
+            <select name="age" class="form-control" required>
+                <option value="">Pilih Age</option>
+                <?php foreach ($age_options as $option): ?>
+                    <option value="<?php echo $option; ?>" <?php echo ($sps['age'] == $option) ? 'selected' : ''; ?>><?php echo ucfirst($option); ?></option>
+                <?php endforeach; ?>
+            </select>
         </div>
         <div class="col-md-4">
             <label>Qty</label>
