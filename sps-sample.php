@@ -1,4 +1,7 @@
 <?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 // db.php
 include "includes/header.php";
 include "config/db.php";
@@ -507,7 +510,7 @@ $age_options = array_map(function ($val) {
     $(document).ready(function() {
         $('#sppTable').DataTable({
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json'
+                url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json'
             },
             order: [
                 [0, 'asc']

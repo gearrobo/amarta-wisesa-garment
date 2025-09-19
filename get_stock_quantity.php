@@ -7,7 +7,7 @@ if (isset($_GET['gudang_id']) && isset($_GET['kategori_id'])) {
     $kategori_id = intval($_GET['kategori_id']);
     
     // Get category name
-    $sql_kategori = "SELECT nama_kategori FROM kategori_barang WHERE id_kategori = ?";
+    $sql_kategori = "SELECT nama_kategori FROM kategori_barang WHERE id = ?";
     $stmt_kategori = mysqli_prepare($conn, $sql_kategori);
     mysqli_stmt_bind_param($stmt_kategori, "i", $kategori_id);
     mysqli_stmt_execute($stmt_kategori);

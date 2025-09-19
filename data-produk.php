@@ -1,4 +1,8 @@
 <?php
+
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 // Include database configuration
 include 'config/db.php';
 
@@ -77,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 $sql = "SELECT p.*, k.nama_kategori 
         FROM produk p 
-        LEFT JOIN kategori_barang k ON p.id_kategori = k.id_kategori 
+        LEFT JOIN kategori_barang k ON p.id_kategori = k.id 
         ORDER BY p.nama_produk";
 $result = mysqli_query($conn, $sql);
 
@@ -227,7 +231,7 @@ $kategoriList = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                 <select name="id_kategori" class="form-select">
                                     <option value="">Pilih Kategori</option>
                                     <?php foreach ($kategoriList as $kategori): ?>
-                                    <option value="<?= $kategori['id_kategori']; ?>">
+                                    <option value="<?= $kategori['id']; ?>">
                                         <?= htmlspecialchars($kategori['nama_kategori']); ?>
                                     </option>
                                     <?php endforeach; ?>
@@ -286,7 +290,7 @@ $(document).ready(function() {
     $('#tabelProduk').DataTable({
         responsive: true,
         language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
+            url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
         },
         columnDefs: [
             { orderable: false, targets: [7] } // Disable sorting on action column

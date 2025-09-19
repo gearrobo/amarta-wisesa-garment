@@ -99,7 +99,7 @@ if (!$kategori) {
                 </div>
                 <div class="card-footer">
                     <a href="kategori-barang.php" class="btn btn-secondary">Kembali</a>
-                    <a href="edit-kategori.php?id=<?= $kategori['id_kategori']; ?>" class="btn btn-warning">Edit</a>
+                    <a href="edit-kategori.php?id=<?= $kategori['id']; ?>" class="btn btn-warning">Edit</a>
                 </div>
             </div>
         </div>
