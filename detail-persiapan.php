@@ -40,6 +40,45 @@ if (!$data_persiapan) {
     die("Data persiapan tidak ditemukan.");
 }
 
+// Generate SPP number if not exists and status is 'selesai'
+if (empty($data_persiapan['spp_no']) && strtolower($data_persiapan['status']) === 'selesai') {
+    // Generate nomor SPP baru
+    $year = date('Y');
+    $month = date('m');
+
+    // Cari nomor SPP terakhir
+    $last_spp_sql = "SELECT MAX(CAST(SUBSTRING(spp_no, 4, 4) AS UNSIGNED)) as last_num 
+                     FROM persiapan 
+                     WHERE spp_no LIKE 'SPP%' AND YEAR(created_at) = ?";
+    $last_spp_stmt = mysqli_prepare($conn, $last_spp_sql);
+    if (!$last_spp_stmt) {
+        error_log("Prepare failed for last SPP query: " . mysqli_error($conn));
+    } else {
+        mysqli_stmt_bind_param($last_spp_stmt, "i", $year);
+        mysqli_stmt_execute($last_spp_stmt);
+        $last_spp_result = mysqli_stmt_get_result($last_spp_stmt);
+        $last_spp = mysqli_fetch_assoc($last_spp_result);
+
+        $next_num = ($last_spp['last_num'] ?? 0) + 1;
+        $spp_no = 'SPP' . str_pad($next_num, 4, '0', STR_PAD_LEFT);
+        $sp_srx = 'SRX-' . str_pad($next_num, 4, '0', STR_PAD_LEFT);
+
+        // Update database dengan nomor SPP dan SP/SRX yang baru
+        $update_sql = "UPDATE persiapan SET spp_no = ?, sp_srx = ? WHERE id = ?";
+        $update_stmt = mysqli_prepare($conn, $update_sql);
+        if ($update_stmt) {
+            mysqli_stmt_bind_param($update_stmt, "ssi", $spp_no, $sp_srx, $id_persiapan);
+            if (mysqli_stmt_execute($update_stmt)) {
+                // Update local data
+                $data_persiapan['spp_no'] = $spp_no;
+                $data_persiapan['sp_srx'] = $sp_srx;
+            }
+            mysqli_stmt_close($update_stmt);
+        }
+        mysqli_stmt_close($last_spp_stmt);
+    }
+}
+
 // --- Ambil data produksi ---
 // Ambil semua pekerja, target, hasil (bisa disesuaikan WHERE status='proses')
 $sql_worker = "SELECT pekerja, target, hasil ,kerjaan FROM produksi WHERE id_sps = $id_sps_produksi";
